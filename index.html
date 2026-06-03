@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日热搜 - AI 增强的多平台热搜聚合</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=Noto+Serif+SC:wght@600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   CSS Variables & Design Tokens
+   ============================================ */
+:root {
+  /* Core palette - bright operations desk with editorial heat signals */
+  --bg-primary: #f6f7fb;
+  --bg-secondary: #eef1f7;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-ink: #111827;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #526070;
+  --text-tertiary: #8994a3;
+  --text-inverse: #ffffff;
+
+  /* Accent - urgent but editorial */
+  --accent-primary: #e23d28;
+  --accent-primary-light: #ff7b55;
+  --accent-primary-bg: rgba(226, 61, 40, 0.08);
+  --accent-primary-bg-hover: rgba(226, 61, 40, 0.14);
+  --accent-cyan: #0891b2;
+  --accent-cyan-bg: rgba(8, 145, 178, 0.1);
+
+  /* AI card */
+  --ai-bg: #ffffff;
+  --ai-bg-subtle: #f8fafc;
+  --ai-border: #d9e2ec;
+  --ai-ink: #0f172a;
+  --ai-muted: #556273;
+  --ai-chip: #edf7fb;
+
+  /* Rank colors */
+  --rank-gold: #f59e0b;
+  --rank-gold-bg: rgba(245,158,11,0.1);
+  --rank-silver: #94a3b8;
+  --rank-silver-bg: rgba(148,163,184,0.1);
+  --rank-bronze: #c2703e;
+  --rank-bronze-bg: rgba(194,112,62,0.1);
+
+  /* Sentiment */
+  --sentiment-positive: #10b981;
+  --sentiment-neutral: #6b7280;
+  --sentiment-negative: #ef4444;
+
+  /* Tag colors */
+  --tag-tech: #3b82f6;
+  --tag-tech-bg: rgba(59,130,246,0.1);
+  --tag-entertainment: #ec4899;
+  --tag-entertainment-bg: rgba(236,72,153,0.1);
+  --tag-sports: #f59e0b;
+  --tag-sports-bg: rgba(245,158,11,0.1);
+  --tag-finance: #10b981;
+  --tag-finance-bg: rgba(16,185,129,0.1);
+  --tag-society: #8b5cf6;
+  --tag-society-bg: rgba(139,92,246,0.1);
+  --tag-gaming: #06b6d4;
+  --tag-gaming-bg: rgba(6,182,212,0.1);
+  --tag-education: #f97316;
+  --tag-education-bg: rgba(249,115,22,0.1);
+  --tag-international: #6366f1;
+  --tag-international-bg: rgba(99,102,241,0.1);
+  --tag-life: #84cc16;
+  --tag-life-bg: rgba(132,204,22,0.1);
+  --tag-other: #9ca3af;
+  --tag-other-bg: rgba(156,163,175,0.1);
+
+  /* Borders & Shadows */
+  --border-light: #e2e8f0;
+  --border-card: rgba(15,23,42,0.08);
+  --shadow-card: 0 1px 2px rgba(15,23,42,0.04), 0 12px 28px rgba(15,23,42,0.05);
+  --shadow-card-hover: 0 18px 36px rgba(15,23,42,0.1), 0 2px 6px rgba(15,23,42,0.05);
+  --shadow-ai: 0 24px 48px rgba(15,23,42,0.1);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-pill: 9999px;
+
+  /* Typography */
+  --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Noto Serif SC', 'Noto Sans SC', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --max-width: 1400px;
+  --header-height: 64px;
+}
+
+/* ============================================
+   Reset & Base
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background:
+    linear-gradient(90deg, rgba(15,23,42,0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(15,23,42,0.03) 1px, transparent 1px),
+    radial-gradient(circle at 8% 0%, rgba(8,145,178,0.08), transparent 34%),
+    radial-gradient(circle at 82% 5%, rgba(226,61,40,0.08), transparent 28%),
+    var(--bg-primary);
+  background-size: 32px 32px, 32px 32px, auto, auto, auto;
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+* { scrollbar-width: thin; scrollbar-color: var(--border-light) transparent; }
+
+/* ============================================
+   Header
+   ============================================ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(246, 247, 251, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-light);
+  height: var(--header-height);
+}
+
+.header-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--bg-ink);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0;
+  box-shadow: inset 0 -3px 0 rgba(226,61,40,0.8), 0 8px 18px rgba(17,24,39,0.14);
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: 0;
+}
+
+.logo-text span {
+  color: var(--accent-primary);
+}
+
+.header-tagline {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .header-tagline { display: block; }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.btn-refresh {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.92);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.btn-refresh:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(226,61,40,0.12);
+}
+
+.btn-refresh:active {
+  transform: scale(0.97);
+}
+
+.btn-refresh.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.btn-refresh.loading .refresh-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.refresh-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Main Container
+   ============================================ */
+.main-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+}
+
+/* ============================================
+   AI Recommendation Card
+   ============================================ */
+.ai-card {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.98), rgba(248,250,252,0.94)),
+    var(--ai-bg);
+  border: 1px solid var(--ai-border);
+  border-left: 6px solid var(--accent-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-ai);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s var(--transition-slow) both;
+}
+
+.ai-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(15,23,42,0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(15,23,42,0.04) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.ai-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 180px;
+  height: 100%;
+  background:
+    linear-gradient(135deg, rgba(8,145,178,0.18), transparent 55%),
+    repeating-linear-gradient(-45deg, rgba(226,61,40,0.08), rgba(226,61,40,0.08) 7px, transparent 7px, transparent 16px);
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--bg-ink);
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 rgba(226,61,40,0.8);
+}
+
+.ai-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ai-card-subtitle {
+  color: var(--ai-muted);
+  font-size: 13px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid rgba(8,145,178,0.16);
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.68);
+}
+
+.ai-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  position: relative;
+  z-index: 1;
+}
+
+.ai-signal {
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(15,23,42,0.08);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.ai-signal-value {
+  display: block;
+  color: var(--ai-ink);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ai-signal-label {
+  display: block;
+  color: var(--ai-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.ai-events {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+  position: relative;
+  z-index: 1;
+}
+
+.ai-event {
+  background: rgba(255,255,255,0.86);
+  border: 1px solid rgba(15,23,42,0.09);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+  cursor: default;
+}
+
+.ai-event:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(15,23,42,0.1);
+}
+
+.ai-event-top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.ai-level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: white;
+  flex-shrink: 0;
+}
+
+.ai-level.level-s {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  box-shadow: 0 2px 8px rgba(245,158,11,0.4);
+}
+
+.ai-level.level-a {
+  background: linear-gradient(135deg, #0284c7, #06b6d4);
+  box-shadow: 0 2px 8px rgba(8,145,178,0.25);
+}
+
+.ai-level.level-b {
+  background: var(--ai-chip);
+  color: var(--ai-ink);
+}
+
+.ai-event-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ai-ink);
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-sentiment {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.ai-sentiment.positive {
+  background: rgba(16,185,129,0.1);
+  color: #047857;
+}
+
+.ai-sentiment.neutral {
+  background: rgba(107,114,128,0.12);
+  color: #4b5563;
+}
+
+.ai-sentiment.negative {
+  background: rgba(239,68,68,0.1);
+  color: #b91c1c;
+}
+
+.ai-event-reason {
+  font-size: 13px;
+  color: var(--ai-muted);
+  margin-bottom: var(--space-sm);
+  line-height: 1.5;
+}
+
+.ai-event-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-platform-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--accent-cyan-bg);
+  border-radius: var(--radius-sm);
+  color: var(--ai-muted);
+  font-weight: 500;
+}
+
+.ai-platform-tag .rank-num {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ai-ink);
+}
+
+/* AI unavailable state */
+.ai-card-unavailable {
+  background: var(--ai-bg-subtle);
+  border: 1px dashed var(--ai-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.ai-card-unavailable svg {
+  width: 32px;
+  height: 32px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-sm);
+}
+
+/* ============================================
+   Tag Filter Bar
+   ============================================ */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  overflow-x: auto;
+  padding: var(--space-sm);
+  background: rgba(255,255,255,0.72);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  -webkit-overflow-scrolling: touch;
+  animation: fadeInUp 0.6s 0.1s var(--transition-slow) both;
+}
+
+.filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+  font-family: var(--font-sans);
+}
+
+.filter-tag:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-primary-bg);
+}
+
+.filter-tag.active {
+  background: var(--bg-ink);
+  color: white;
+  border-color: var(--bg-ink);
+  box-shadow: 0 8px 16px rgba(15,23,42,0.14);
+}
+
+.filter-tag .tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Platform Card Grid
+   ============================================ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(318px, 1fr));
+  gap: var(--space-md);
+  animation: fadeInUp 0.6s 0.2s var(--transition-slow) both;
+}
+
+/* ============================================
+   Platform Card
+   ============================================ */
+.platform-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  animation: fadeInUp 0.5s var(--transition-slow) both;
+  position: relative;
+}
+
+.platform-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-cyan));
+  opacity: 0.9;
+}
+
+.platform-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: calc(var(--space-md) + 2px) var(--space-md) var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+  background: linear-gradient(180deg, rgba(248,250,252,0.95), rgba(255,255,255,0.95));
+}
+
+.platform-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  font-family: var(--font-mono);
+}
+
+.platform-icon.weibo { background: #fff0f0; color: #d7341f; }
+.platform-icon.zhihu { background: #eef6ff; color: #0f62d6; }
+.platform-icon.bilibili { background: #fff0fb; color: #d94690; }
+.platform-icon.douyin { background: #f0f0f0; color: #111; }
+.platform-icon.thepaper { background: #fff8ed; color: #a16207; }
+.platform-icon.kr36 { background: #effbf3; color: #15803d; }
+.platform-icon.hupu { background: #fff0f0; color: #b42318; }
+.platform-icon.github { background: #f1f2f4; color: #24292f; }
+
+.card-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-header-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.card-header-list {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.card-header-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* Card body */
+.card-body {
+  padding: 6px var(--space-md) var(--space-md);
+}
+
+/* Hot item row */
+.hot-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  transition: background var(--transition-fast);
+  border-radius: var(--radius-sm);
+}
+
+.hot-item:last-child {
+  border-bottom: none;
+}
+
+.hot-item:hover {
+  background: var(--bg-card-hover);
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.hot-item.hidden-by-filter {
+  display: none;
+}
+
+/* Rank number */
+.hot-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  background: transparent;
+  margin-top: 1px;
+}
+
+.hot-rank.rank-1 {
+  background: var(--rank-gold-bg);
+  color: var(--rank-gold);
+  box-shadow: inset 0 0 0 1px rgba(245,158,11,0.18);
+}
+
+.hot-rank.rank-2 {
+  background: var(--rank-silver-bg);
+  color: var(--rank-silver);
+}
+
+.hot-rank.rank-3 {
+  background: var(--rank-bronze-bg);
+  color: var(--rank-bronze);
+}
+
+/* Hot item content */
+.hot-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hot-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.hot-title {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  line-height: 1.45;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.hot-title:hover {
+  color: var(--accent-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hot-title.no-link {
+  cursor: default;
+  color: var(--text-primary);
+}
+
+.hot-heat {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-pill);
+  padding: 1px 7px;
+}
+
+/* Tags row */
+.hot-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.hot-tag {
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.hot-tag.tech { color: var(--tag-tech); background: var(--tag-tech-bg); }
+.hot-tag.entertainment { color: var(--tag-entertainment); background: var(--tag-entertainment-bg); }
+.hot-tag.sports { color: var(--tag-sports); background: var(--tag-sports-bg); }
+.hot-tag.finance { color: var(--tag-finance); background: var(--tag-finance-bg); }
+.hot-tag.society { color: var(--tag-society); background: var(--tag-society-bg); }
+.hot-tag.gaming { color: var(--tag-gaming); background: var(--tag-gaming-bg); }
+.hot-tag.education { color: var(--tag-education); background: var(--tag-education-bg); }
+.hot-tag.international { color: var(--tag-international); background: var(--tag-international-bg); }
+.hot-tag.life { color: var(--tag-life); background: var(--tag-life-bg); }
+.hot-tag.other { color: var(--tag-other); background: var(--tag-other-bg); }
+
+/* ============================================
+   Error / Empty States
+   ============================================ */
+.card-error {
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.card-error svg {
+  width: 40px;
+  height: 40px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-sm);
+}
+
+.card-error p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 6px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition-fast);
+}
+
+.btn-retry:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.card-empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.footer {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+  border-top: 1px solid var(--border-light);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: center;
+}
+
+.footer-brand {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.footer-desc {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+.footer-ai-notice {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  background: rgba(255,255,255,0.72);
+  border: 1px solid var(--border-light);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.footer-ai-notice svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  margin-right: 4px;
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ============================================
+   Toast
+   ============================================ */
+.toast {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-md));
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--bg-ink);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--transition-normal);
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================
+   Skeleton Loading
+   ============================================ */
+.skeleton-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card);
+  overflow: hidden;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.skeleton-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-lines {
+  flex: 1;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 6px;
+}
+
+.skeleton-line:last-child { margin-bottom: 0; }
+.skeleton-line.short { width: 60%; }
+
+.skeleton-body {
+  padding: var(--space-md);
+}
+
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 0;
+}
+
+.skeleton-item-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  animation: shimmer 1.5s infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-item-text {
+  flex: 1;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--bg-secondary);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1200px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 56px;
+  }
+
+  .header-inner {
+    padding: 0 var(--space-md);
+  }
+
+  .main-container {
+    padding: var(--space-md) var(--space-md) var(--space-xl);
+  }
+
+  .ai-card {
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+  }
+
+  .ai-events {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-signal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-event {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .ai-event-top {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: start;
+  }
+
+  .ai-sentiment {
+    margin-left: 0;
+    margin-top: 3px;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .filter-bar {
+    gap: 6px;
+  }
+
+  .filter-tag {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  .hot-title-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .hot-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .footer {
+    padding: var(--space-lg) var(--space-md) var(--space-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-card-subtitle {
+    display: none;
+  }
+
+  .btn-refresh span {
+    display: none;
+  }
+
+  .btn-refresh {
+    padding: 8px 10px;
+  }
+
+  .update-indicator {
+    display: none;
+  }
+}
+
+/* ============================================
+   No results state for filter
+   ============================================ */
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+.no-results svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
+.no-results p {
+  margin-top: var(--space-sm);
+}
+
+/* ============================================
+   Update time indicator
+   ============================================ */
+.update-indicator {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.update-indicator .pulse {
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ============================================
+   Card stagger animation
+   ============================================ */
+.platform-card:nth-child(1) { animation-delay: 0.25s; }
+.platform-card:nth-child(2) { animation-delay: 0.30s; }
+.platform-card:nth-child(3) { animation-delay: 0.35s; }
+.platform-card:nth-child(4) { animation-delay: 0.40s; }
+.platform-card:nth-child(5) { animation-delay: 0.45s; }
+.platform-card:nth-child(6) { animation-delay: 0.50s; }
+.platform-card:nth-child(7) { animation-delay: 0.55s; }
+.platform-card:nth-child(8) { animation-delay: 0.60s; }
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     Header
+     ============================================ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">
+        <div class="logo-icon">热</div>
+        <div class="logo-text">今日<span>热搜</span></div>
+      </div>
+      <div class="header-tagline">用 AI 读懂全网热点</div>
+    </div>
+    <div class="header-right">
+      <div class="update-indicator">
+        <span class="pulse"></span>
+        <span id="updateTime">3 分钟前更新</span>
+      </div>
+      <button class="btn-refresh" id="refreshBtn" type="button" aria-label="刷新热榜数据" onclick="handleRefresh()">
+        <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        <span>刷新</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================
+     Main Content
+     ============================================ -->
+<main class="main-container">
+
+  <!-- AI Recommendation Card -->
+  <section class="ai-card" id="aiCard">
+    <div class="ai-card-header">
+      <div class="ai-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+        AI 今日推荐
+      </div>
+      <div class="ai-card-subtitle">综合 7 个平台热搜，AI 自动聚类分析</div>
+    </div>
+    <div class="ai-signal-grid" aria-label="热榜概览">
+      <div class="ai-signal">
+        <span class="ai-signal-value">7/8</span>
+        <span class="ai-signal-label">核心平台在线</span>
+      </div>
+      <div class="ai-signal">
+        <span class="ai-signal-value">68</span>
+        <span class="ai-signal-label">当前可读热点</span>
+      </div>
+      <div class="ai-signal">
+        <span class="ai-signal-value">5-10m</span>
+        <span class="ai-signal-label">缓存刷新节奏</span>
+      </div>
+    </div>
+    <div class="ai-events" id="aiEvents">
+      <!-- S Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-s">S</div>
+          <div class="ai-event-title">GPT-5 正式发布，多模态能力全面升级引发全球关注</div>
+          <div class="ai-sentiment positive">正面</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：多平台同时登榜，微博知乎B站均进前5，24h内热度飙升300%</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">微博 <span class="rank-num">#1</span></span>
+          <span class="ai-platform-tag">知乎 <span class="rank-num">#2</span></span>
+          <span class="ai-platform-tag">B站 <span class="rank-num">#3</span></span>
+          <span class="ai-platform-tag">GitHub <span class="rank-num">#1</span></span>
+        </div>
+      </div>
+
+      <!-- S Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-s">S</div>
+          <div class="ai-event-title">高考倒计时：多地出台新政策调整录取规则</div>
+          <div class="ai-sentiment neutral">中性</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：社会关注度极高，微博热搜第一，澎湃新闻头条</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">微博 <span class="rank-num">#2</span></span>
+          <span class="ai-platform-tag">澎湃 <span class="rank-num">#1</span></span>
+          <span class="ai-platform-tag">知乎 <span class="rank-num">#5</span></span>
+        </div>
+      </div>
+
+      <!-- A Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-a">A</div>
+          <div class="ai-event-title">苹果 WWDC 2026 将推出全新 AI 框架</div>
+          <div class="ai-sentiment positive">正面</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：科技圈热度极高，36氪与GitHub相关项目激增</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">36氪 <span class="rank-num">#1</span></span>
+          <span class="ai-platform-tag">GitHub <span class="rank-num">#3</span></span>
+          <span class="ai-platform-tag">知乎 <span class="rank-num">#8</span></span>
+        </div>
+      </div>
+
+      <!-- A Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-a">A</div>
+          <div class="ai-event-title">NBA 总决赛激战正酣，球队阵容变动引发热议</div>
+          <div class="ai-sentiment neutral">中性</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：体育领域最高热度事件，虎扑步行街热帖第一</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">虎扑 <span class="rank-num">#1</span></span>
+          <span class="ai-platform-tag">微博 <span class="rank-num">#6</span></span>
+          <span class="ai-platform-tag">B站 <span class="rank-num">#7</span></span>
+        </div>
+      </div>
+
+      <!-- A Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-a">A</div>
+          <div class="ai-event-title">某知名企业大规模裁员引发行业震动</div>
+          <div class="ai-sentiment negative">负面</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：涉及财经与社会双重领域，多平台进入前10</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">微博 <span class="rank-num">#4</span></span>
+          <span class="ai-platform-tag">36氪 <span class="rank-num">#3</span></span>
+          <span class="ai-platform-tag">知乎 <span class="rank-num">#1</span></span>
+        </div>
+      </div>
+
+      <!-- B Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-b">B</div>
+          <div class="ai-event-title">国产 3A 大作新预告片发布，画面质量惊艳</div>
+          <div class="ai-sentiment positive">正面</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：B站游戏区热度飙升，微博游戏话题进入前20</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">B站 <span class="rank-num">#2</span></span>
+          <span class="ai-platform-tag">微博 <span class="rank-num">#15</span></span>
+        </div>
+      </div>
+
+      <!-- B Level -->
+      <div class="ai-event">
+        <div class="ai-event-top">
+          <div class="ai-level level-b">B</div>
+          <div class="ai-event-title">国际油价波动加剧，多国央行紧急会议</div>
+          <div class="ai-sentiment negative">负面</div>
+        </div>
+        <div class="ai-event-reason">推荐理由：财经领域重要事件，36氪与澎湃均有报道</div>
+        <div class="ai-event-platforms">
+          <span class="ai-platform-tag">36氪 <span class="rank-num">#5</span></span>
+          <span class="ai-platform-tag">澎湃 <span class="rank-num">#4</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tag Filter Bar -->
+  <section class="filter-bar" id="filterBar">
+    <button class="filter-tag active" type="button" data-tag="all" onclick="filterByTag('all')">全部</button>
+    <button class="filter-tag" type="button" data-tag="tech" onclick="filterByTag('tech')">
+      <span class="tag-dot" style="background: var(--tag-tech)"></span>科技
+    </button>
+    <button class="filter-tag" type="button" data-tag="entertainment" onclick="filterByTag('entertainment')">
+      <span class="tag-dot" style="background: var(--tag-entertainment)"></span>娱乐
+    </button>
+    <button class="filter-tag" type="button" data-tag="sports" onclick="filterByTag('sports')">
+      <span class="tag-dot" style="background: var(--tag-sports)"></span>体育
+    </button>
+    <button class="filter-tag" type="button" data-tag="finance" onclick="filterByTag('finance')">
+      <span class="tag-dot" style="background: var(--tag-finance)"></span>财经
+    </button>
+    <button class="filter-tag" type="button" data-tag="society" onclick="filterByTag('society')">
+      <span class="tag-dot" style="background: var(--tag-society)"></span>社会
+    </button>
+    <button class="filter-tag" type="button" data-tag="gaming" onclick="filterByTag('gaming')">
+      <span class="tag-dot" style="background: var(--tag-gaming)"></span>游戏
+    </button>
+    <button class="filter-tag" type="button" data-tag="education" onclick="filterByTag('education')">
+      <span class="tag-dot" style="background: var(--tag-education)"></span>教育
+    </button>
+    <button class="filter-tag" type="button" data-tag="international" onclick="filterByTag('international')">
+      <span class="tag-dot" style="background: var(--tag-international)"></span>国际
+    </button>
+    <button class="filter-tag" type="button" data-tag="life" onclick="filterByTag('life')">
+      <span class="tag-dot" style="background: var(--tag-life)"></span>生活
+    </button>
+    <button class="filter-tag" type="button" data-tag="other" onclick="filterByTag('other')">
+      <span class="tag-dot" style="background: var(--tag-other)"></span>其他
+    </button>
+  </section>
+
+  <!-- Platform Card Grid -->
+  <section class="card-grid" id="cardGrid">
+
+    <!-- 微博 -->
+    <article class="platform-card" data-source="weibo">
+      <div class="card-header">
+        <div class="platform-icon weibo">微</div>
+        <div class="card-header-info">
+          <div class="card-header-name">微博 · 热搜榜</div>
+          <div class="card-header-list">实时热度</div>
+        </div>
+        <div class="card-header-time">3分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">GPT-5正式发布 多模态能力全面升级</a>
+              <span class="hot-heat">892.3万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society','education']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">高考倒计时 多地出台新政策</a>
+              <span class="hot-heat">756.1万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span><span class="hot-tag education">教育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">全国多地迎来强降雨天气预警</a>
+              <span class="hot-heat">623.8万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance','society']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">某知名企业大规模裁员引发行业震动</a>
+              <span class="hot-heat">534.2万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">国产大模型性能突破新纪录</a>
+              <span class="hot-heat">487.6万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">NBA总决赛激战正酣</a>
+              <span class="hot-heat">445.1万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['entertainment']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">热门综艺新一季官宣嘉宾阵容</a>
+              <span class="hot-heat">398.7万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag entertainment">娱乐</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['international']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">联合国发布最新气候变化报告</a>
+              <span class="hot-heat">356.4万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag international">国际</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['life']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">暑期旅游热门目的地预测出炉</a>
+              <span class="hot-heat">312.9万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag life">生活</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech','gaming']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">国产3A大作新预告片画面惊艳</a>
+              <span class="hot-heat">289.5万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span><span class="hot-tag gaming">游戏</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank">11</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">多地出台楼市新政刺激购房需求</a>
+              <span class="hot-heat">267.3万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['entertainment']">
+          <div class="hot-rank">12</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">知名导演新片定档引发期待</a>
+              <span class="hot-heat">234.8万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag entertainment">娱乐</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">13</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">新能源汽车销量再创月度新高</a>
+              <span class="hot-heat">212.6万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank">14</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">养老金上调方案正式公布</a>
+              <span class="hot-heat">198.4万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['other']">
+          <div class="hot-rank">15</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://weibo.com" target="_blank" rel="noopener">网友热议夏日防晒神器推荐</a>
+              <span class="hot-heat">176.2万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag other">其他</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 知乎 -->
+    <article class="platform-card" data-source="zhihu">
+      <div class="card-header">
+        <div class="platform-icon zhihu">知</div>
+        <div class="card-header-info">
+          <div class="card-header-name">知乎 · 热榜</div>
+          <div class="card-header-list">全站热门</div>
+        </div>
+        <div class="card-header-time">5分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['finance','society']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">如何看待某知名企业的大规模裁员？对行业意味着什么</a>
+              <span class="hot-heat">1842万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">GPT-5 的发布对 AI 行业格局会产生怎样的影响？</a>
+              <span class="hot-heat">1567万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society','education']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">2026年高考新政策对考生有哪些实质影响？</a>
+              <span class="hot-heat">1234万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span><span class="hot-tag education">教育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">如何评价 DeepSeek 最新发布的开源模型？</a>
+              <span class="hot-heat">987万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">年轻人为什么越来越不愿意买房了？</a>
+              <span class="hot-heat">876万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['life']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">有哪些看起来不起眼但实际很好用的生活技巧？</a>
+              <span class="hot-heat">765万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag life">生活</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">程序员如何在 AI 时代保持竞争力？</a>
+              <span class="hot-heat">654万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">苹果 WWDC 2026 发布的 AI 框架有哪些亮点？</a>
+              <span class="hot-heat">543万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['education']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">考研和就业之间应该如何选择？过来人怎么说</a>
+              <span class="hot-heat">432万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag education">教育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['international']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://zhihu.com" target="_blank" rel="noopener">如何看待中美科技竞争的最新走向？</a>
+              <span class="hot-heat">321万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag international">国际</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- B站 -->
+    <article class="platform-card" data-source="bilibili">
+      <div class="card-header">
+        <div class="platform-icon bilibili">B</div>
+        <div class="card-header-info">
+          <div class="card-header-name">B站 · 热门榜</div>
+          <div class="card-header-list">全站热门视频</div>
+        </div>
+        <div class="card-header-time">2分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['gaming','tech']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">国产3A大作新预告片首发 画面炸裂</a>
+              <span class="hot-heat">523.4万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag gaming">游戏</span><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">GPT-5 深度测评：这可能是AI的终极形态</a>
+              <span class="hot-heat">478.2万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">自制AI芯片全过程 从沙子到算力</a>
+              <span class="hot-heat">412.7万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['entertainment']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">全网最细的化妆教程 新手也能学会</a>
+              <span class="hot-heat">367.5万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag entertainment">娱乐</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">NBA总决赛精彩集锦 全场最佳球</a>
+              <span class="hot-heat">334.8万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['life']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">挑战30天只花100元生活费</a>
+              <span class="hot-heat">298.6万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag life">生活</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">NBA总决赛激战正酣 球迷热议阵容变动</a>
+              <span class="hot-heat">267.3万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['entertainment']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">当AI开始创作音乐 人类音乐家怎么办</a>
+              <span class="hot-heat">234.1万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag entertainment">娱乐</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['education']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">高考数学压轴题解法全解析</a>
+              <span class="hot-heat">198.7万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag education">教育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['gaming']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://bilibili.com" target="_blank" rel="noopener">开放世界新游实机演示 画面堪比电影</a>
+              <span class="hot-heat">176.4万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag gaming">游戏</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 澎湃新闻 -->
+    <article class="platform-card" data-source="thepaper">
+      <div class="card-header">
+        <div class="platform-icon thepaper">澎</div>
+        <div class="card-header-info">
+          <div class="card-header-name">澎湃新闻 · 热榜</div>
+          <div class="card-header-list">时事热点</div>
+        </div>
+        <div class="card-header-time">4分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['society','education']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">高考倒计时：多地出台录取新政策详解</a>
+              <span class="hot-heat">342万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span><span class="hot-tag education">教育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">全国防汛形势严峻 多部门联合部署</a>
+              <span class="hot-heat">287万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['international']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">外交部回应最新国际局势变化</a>
+              <span class="hot-heat">234万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag international">国际</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance','international']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">国际油价波动加剧 多国央行紧急磋商</a>
+              <span class="hot-heat">198万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span><span class="hot-tag international">国际</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">新修订的个人信息保护条例正式实施</a>
+              <span class="hot-heat">167万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">工信部发布AI产业发展三年行动计划</a>
+              <span class="hot-heat">145万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">多地推进保障性住房建设新进展</a>
+              <span class="hot-heat">123万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['education']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">教育部发文规范校外培训机构管理</a>
+              <span class="hot-heat">98万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag education">教育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['society']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">全国碳交易市场扩容方案公布</a>
+              <span class="hot-heat">87万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['life']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://thepaper.cn" target="_blank" rel="noopener">暑期出行高峰将至 铁路部门增加运力</a>
+              <span class="hot-heat">76万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag life">生活</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 36氪 -->
+    <article class="platform-card" data-source="36kr">
+      <div class="card-header">
+        <div class="platform-icon kr36">36</div>
+        <div class="card-header-info">
+          <div class="card-header-name">36氪 · 热榜</div>
+          <div class="card-header-list">商业科技</div>
+        </div>
+        <div class="card-header-time">6分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">苹果WWDC 2026发布全新AI框架 开发者生态大变</a>
+              <span class="hot-heat">156万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">独角兽企业新一轮融资总额创今年新高</a>
+              <span class="hot-heat">134万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance','society']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">某知名企业裁员背后：行业转型阵痛期来临</a>
+              <span class="hot-heat">112万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span><span class="hot-tag society">社会</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">DeepSeek完成新一轮融资 估值再创新高</a>
+              <span class="hot-heat">98万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance','international']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">国际油价剧烈波动 全球供应链面临新挑战</a>
+              <span class="hot-heat">87万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span><span class="hot-tag international">国际</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">新能源汽车出海：中国品牌的全球化之路</a>
+              <span class="hot-heat">76万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">央行数字货币试点范围再次扩大</a>
+              <span class="hot-heat">65万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">GPT-5发布后 国内大模型厂商如何应对</a>
+              <span class="hot-heat">54万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['finance']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">A股市场半年度回顾：哪些板块值得关注</a>
+              <span class="hot-heat">43万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag finance">财经</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://36kr.com" target="_blank" rel="noopener">AI Agent赛道升温：下一个万亿级市场？</a>
+              <span class="hot-heat">32万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 虎扑 -->
+    <article class="platform-card" data-source="hupu">
+      <div class="card-header">
+        <div class="platform-icon hupu">虎</div>
+        <div class="card-header-info">
+          <div class="card-header-name">虎扑 · 步行街热帖</div>
+          <div class="card-header-list">社区热议</div>
+        </div>
+        <div class="card-header-time">3分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">NBA总决赛G4战报 球队阵容大变动引热议</a>
+              <span class="hot-heat">892万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">CBA选秀大会热门新秀盘点</a>
+              <span class="hot-heat">678万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports','entertainment']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">欧洲杯小组赛出线形势分析</a>
+              <span class="hot-heat">567万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['life']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">JRs投票：你心目中的最佳运动鞋是哪双</a>
+              <span class="hot-heat">456万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag life">生活</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">中超联赛最新积分榜及争冠形势</a>
+              <span class="hot-heat">345万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['entertainment']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">明星球员私生活曝光 网友炸锅</a>
+              <span class="hot-heat">289万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag entertainment">娱乐</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports','gaming']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">电竞战队转会期大地震 多名选手离队</a>
+              <span class="hot-heat">234万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span><span class="hot-tag gaming">游戏</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['life']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">健身打卡第100天 身材变化对比照</a>
+              <span class="hot-heat">198万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag life">生活</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['sports']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">F1赛车最新一站精彩超车集锦</a>
+              <span class="hot-heat">167万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag sports">体育</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['other']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://hupu.com" target="_blank" rel="noopener">步行街神帖：那些年我们追过的女孩</a>
+              <span class="hot-heat">145万</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag other">其他</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- GitHub -->
+    <article class="platform-card" data-source="github">
+      <div class="card-header">
+        <div class="platform-icon github">GH</div>
+        <div class="card-header-info">
+          <div class="card-header-name">GitHub · Trending</div>
+          <div class="card-header-list">今日热门项目</div>
+        </div>
+        <div class="card-header-time">8分钟前</div>
+      </div>
+      <div class="card-body">
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-1">1</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">openai/gpt-5-api-examples</a>
+              <span class="hot-heat">⭐ 12.3k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-2">2</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">apple/ai-framework-beta</a>
+              <span class="hot-heat">⭐ 8.7k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank rank-3">3</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">deepseek/deepseek-r2</a>
+              <span class="hot-heat">⭐ 7.2k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">4</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">vercel/ai-sdk-v4</a>
+              <span class="hot-heat">⭐ 5.4k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">5</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">microsoft/maestro-autonomous-agent</a>
+              <span class="hot-heat">⭐ 4.8k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">6</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">rust-lang/rust-2026-edition</a>
+              <span class="hot-heat">⭐ 3.9k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">7</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">google/project-gameface-open</a>
+              <span class="hot-heat">⭐ 3.2k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">8</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">meta/llama-4-400b</a>
+              <span class="hot-heat">⭐ 2.8k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">9</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">denoland/deno-3.0</a>
+              <span class="hot-heat">⭐ 2.1k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+        <div class="hot-item" data-tags="['tech']">
+          <div class="hot-rank">10</div>
+          <div class="hot-content">
+            <div class="hot-title-row">
+              <a class="hot-title" href="https://github.com/trending" target="_blank" rel="noopener">anthropics/claude-code-oss</a>
+              <span class="hot-heat">⭐ 1.9k</span>
+            </div>
+            <div class="hot-tags"><span class="hot-tag tech">科技</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 抖音（降级状态示例） -->
+    <article class="platform-card" data-source="douyin">
+      <div class="card-header">
+        <div class="platform-icon douyin">抖</div>
+        <div class="card-header-info">
+          <div class="card-header-name">抖音 · 热点榜</div>
+          <div class="card-header-list">数据源维护中</div>
+        </div>
+        <div class="card-header-time">--</div>
+      </div>
+      <div class="card-error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <p>数据源暂时不可用</p>
+        <button class="btn-retry" onclick="showToast('正在尝试重新获取抖音数据...')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          重试
+        </button>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<!-- ============================================
+     Footer
+     ============================================ -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-brand">今日热搜 · 用 AI 读懂全网热点</div>
+    <div class="footer-desc">
+      本站为个人学习项目，数据来源于各平台公开信息，非官方。所有标题点击跳转到来源平台原文。数据约每 5~10 分钟更新一次。
+    </div>
+    <div class="footer-ai-notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+        <path d="M2 17l10 5 10-5"></path>
+        <path d="M2 12l10 5 10-5"></path>
+      </svg>
+      AI 推荐和标签由 AI 自动生成，仅供参考，本站不对 AI 生成内容作事实保证。
+    </div>
+    <div class="footer-links">
+      <span>侵权联系：hot@example.com</span>
+      <span>·</span>
+      <span>非商用项目</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================
+     JavaScript
+     ============================================ -->
+<script>
+// Tag filter functionality
+function filterByTag(tag) {
+  // Update active filter button
+  document.querySelectorAll('.filter-tag').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tag === tag);
+  });
+
+  const allItems = document.querySelectorAll('.hot-item');
+  let visibleCount = 0;
+
+  allItems.forEach(item => {
+    const itemTags = JSON.parse(item.dataset.tags || '[]');
+    if (tag === 'all' || itemTags.includes(tag)) {
+      item.classList.remove('hidden-by-filter');
+      visibleCount++;
+    } else {
+      item.classList.add('hidden-by-filter');
+    }
+  });
+
+  // Show/hide cards with no visible items
+  document.querySelectorAll('.platform-card').forEach(card => {
+    const visibleItems = card.querySelectorAll('.hot-item:not(.hidden-by-filter)');
+    const body = card.querySelector('.card-body');
+    const errorState = card.querySelector('.card-error');
+
+    // Don't hide cards that are in error state
+    if (errorState) return;
+
+    if (visibleItems.length === 0 && body) {
+      // Check if empty state already exists
+      let emptyState = body.querySelector('.card-empty');
+      if (!emptyState) {
+        emptyState = document.createElement('div');
+        emptyState.className = 'card-empty';
+        emptyState.textContent = '该分类下暂无热搜';
+        body.appendChild(emptyState);
+      }
+      emptyState.style.display = 'block';
+    } else if (body) {
+      const emptyState = body.querySelector('.card-empty');
+      if (emptyState) emptyState.style.display = 'none';
+    }
+  });
+
+  // Show global no results
+  const grid = document.getElementById('cardGrid');
+  let existingNoResults = grid.querySelector('.no-results');
+  if (visibleCount === 0) {
+    if (!existingNoResults) {
+      existingNoResults = document.createElement('div');
+      existingNoResults.className = 'no-results';
+      existingNoResults.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <p>该分类下暂无热搜</p>
+      `;
+      grid.appendChild(existingNoResults);
+    }
+    existingNoResults.style.display = 'block';
+  } else if (existingNoResults) {
+    existingNoResults.style.display = 'none';
+  }
+}
+
+// Refresh button
+function handleRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+
+  // Simulate refresh delay
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    document.getElementById('updateTime').textContent = '刚刚更新';
+    showToast('数据已更新');
+  }, 1500);
+}
+
+// Toast notification
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2500);
+}
+</script>
+
+</body>
+</html>
