@@ -1,0 +1,65 @@
+import { useState } from "react";
+import styles from "./App.module.css";
+import Sidebar from "./components/Sidebar";
+import TopBar from "./components/TopBar";
+import HomeView from "./components/views/HomeView";
+import PlatformView from "./components/views/PlatformView";
+import ErrorCard from "./components/ErrorCard";
+import { useHotData } from "./hooks/useHotData";
+
+export type ViewKey = "home" | "interest" | "platform";
+
+const VIEW_META: Record<ViewKey, { title: string; subtitle: string }> = {
+  home: { title: "首页", subtitle: "一处看完全网正在发生什么" },
+  interest: { title: "个性推荐", subtitle: "基于兴趣标签的智能推荐（即将上线）" },
+  platform: { title: "平台热榜", subtitle: "各平台独立实时热榜" },
+};
+
+export default function App() {
+  const [view, setView] = useState<ViewKey>("home");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { data, loading, refreshing, error, refreshFailed, refresh } = useHotData();
+
+  const meta = VIEW_META[view];
+
+  return (
+    <div className={styles.layout}>
+      <Sidebar
+        activeView={view}
+        onSelectView={(v) => {
+          setView(v);
+          setSidebarOpen(false);
+        }}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      <div className={styles.main}>
+        <TopBar
+          title={meta.title}
+          subtitle={meta.subtitle}
+          updatedAt={data?.updatedAt ?? null}
+          refreshing={refreshing}
+          refreshFailed={refreshFailed}
+          onRefresh={refresh}
+          onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        />
+
+        <main className={styles.content}>
+          {error && !data ? (
+            <ErrorCard message={`数据加载失败：${error}`} onRetry={refresh} />
+          ) : view === "home" ? (
+            <HomeView data={data} loading={loading} />
+          ) : view === "platform" ? (
+            <PlatformView data={data} loading={loading} />
+          ) : (
+            <div className={styles.placeholder}>
+              <h3>个性推荐</h3>
+              <p>该功能将在 MVP 第二阶段接入 AI 后上线，敬请期待。</p>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}

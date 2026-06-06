@@ -1,0 +1,31 @@
+// Express 入口 —— MVP 第一阶段后端空壳。
+
+import express from "express";
+import cors from "cors";
+import hotRouter from "./routes/hot.js";
+
+const app = express();
+const PORT = Number(process.env.PORT ?? 3001);
+
+// CORS：允许前端开发地址（可通过 CLIENT_ORIGIN 覆盖）
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
+app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use(express.json());
+
+// 健康检查
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
+
+// 业务路由
+app.use("/api", hotRouter);
+
+// 404 兜底
+app.use((_req, res) => {
+  res.status(404).json({ error: "Not Found" });
+});
+
+app.listen(PORT, () => {
+  console.log(`[mini-hot-hub] server listening on http://localhost:${PORT}`);
+  console.log(`[mini-hot-hub] CORS origin: ${CLIENT_ORIGIN}`);
+});
