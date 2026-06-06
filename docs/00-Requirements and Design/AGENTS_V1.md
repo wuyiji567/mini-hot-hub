@@ -1,10 +1,8 @@
-# 今日热搜 · AI 开发指令 V2
+# 今日热搜 · AI 开发指令
 
 ## 项目概述
 
-「今日热搜」是一个 AI 增强的多平台热搜聚合网站。左侧导航栏 + 右侧内容区布局，最终包含三个视图：首页（今日最热轮播 + 热点速览 + 综合热榜）、个性推荐、平台热榜。深色科技风主题。
-
-本文件是 **MVP 第一阶段开发指令**，目标是先把基础热榜聚合链路跑通。第一阶段首页只实现综合热榜和平台热榜基础浏览；「今日最热」「热点速览」「个性推荐」可以先保留入口、占位态或隐藏真实内容，第二阶段再接入 AI 后补齐。
+「今日热搜」是一个 AI 增强的多平台热搜聚合网站。左侧导航栏 + 右侧内容区布局，三个视图：首页（今日最热轮播 + 热点速览 + 综合热榜）、个性推荐、平台热榜。深色科技风主题。
 
 ## 版本范围
 
@@ -17,8 +15,6 @@
 - 单平台失败降级
 
 **不要在第一阶段实现**：AI 功能、抖音、澎湃/36氪/虎扑/今日头条、个性推荐页内容。这些属于 MVP 第二阶段或未来版。
-
-说明：PRD 中的完整 MVP 包含 8 个核心平台和 AI 增强体验；Tech Design 将开发拆成两个阶段。第一阶段只交付稳定基础热榜，第二阶段再补齐 PRD 完整 MVP。
 
 ## 技术栈
 
@@ -58,17 +54,11 @@ mini-hot-hub/
 │   └── utils/cache.ts
 ```
 
-如果当前仓库已经存在 `mini-hot-hub-frontend/`，第一阶段可以先沿用该目录继续开发，避免重复新建前端项目；后续需要统一结构时，再重命名或迁移为 `client/`。后端仍按 `server/` 新建。
-
 ## 核心类型（必须严格遵守）
 
 ```typescript
 type Source = "weibo" | "zhihu" | "bilibili" | "github"
   | "thepaper" | "kr36" | "hupu" | "toutiao" | "douyin";
-
-// 第一阶段 Source 类型保留完整枚举，但 services 只实现：
-// weibo / zhihu / bilibili / github。
-// 其余平台不进入默认聚合，第二阶段或未来版再接入。
 
 interface HotItem {
   rank: number;
@@ -98,32 +88,6 @@ interface RankingItem {
   trend: "up" | "down" | "flat";
 }
 
-interface AIFeatured {
-  eventTitle: string;
-  hotReason: string;
-  tag: string;
-  imageUrl: string;        // 使用分类默认图，AI 不直接生成图片 URL
-  platforms: {
-    source: Source;
-    rank: number;
-  }[];
-  heat: string;
-  trend: string;
-  section: "featured" | "quick";
-}
-
-interface AIRecommend {
-  eventTitle: string;
-  reasonType: "follow" | "similar";
-  reasonLabel: string;
-  aiReason: string;
-  imageUrl: string;        // 使用分类默认图
-  platform: Source;
-  platformCount: number;
-  heat: string;
-  tags: string[];
-}
-
 interface HotResponse {
   updatedAt: string;
   stale?: boolean;
@@ -144,7 +108,6 @@ interface HotResponse {
 - `GET /api/hot` — 全量数据（ranking + sources + ai）
 - `GET /api/hot/:source` — 单平台数据
 - source 枚举中，36氪统一用 `kr36`；上游返回 `36kr` 时后端映射
-- 第一阶段 `/api/hot` 默认只聚合 `weibo` / `zhihu` / `bilibili` / `github`
 - 无效 source 返回 404
 
 ## 编码规范
@@ -162,7 +125,6 @@ interface HotResponse {
 - 综合热榜两列，序号 1~20 连续不重复（左列 1~10，右列 11~20）
 - 轮播箭头：窄长方形（约 44×64px），接近透明（15%），hover 加深，不遮挡文字
 - 侧边栏 200px 固定，移动端（<768px）隐藏 + 汉堡按钮
-- 第一阶段如保留「今日最热」「热点速览」「个性推荐」区域，只显示轻量占位或不可用提示，不展示伪造 AI 内容
 
 ## 综合热榜算法
 

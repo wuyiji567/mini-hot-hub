@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日热搜 - 用 AI 读懂全网热点</title>
+<style>
+:root {
+  --bg: #f4f6f8;
+  --paper: #ffffff;
+  --paper-soft: #f8fafb;
+  --ink: #15171a;
+  --muted: #5e6875;
+  --faint: #8b95a3;
+  --line: #dfe5eb;
+  --line-strong: #c8d2dc;
+  --red: #d93f32;
+  --red-soft: #fff0ed;
+  --blue: #1769aa;
+  --blue-soft: #eaf4ff;
+  --teal: #087f7a;
+  --teal-soft: #e7f7f4;
+  --green: #168457;
+  --green-soft: #e9f7ef;
+  --amber: #b36b00;
+  --amber-soft: #fff6df;
+  --rose: #b73768;
+  --rose-soft: #fff0f6;
+  --violet: #6652b8;
+  --violet-soft: #f2efff;
+  --slate: #475569;
+  --slate-soft: #edf1f5;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 38px rgba(21, 23, 26, 0.07);
+  --shadow-tight: 0 1px 1px rgba(15, 23, 42, 0.05), 0 8px 22px rgba(21, 23, 26, 0.06);
+  --radius: 8px;
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+  --font-serif: "Songti SC", "STSong", "Noto Serif SC", serif;
+  --font-mono: "SFMono-Regular", "Cascadia Mono", "Menlo", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  background:
+    linear-gradient(90deg, rgba(21, 23, 26, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(21, 23, 26, 0.03) 1px, transparent 1px),
+    linear-gradient(180deg, #fbfcfd 0, var(--bg) 340px, #eef2f5 100%);
+  background-size: 28px 28px, 28px 28px, auto;
+  letter-spacing: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.page-shell {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(200, 210, 220, 0.8);
+  background: rgba(244, 246, 248, 0.88);
+  backdrop-filter: blur(18px);
+}
+
+.topbar-inner {
+  width: min(1440px, calc(100% - 32px));
+  height: 64px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #111827;
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background:
+    linear-gradient(180deg, #20242a 0 62%, var(--red) 62% 100%);
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.brand-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.brand-title strong {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.brand-title span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.status-pill,
+.icon-button,
+.primary-button {
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.status-pill {
+  padding: 0 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px var(--green-soft);
+}
+
+.icon-button,
+.primary-button {
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.icon-button {
+  width: 36px;
+}
+
+.primary-button {
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-color: #20242a;
+  background: #20242a;
+  color: #fff;
+}
+
+.icon-button:hover,
+.primary-button:hover {
+  transform: translateY(-1px);
+}
+
+.icon-button:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: #fff;
+}
+
+.primary-button.refreshing svg {
+  animation: spin 700ms linear infinite;
+}
+
+.hero {
+  padding: 30px 0 18px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.hero-main,
+.brief-card,
+.ai-panel,
+.platform-card,
+.filter-bar {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-tight);
+}
+
+.hero-main {
+  position: relative;
+  overflow: hidden;
+  min-height: 278px;
+  padding: 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 22px;
+  border-color: #ccd5df;
+}
+
+.hero-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 19px, rgba(21, 23, 26, 0.035) 19px 20px),
+    linear-gradient(135deg, rgba(217, 63, 50, 0.08), transparent 42%),
+    linear-gradient(315deg, rgba(8, 127, 122, 0.08), transparent 38%);
+}
+
+.hero-copy,
+.signal-board {
+  position: relative;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid #f0b0a8;
+  border-radius: var(--radius);
+  color: var(--red);
+  background: var(--red-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kicker::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+h1 {
+  margin: 18px 0 12px;
+  max-width: 760px;
+  font-family: var(--font-serif);
+  font-size: 48px;
+  line-height: 1.08;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.hero-copy p {
+  margin: 0;
+  max-width: 720px;
+  color: #3f4a56;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.hero-meta {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meta-chip {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.meta-chip b {
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.signal-board {
+  align-self: stretch;
+  border: 1px solid #20242a;
+  border-radius: var(--radius);
+  background: #20242a;
+  color: #fff;
+  padding: 14px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 220px;
+}
+
+.signal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #dbe3ea;
+  font-size: 12px;
+}
+
+.signal-top b {
+  color: #fff;
+  font-family: var(--font-mono);
+}
+
+.signal-list {
+  margin: 14px 0;
+  display: grid;
+  gap: 8px;
+}
+
+.signal-row {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 34px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signal-row:last-child {
+  border-bottom: 0;
+}
+
+.signal-source {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.signal-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+
+.signal-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff6a55, #f6c65b);
+}
+
+.signal-rank {
+  color: #dbe3ea;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.signal-note {
+  color: #d6dde5;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.brief-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.brief-card {
+  padding: 18px;
+}
+
+.brief-label {
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.brief-number {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.brief-text {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.brief-card.ai {
+  background: #20242a;
+  border-color: #20242a;
+  color: #fff;
+}
+
+.brief-card.ai .brief-label,
+.brief-card.ai .brief-text {
+  color: #d6dde5;
+}
+
+.ai-panel {
+  margin-top: 16px;
+  overflow: hidden;
+  border-color: #c8d2dc;
+  box-shadow: var(--shadow);
+}
+
+.section-head {
+  min-height: 58px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.section-title h2,
+.section-title h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+
+.section-title p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ai-mark,
+.platform-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-weight: 900;
+}
+
+.ai-mark {
+  border: 1px solid #20242a;
+  background: #20242a;
+  color: #fff;
+  font-family: var(--font-serif);
+}
+
+.section-action {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ai-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ai-item {
+  min-height: 178px;
+  padding: 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  background: linear-gradient(180deg, #fff, #fbfcfd);
+}
+
+.ai-item:nth-child(4n) {
+  border-right: 0;
+}
+
+.ai-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.level {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.level.s {
+  color: #fff;
+  background: var(--red);
+}
+
+.level.a {
+  color: var(--amber);
+  background: var(--amber-soft);
+  border: 1px solid #f0cf8a;
+}
+
+.level.b {
+  color: var(--blue);
+  background: var(--blue-soft);
+  border: 1px solid #b8d8f6;
+}
+
+.sentiment {
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  background: var(--paper-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ai-item h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.ai-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.source-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.source-badge {
+  min-height: 24px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  color: #34404c;
+  background: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.filter-bar {
+  position: sticky;
+  top: 76px;
+  z-index: 15;
+  margin: 16px 0;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.filter-label {
+  padding: 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.filter-button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.filter-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.filter-button.active {
+  border-color: #20242a;
+  background: #20242a;
+  color: #fff;
+}
+
+.filter-count {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(21, 23, 26, 0.08);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.filter-button.active .filter-count {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.grid-head {
+  margin: 12px 0 14px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.grid-head h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.grid-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.view-hint {
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.platform-card {
+  overflow: hidden;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.platform-card.is-hidden {
+  display: none;
+}
+
+.platform-head {
+  min-height: 64px;
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.platform-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.platform-logo {
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.logo-weibo { background: #d93f32; }
+.logo-zhihu { background: #1769aa; }
+.logo-bilibili { background: #00a1d6; }
+.logo-thepaper { background: #20242a; }
+.logo-36kr { background: #087f7a; }
+.logo-hupu { background: #b36b00; }
+.logo-github { background: #2f363d; }
+.logo-douyin { background: linear-gradient(135deg, #111827, #d93f32); }
+
+.platform-name {
+  min-width: 0;
+}
+
+.platform-name strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.platform-name span {
+  display: block;
+  margin-top: 2px;
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.platform-state {
+  min-height: 26px;
+  padding: 0 8px;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  color: var(--green);
+  background: var(--green-soft);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.platform-state.error {
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+.hot-list {
+  flex: 1;
+  padding: 6px 0;
+}
+
+.hot-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(223, 229, 235, 0.72);
+}
+
+.hot-item:last-child {
+  border-bottom: 0;
+}
+
+.hot-item[hidden] {
+  display: none;
+}
+
+.rank {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: var(--slate-soft);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.rank.rank-1 {
+  color: #fff;
+  background: var(--red);
+}
+
+.rank.rank-2 {
+  color: #20242a;
+  background: #d8dee6;
+}
+
+.rank.rank-3 {
+  color: #fff;
+  background: var(--amber);
+}
+
+.hot-content {
+  min-width: 0;
+}
+
+.hot-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.hot-title {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+a.hot-title:hover {
+  color: var(--red);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.heat {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: nowrap;
+  transform: translateY(3px);
+}
+
+.tag-row {
+  margin-top: 7px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tag {
+  min-height: 22px;
+  padding: 0 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tag-tech { color: var(--blue); background: var(--blue-soft); border-color: #bdd9f3; }
+.tag-entertainment { color: var(--rose); background: var(--rose-soft); border-color: #f4bed1; }
+.tag-sports { color: var(--amber); background: var(--amber-soft); border-color: #eed18d; }
+.tag-finance { color: var(--green); background: var(--green-soft); border-color: #b9e3c8; }
+.tag-society { color: var(--violet); background: var(--violet-soft); border-color: #cec5f3; }
+.tag-gaming { color: var(--teal); background: var(--teal-soft); border-color: #b9dfdc; }
+.tag-education { color: #9a5a00; background: #fff3e2; border-color: #eccb9d; }
+.tag-international { color: #3159a6; background: #eef4ff; border-color: #bfd0f0; }
+.tag-life { color: #526c12; background: #f2f8dd; border-color: #d6e8a0; }
+.tag-other { color: var(--slate); background: var(--slate-soft); border-color: #d5dce4; }
+
+.platform-foot {
+  min-height: 42px;
+  padding: 0 14px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--faint);
+  background: var(--paper-soft);
+  font-size: 12px;
+}
+
+.source-link {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.source-link:hover {
+  color: var(--red);
+}
+
+.empty-card,
+.error-body {
+  min-height: 280px;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--muted);
+}
+
+.error-box {
+  width: 100%;
+  border: 1px dashed #efb2aa;
+  border-radius: var(--radius);
+  padding: 24px 18px;
+  background: var(--red-soft);
+}
+
+.error-box strong {
+  display: block;
+  color: var(--red);
+  font-size: 15px;
+}
+
+.error-box p,
+.empty-card p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.retry-button {
+  margin-top: 14px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--red);
+  border-radius: var(--radius);
+  color: var(--red);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.no-results {
+  display: none;
+  margin: 18px 0 0;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: 34px;
+  text-align: center;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.footer {
+  margin-top: 42px;
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.footer-inner {
+  width: min(1440px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 34px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.footer strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+  max-width: min(360px, calc(100vw - 40px));
+  padding: 12px 14px;
+  border: 1px solid #20242a;
+  border-radius: var(--radius);
+  background: #20242a;
+  color: #fff;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  transform: translateY(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1220px) {
+  .hero-grid,
+  .hero-main {
+    grid-template-columns: 1fr;
+  }
+
+  .brief-stack {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .ai-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ai-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .platform-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .page-shell,
+  .topbar-inner,
+  .footer-inner {
+    width: min(100% - 20px, 1440px);
+  }
+
+  .topbar-inner {
+    height: 58px;
+  }
+
+  .brand-title strong {
+    font-size: 18px;
+  }
+
+  .brand-title span,
+  .status-pill,
+  .section-action,
+  .view-hint {
+    display: none;
+  }
+
+  .primary-button {
+    width: 36px;
+    padding: 0;
+  }
+
+  .primary-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .hero {
+    padding-top: 18px;
+  }
+
+  .hero-main {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .hero-copy p {
+    font-size: 14px;
+  }
+
+  .brief-stack,
+  .ai-list,
+  .platform-grid,
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-item {
+    min-height: 0;
+    border-right: 0;
+  }
+
+  .filter-bar {
+    top: 66px;
+    margin-top: 12px;
+  }
+
+  .grid-head {
+    align-items: start;
+  }
+
+  .platform-card {
+    min-height: 0;
+  }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#" aria-label="今日热搜首页">
+      <span class="brand-mark">热</span>
+      <span class="brand-title">
+        <strong>今日热搜</strong>
+        <span>用 AI 读懂热搜，不只是聚合</span>
+      </span>
+    </a>
+    <div class="topbar-actions">
+      <span class="status-pill"><span class="status-dot"></span><span id="statusText">7 个核心源在线</span></span>
+      <button class="icon-button" id="scrollTopButton" aria-label="回到顶部" title="回到顶部">
+        <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="primary-button" id="refreshButton" aria-label="刷新热榜">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.6 6.1M3 12A9 9 0 0 1 18.6 5.9M18 2v5h-5M6 22v-5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>刷新</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="page-shell">
+  <section class="hero" aria-labelledby="pageTitle">
+    <div class="hero-grid">
+      <div class="hero-main">
+        <div class="hero-copy">
+          <span class="kicker">AI 增强热点雷达</span>
+          <h1 id="pageTitle">三分钟看清全网正在发生什么</h1>
+          <p>把微博、知乎、B站、澎湃、36氪、虎扑、GitHub 等平台放进同一张信息桌面。AI 先做事件聚类和推荐，再把每条热搜打上可筛选标签，适合通勤和午休快速扫读。</p>
+          <div class="hero-meta" aria-label="产品状态">
+            <span class="meta-chip"><b id="totalItemCount">0</b> 条热搜</span>
+            <span class="meta-chip"><b id="recommendationCount">0</b> 条 AI 推荐</span>
+            <span class="meta-chip"><b>5-10</b> 分钟缓存</span>
+            <span class="meta-chip"><b>NO LOGIN</b> 即开即用</span>
+          </div>
+        </div>
+        <aside class="signal-board" aria-label="跨平台热度信号">
+          <div class="signal-top"><span>跨平台重合度</span><b>LIVE</b></div>
+          <div class="signal-list">
+            <div class="signal-row"><span class="signal-source">微</span><span class="signal-bar"><span style="width: 92%"></span></span><span class="signal-rank">#1</span></div>
+            <div class="signal-row"><span class="signal-source">知</span><span class="signal-bar"><span style="width: 78%"></span></span><span class="signal-rank">#3</span></div>
+            <div class="signal-row"><span class="signal-source">B站</span><span class="signal-bar"><span style="width: 70%"></span></span><span class="signal-rank">#5</span></div>
+            <div class="signal-row"><span class="signal-source">36</span><span class="signal-bar"><span style="width: 58%"></span></span><span class="signal-rank">#2</span></div>
+          </div>
+          <div class="signal-note">同一事件在多平台登榜时优先进入 AI 推荐，避免用户在重复标题里来回确认。</div>
+        </aside>
+      </div>
+      <div class="brief-stack" aria-label="今日摘要">
+        <article class="brief-card ai">
+          <div class="brief-label">今日重点</div>
+          <div class="brief-number">S / A / B</div>
+          <div class="brief-text">AI 将热点按必看、推荐、了解三级整理，并解释推荐依据。</div>
+        </article>
+        <article class="brief-card">
+          <div class="brief-label">筛选方式</div>
+          <div class="brief-number">10</div>
+          <div class="brief-text">固定分类标签，点击即可跨平台过滤，不引入复杂搜索。</div>
+        </article>
+        <article class="brief-card">
+          <div class="brief-label">降级策略</div>
+          <div class="brief-number">OK</div>
+          <div class="brief-text">AI 或单平台不可用时，基础热榜浏览仍然保留。</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="ai-panel" aria-labelledby="aiTitle">
+    <div class="section-head">
+      <div class="section-title">
+        <span class="ai-mark">AI</span>
+        <div>
+          <h2 id="aiTitle">今日推荐</h2>
+          <p>基于跨平台排名、热度和重复事件聚类生成</p>
+        </div>
+      </div>
+      <span class="section-action">AI 内容仅供参考</span>
+    </div>
+    <div class="ai-list" id="aiList"></div>
+  </section>
+
+  <nav class="filter-bar" aria-label="分类筛选">
+    <span class="filter-label">分类</span>
+    <div id="filterList"></div>
+  </nav>
+
+  <section aria-labelledby="gridTitle">
+    <div class="grid-head">
+      <div>
+        <h2 id="gridTitle">平台热榜</h2>
+        <p id="gridSubtitle">展示所有平台的当前热点</p>
+      </div>
+      <span class="view-hint">标题会在新标签页打开来源页面</span>
+    </div>
+    <div class="platform-grid" id="platformGrid"></div>
+    <div class="no-results" id="noResults">
+      <strong>该分类下暂无热搜</strong>
+      <p>切换到“全部”或其他分类继续浏览。</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <strong>今日热搜 · 用 AI 读懂全网热点</strong>
+      本站为个人学习项目，数据来源于各平台公开信息，非官方。所有标题点击跳转到来源平台原文，数据约每 5-10 分钟更新一次。
+    </div>
+    <div>
+      AI 推荐和标签由 AI 自动生成，仅供参考，本站不对 AI 生成内容作事实保证。侵权联系：hot@example.com
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const tagMeta = [
+  ["all", "全部"],
+  ["tech", "科技"],
+  ["entertainment", "娱乐"],
+  ["sports", "体育"],
+  ["finance", "财经"],
+  ["society", "社会"],
+  ["gaming", "游戏"],
+  ["education", "教育"],
+  ["international", "国际"],
+  ["life", "生活"],
+  ["other", "其他"]
+];
+
+const recommendations = [
+  {
+    level: "S",
+    title: "高考与志愿填报进入全网讨论高峰",
+    reason: "微博、知乎、B站同时进入前五，话题横跨政策解读、家庭决策和经验分享。",
+    sentiment: "中性",
+    platforms: ["微博 #1", "知乎 #3", "B站 #5"]
+  },
+  {
+    level: "A",
+    title: "大模型应用进入办公与教育场景竞争",
+    reason: "36氪、GitHub 与知乎同时出现相关条目，技术发布和使用争议并行升温。",
+    sentiment: "正面",
+    platforms: ["36氪 #1", "GitHub #2", "知乎 #7"]
+  },
+  {
+    level: "A",
+    title: "暑期文旅和演出经济持续走热",
+    reason: "微博、澎湃、B站均出现消费场景内容，热度覆盖交通、票务和城市活动。",
+    sentiment: "正面",
+    platforms: ["微博 #4", "澎湃 #6", "B站 #8"]
+  },
+  {
+    level: "B",
+    title: "体育赛事与转会话题集中发酵",
+    reason: "虎扑榜单高位集中出现赛事战报和转会讨论，适合体育用户快速跟进。",
+    sentiment: "中性",
+    platforms: ["虎扑 #1", "虎扑 #3", "微博 #9"]
+  },
+  {
+    level: "B",
+    title: "新能源与供应链新闻值得关注",
+    reason: "财经和科技平台同时出现产业链更新，可能影响后续商业报道和投资讨论。",
+    sentiment: "中性",
+    platforms: ["36氪 #4", "澎湃 #7"]
+  },
+  {
+    level: "B",
+    title: "游戏新品和电竞转会带动社区讨论",
+    reason: "B站、虎扑、微博均有游戏相关条目，讨论以新品体验和队伍调整为主。",
+    sentiment: "中性",
+    platforms: ["B站 #3", "虎扑 #7", "微博 #10"]
+  }
+];
+
+const sources = [
+  {
+    source: "weibo",
+    name: "微博",
+    logo: "微",
+    listName: "热搜榜",
+    updated: "2 分钟前",
+    status: "ok",
+    url: "https://s.weibo.com/top/summary",
+    items: [
+      item(1, "高考首日作文题引发全民回忆", "823万", ["education", "society"]),
+      item(2, "某地暴雨红色预警 多部门连夜抢险", "768万", ["society"]),
+      item(3, "新一代国产大模型开放测试", "692万", ["tech"]),
+      item(4, "暑期演唱会门票开售秒空", "610万", ["entertainment", "life"]),
+      item(5, "年轻人为什么开始反向旅游", "556万", ["life"]),
+      item(6, "新能源汽车补能网络继续扩张", "498万", ["tech", "finance"]),
+      item(7, "热门剧集大结局口碑两极", "432万", ["entertainment"]),
+      item(8, "国际航班暑期价格回落", "384万", ["international", "life"]),
+      item(9, "总决赛赛后采访刷屏", "346万", ["sports"]),
+      item(10, "开放世界新游发布实机演示", "301万", ["gaming"])
+    ]
+  },
+  {
+    source: "zhihu",
+    name: "知乎",
+    logo: "知",
+    listName: "热榜",
+    updated: "4 分钟前",
+    status: "ok",
+    url: "https://www.zhihu.com/hot",
+    items: [
+      item(1, "今年高考作文题有哪些可分析角度", "521万", ["education"]),
+      item(2, "普通人如何判断一款 AI 产品是否真正有用", "438万", ["tech"]),
+      item(3, "为什么城市更新越来越强调步行体验", "372万", ["society", "life"]),
+      item(4, "新能源汽车价格战会持续多久", "328万", ["finance", "tech"]),
+      item(5, "毕业生第一份工作应该更看重什么", "286万", ["education", "society"]),
+      item(6, "如何评价某科幻电影的结局", "244万", ["entertainment"]),
+      item(7, "大模型进入课堂会改变作业形态吗", "219万", ["tech", "education"]),
+      item(8, "海外市场对中国游戏厂商意味着什么", "188万", ["gaming", "international"]),
+      item(9, "运动后恢复有哪些常见误区", "143万", ["sports", "life"]),
+      item(10, "如何理解最新国际能源价格波动", "119万", ["finance", "international"])
+    ]
+  },
+  {
+    source: "bilibili",
+    name: "B站",
+    logo: "B",
+    listName: "热门榜",
+    updated: "5 分钟前",
+    status: "ok",
+    url: "https://www.bilibili.com/v/popular/all",
+    items: [
+      item(1, "我用一天复刻了热门 AI 办公流", "398万", ["tech"]),
+      item(2, "高考结束后的第一个晚上", "352万", ["education", "life"]),
+      item(3, "国产独立游戏试玩：美术完成度太高了", "311万", ["gaming"]),
+      item(4, "三分钟看懂最新手机影像旗舰", "276万", ["tech"]),
+      item(5, "总决赛关键回合逐帧分析", "238万", ["sports"]),
+      item(6, "城市夜市摊主的一天", "204万", ["life", "society"]),
+      item(7, "老番重制版为什么又火了", "174万", ["entertainment"]),
+      item(8, "暑期旅行预算怎么安排更合理", "132万", ["life", "finance"]),
+      item(9, "海外玩家怎么看中国游戏发布会", "108万", ["gaming", "international"]),
+      item(10, "一个开源项目的爆红全过程", "92万", ["tech"])
+    ]
+  },
+  {
+    source: "thepaper",
+    name: "澎湃新闻",
+    logo: "澎",
+    listName: "热榜",
+    updated: "6 分钟前",
+    status: "ok",
+    url: "https://www.thepaper.cn/",
+    items: [
+      item(1, "多地启动高温应急响应", "286万", ["society"]),
+      item(2, "高校招生咨询会本周末举行", "241万", ["education"]),
+      item(3, "城市公共交通新规公开征求意见", "214万", ["society", "life"]),
+      item(4, "国际机构上调亚太经济增长预期", "188万", ["finance", "international"]),
+      item(5, "文旅部门发布暑期出行提示", "166万", ["life"]),
+      item(6, "新能源汽车充电基础设施建设提速", "139万", ["tech", "finance"]),
+      item(7, "一线城市租房市场出现新变化", "118万", ["finance", "life"]),
+      item(8, "青少年近视防控指南更新", "96万", ["education", "life"])
+    ]
+  },
+  {
+    source: "36kr",
+    name: "36氪",
+    logo: "36",
+    listName: "热榜",
+    updated: "7 分钟前",
+    status: "ok",
+    url: "https://36kr.com/",
+    items: [
+      item(1, "头部 AI 公司发布企业级 Agent 套件", "156万", ["tech", "finance"]),
+      item(2, "低空经济创业公司完成新一轮融资", "133万", ["finance", "tech"]),
+      item(3, "消费品牌开始重做线下体验店", "112万", ["finance", "life"]),
+      item(4, "新能源汽车供应链公司出海提速", "98万", ["tech", "international"]),
+      item(5, "大模型价格战进入应用层", "86万", ["tech"]),
+      item(6, "游戏公司押注 AI NPC 新玩法", "74万", ["gaming", "tech"]),
+      item(7, "年轻人理财产品偏好发生变化", "61万", ["finance"]),
+      item(8, "办公 SaaS 开始集成多模态助手", "49万", ["tech"])
+    ]
+  },
+  {
+    source: "hupu",
+    name: "虎扑",
+    logo: "虎",
+    listName: "步行街热帖",
+    updated: "8 分钟前",
+    status: "ok",
+    url: "https://bbs.hupu.com/",
+    items: [
+      item(1, "总决赛第四场赛后评分", "892万", ["sports"]),
+      item(2, "今年选秀大会热门新秀盘点", "678万", ["sports"]),
+      item(3, "欧洲杯小组赛出线形势讨论", "567万", ["sports", "international"]),
+      item(4, "你买过最值的一双运动鞋是什么", "456万", ["sports", "life"]),
+      item(5, "中超积分榜和争冠形势更新", "345万", ["sports"]),
+      item(6, "电竞战队转会期传闻汇总", "289万", ["gaming", "sports"]),
+      item(7, "健身打卡一百天变化分享", "198万", ["life", "sports"]),
+      item(8, "步行街热议：毕业后还留在大城市吗", "145万", ["society", "life"])
+    ]
+  },
+  {
+    source: "github",
+    name: "GitHub",
+    logo: "GH",
+    listName: "Trending",
+    updated: "9 分钟前",
+    status: "ok",
+    url: "https://github.com/trending",
+    items: [
+      item(1, "openai/agents-realtime-starter", "12.3k", ["tech"]),
+      item(2, "vercel/ai-chat-patterns", "8.7k", ["tech"]),
+      item(3, "deepseek-ai/agent-workflows", "7.2k", ["tech"]),
+      item(4, "browser-use/desktop-control", "5.4k", ["tech"]),
+      item(5, "modelscope/streaming-search", "4.8k", ["tech"]),
+      item(6, "rust-lang/edition-guide", "3.9k", ["tech", "education"]),
+      item(7, "game-dev-cn/open-world-kit", "3.2k", ["gaming", "tech"]),
+      item(8, "public-data/global-energy-dashboard", "2.8k", ["finance", "international"])
+    ]
+  },
+  {
+    source: "douyin",
+    name: "抖音",
+    logo: "抖",
+    listName: "热点榜",
+    updated: null,
+    status: "error",
+    url: "https://www.douyin.com/hot",
+    errorMessage: "数据源维护中，当前展示降级态。",
+    items: []
+  }
+];
+
+let activeTag = "all";
+
+function item(rank, title, heat, tags) {
+  return {
+    rank,
+    title,
+    heat,
+    tags,
+    url: "https://example.com/"
+  };
+}
+
+function tagLabel(tag) {
+  return tagMeta.find(([value]) => value === tag)?.[1] || "其他";
+}
+
+function allItems() {
+  return sources.flatMap(source => source.items);
+}
+
+function tagCounts() {
+  const counts = { all: allItems().length };
+  allItems().forEach(entry => {
+    entry.tags.forEach(tag => {
+      counts[tag] = (counts[tag] || 0) + 1;
+    });
+  });
+  return counts;
+}
+
+function renderRecommendations() {
+  const aiList = document.getElementById("aiList");
+  aiList.innerHTML = recommendations.map(rec => `
+    <article class="ai-item">
+      <div class="ai-topline">
+        <span class="level ${rec.level.toLowerCase()}">${rec.level}</span>
+        <span class="sentiment">${rec.sentiment}</span>
+      </div>
+      <h3>${rec.title}</h3>
+      <p>${rec.reason}</p>
+      <div class="source-line">
+        ${rec.platforms.map(platform => `<span class="source-badge">${platform}</span>`).join("")}
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderFilters() {
+  const counts = tagCounts();
+  const filterList = document.getElementById("filterList");
+  filterList.innerHTML = tagMeta.map(([value, label]) => `
+    <button class="filter-button ${value === activeTag ? "active" : ""}" data-tag="${value}" type="button">
+      <span>${label}</span>
+      <span class="filter-count">${counts[value] || 0}</span>
+    </button>
+  `).join("");
+
+  filterList.querySelectorAll(".filter-button").forEach(button => {
+    button.addEventListener("click", () => {
+      activeTag = button.dataset.tag;
+      renderFilters();
+      renderPlatforms();
+    });
+  });
+}
+
+function renderPlatforms() {
+  const grid = document.getElementById("platformGrid");
+  let visibleCards = 0;
+
+  grid.innerHTML = sources.map(source => {
+    if (source.status === "error") {
+      const showErrorCard = activeTag === "all";
+      if (showErrorCard) {
+        visibleCards += 1;
+      }
+      return `<div class="${showErrorCard ? "" : "is-hidden"}">${renderErrorCard(source)}</div>`;
+    }
+
+    const visibleItems = activeTag === "all"
+      ? source.items
+      : source.items.filter(entry => entry.tags.includes(activeTag));
+
+    if (visibleItems.length > 0) {
+      visibleCards += 1;
+    }
+
+    return `
+      <article class="platform-card ${visibleItems.length === 0 ? "is-hidden" : ""}">
+        ${renderPlatformHead(source)}
+        <div class="hot-list">
+          ${visibleItems.map(entry => renderHotItem(entry)).join("")}
+        </div>
+        <div class="platform-foot">
+          <span>更新于 ${source.updated}</span>
+          <a class="source-link" href="${source.url}" target="_blank" rel="noopener">来源</a>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  document.getElementById("noResults").style.display = visibleCards === 0 ? "block" : "none";
+  document.getElementById("gridSubtitle").textContent = activeTag === "all"
+    ? "展示所有平台的当前热点"
+    : `正在筛选：${tagLabel(activeTag)}`;
+
+  grid.querySelectorAll(".retry-button").forEach(button => {
+    button.addEventListener("click", () => showToast("正在尝试重新获取抖音数据，旧数据会继续保留。"));
+  });
+}
+
+function renderPlatformHead(source) {
+  return `
+    <div class="platform-head">
+      <div class="platform-title">
+        <span class="platform-logo logo-${source.source}">${source.logo}</span>
+        <div class="platform-name">
+          <strong>${source.name}</strong>
+          <span>${source.listName}</span>
+        </div>
+      </div>
+      <span class="platform-state">在线</span>
+    </div>
+  `;
+}
+
+function renderErrorCard(source) {
+  return `
+    <article class="platform-card">
+      <div class="platform-head">
+        <div class="platform-title">
+          <span class="platform-logo logo-${source.source}">${source.logo}</span>
+          <div class="platform-name">
+            <strong>${source.name}</strong>
+            <span>${source.listName}</span>
+          </div>
+        </div>
+        <span class="platform-state error">降级</span>
+      </div>
+      <div class="error-body">
+        <div class="error-box">
+          <strong>数据源暂时不可用</strong>
+          <p>${source.errorMessage}</p>
+          <button class="retry-button" type="button">重试</button>
+        </div>
+      </div>
+      <div class="platform-foot">
+        <span>等待下次缓存刷新</span>
+        <a class="source-link" href="${source.url}" target="_blank" rel="noopener">来源</a>
+      </div>
+    </article>
+  `;
+}
+
+function renderHotItem(entry) {
+  return `
+    <div class="hot-item">
+      <span class="rank rank-${entry.rank <= 3 ? entry.rank : "normal"}">${entry.rank}</span>
+      <div class="hot-content">
+        <div class="hot-title-row">
+          <a class="hot-title" href="${entry.url}" target="_blank" rel="noopener">${entry.title}</a>
+          ${entry.heat ? `<span class="heat">${entry.heat}</span>` : ""}
+        </div>
+        <div class="tag-row">
+          ${entry.tags.slice(0, 2).map(tag => `<span class="tag tag-${tag}">${tagLabel(tag)}</span>`).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateMetrics() {
+  document.getElementById("totalItemCount").textContent = allItems().length;
+  document.getElementById("recommendationCount").textContent = recommendations.length;
+  const okCount = sources.filter(source => source.status === "ok").length;
+  document.getElementById("statusText").textContent = `${okCount} 个核心源在线`;
+}
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+document.getElementById("scrollTopButton").addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("refreshButton").addEventListener("click", event => {
+  const button = event.currentTarget;
+  button.classList.add("refreshing");
+  button.disabled = true;
+  window.setTimeout(() => {
+    button.classList.remove("refreshing");
+    button.disabled = false;
+    showToast("已刷新：当前展示缓存内的最新热榜。");
+  }, 850);
+});
+
+renderRecommendations();
+renderFilters();
+renderPlatforms();
+updateMetrics();
+</script>
+</body>
+</html>
