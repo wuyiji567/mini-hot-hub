@@ -12,6 +12,12 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
 app.use(cors({ origin: CLIENT_ORIGIN }));
 app.use(express.json());
 
+// 简单请求日志：打印方法 + 路径，例如 "GET /api/hot"
+app.use((req, _res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // 健康检查
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
