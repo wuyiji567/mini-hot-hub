@@ -1,5 +1,6 @@
 import styles from "./HomeView.module.css";
 import RankingList from "../RankingList";
+import Loading from "../Loading";
 import type { HotResponse } from "../../types";
 
 interface HomeViewProps {
@@ -14,7 +15,7 @@ interface HomeViewProps {
  */
 export default function HomeView({ data, loading }: HomeViewProps) {
   if (loading && !data) {
-    return <div className={styles.skeleton}>正在加载热榜数据…</div>;
+    return <Loading message="正在加载热榜数据…" />;
   }
 
   return (

@@ -12,6 +12,7 @@ interface UseHotDataResult {
   error: string | null; // 仅在首次加载且无任何数据时使用
   refreshFailed: boolean; // 刷新失败但保留了旧数据
   refresh: () => void;
+  dismissRefreshFailed: () => void; // 关闭刷新失败提示
 }
 
 export function useHotData(): UseHotDataResult {
@@ -55,5 +56,9 @@ export function useHotData(): UseHotDataResult {
     void load(true);
   }, [load]);
 
-  return { data, loading, refreshing, error, refreshFailed, refresh };
+  const dismissRefreshFailed = useCallback(() => {
+    setRefreshFailed(false);
+  }, []);
+
+  return { data, loading, refreshing, error, refreshFailed, refresh, dismissRefreshFailed };
 }

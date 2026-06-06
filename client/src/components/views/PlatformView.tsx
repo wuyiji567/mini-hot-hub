@@ -1,6 +1,7 @@
 import styles from "./PlatformView.module.css";
 import PlatformCard from "../PlatformCard";
 import EmptyState from "../EmptyState";
+import Loading from "../Loading";
 import type { HotResponse } from "../../types";
 
 interface PlatformViewProps {
@@ -11,7 +12,7 @@ interface PlatformViewProps {
 /** 平台视图：各平台卡片网格（第一阶段 4 个平台） */
 export default function PlatformView({ data, loading }: PlatformViewProps) {
   if (loading && !data) {
-    return <div className={styles.skeleton}>正在加载平台数据…</div>;
+    return <Loading message="正在加载平台数据…" />;
   }
 
   const sources = data?.sources ?? [];

@@ -5,7 +5,6 @@ interface TopBarProps {
   subtitle: string;
   updatedAt: string | null;
   refreshing: boolean;
-  refreshFailed: boolean;
   onRefresh: () => void;
   onToggleSidebar: () => void;
 }
@@ -27,7 +26,6 @@ export default function TopBar({
   subtitle,
   updatedAt,
   refreshing,
-  refreshFailed,
   onRefresh,
   onToggleSidebar,
 }: TopBarProps) {
@@ -43,7 +41,6 @@ export default function TopBar({
       </div>
 
       <div className={styles.right}>
-        {refreshFailed && <span className={styles.failHint}>刷新失败，显示的是之前的数据</span>}
         {updatedAt && <span className={styles.updated}>{formatRelative(updatedAt)}</span>}
         <button
           className={styles.refreshBtn}

@@ -60,8 +60,9 @@ export default function Sidebar({ activeView, onSelectView, open, onClose }: Sid
         </div>
 
         <footer className={styles.footer}>
-          <p>本站为个人学习项目，数据来源于各平台公开信息，非官方。</p>
-          <p>更新频率约 5~10 分钟。</p>
+          <p>本站为个人学习项目，非商用。</p>
+          <p>数据来源于各平台公开信息，非官方，仅供学习交流。</p>
+          <p>所有标题点击跳转来源平台原文，更新频率约 5~10 分钟。</p>
         </footer>
       </aside>
     </>
