@@ -40,10 +40,13 @@ router.get("/hot", async (req, res) => {
   if (!refresh) {
     const cached = getCache<HotResponse>(HOT_ALL_KEY);
     if (cached) {
+      console.log(`[cache hit] ${HOT_ALL_KEY}`);
       res.json(cached);
       return;
     }
+    console.log(`[cache miss] ${HOT_ALL_KEY}`);
   } else {
+    console.log(`[cache refresh] ${HOT_ALL_KEY}`);
     deleteCache(HOT_ALL_KEY);
   }
 
