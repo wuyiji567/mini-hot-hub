@@ -2,6 +2,10 @@
 
 一个 AI 增强的多平台热搜聚合网站。聚合微博、知乎、B站、GitHub 等平台的实时热榜，并提供综合热榜排名，帮助用户一处看完全网热点。
 
+🔗 **在线体验**：<https://mini-hot-hub-five.vercel.app>
+
+> 前端部署于 Vercel，后端部署于 Railway（`https://mini-hot-hub-production-66e2.up.railway.app`）。
+
 > **当前进度：MVP 第一阶段** —— 前后端框架已跑通，4 个平台均已接入**真实公开 JSON 接口**，前端通过 `/api/hot` 获取数据。AI 能力、抖音及其余平台为后续阶段。
 
 ## 技术栈
