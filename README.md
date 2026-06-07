@@ -92,6 +92,26 @@ cd server && npm run build   # 编译到 server/dist
 cd client && npm run build   # 编译到 client/dist
 ```
 
+## 开发测试：模拟单平台失败
+
+后端支持环境变量 `MOCK_FAIL_<SOURCE>=1`，用于在**开发/测试**时强制某个平台失败，验证单平台降级体验。`<SOURCE>` 取大写平台名：`WEIBO` / `ZHIHU` / `BILIBILI` / `GITHUB`。
+
+```bash
+# 模拟微博失败（其余平台正常）
+cd server && MOCK_FAIL_WEIBO=1 npm run dev
+
+# 也可同时模拟多个
+MOCK_FAIL_WEIBO=1 MOCK_FAIL_GITHUB=1 npm run dev
+```
+
+启用后访问 <http://localhost:3001/api/hot?refresh=1>：
+
+- 被模拟的平台 `status: "error"`、`items: []`、带清晰 `errorMessage`；
+- 其他平台仍 `status: "ok"`；整体仍返回完整 `HotResponse`，`ranking` 正常。
+- 前端「平台」页中该平台显示错误卡片 + **重试**按钮。
+
+**恢复正常**：停止后端（`Ctrl+C`），用**不带** `MOCK_FAIL_*` 的命令重启（`npm run dev`），再点页面上的「重试」或刷新即可恢复。该开关仅靠环境变量生效，生产不设置即无任何影响，代码中无硬编码 `throw`。
+
 ## 常见问题（FAQ）
 
 ### a. 3001 端口被占用怎么办？

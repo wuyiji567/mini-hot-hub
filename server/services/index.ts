@@ -23,8 +23,20 @@ export const SERVICES: Record<string, ServiceMeta> = {
 };
 
 /** 抓取单个平台，失败时返回 error 态而非抛出 */
+/**
+ * 开发/测试用失败模拟开关：设置环境变量 MOCK_FAIL_<SOURCE>=1 可让该平台强制失败，
+ * 用于验证单平台降级。例如 MOCK_FAIL_WEIBO=1、MOCK_FAIL_GITHUB=1。
+ * 生产环境不设置这些变量即无任何影响（不含硬编码 throw）。
+ */
+function shouldMockFail(source: Source): boolean {
+  return process.env[`MOCK_FAIL_${source.toUpperCase()}`] === "1";
+}
+
 export async function fetchPlatform(meta: ServiceMeta): Promise<HotPlatform> {
   try {
+    if (shouldMockFail(meta.source)) {
+      throw new Error(`[模拟失败] MOCK_FAIL_${meta.source.toUpperCase()} 已开启`);
+    }
     const items = await meta.fetch();
     return {
       source: meta.source,
