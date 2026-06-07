@@ -2,12 +2,24 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 4px;
+  padding: 7px 6px;
+  margin: 0 -6px;
+  border-radius: var(--radius-sm);
   border-bottom: 1px solid rgba(38, 48, 74, 0.5);
+  transition: background 0.15s;
 }
 
 .item:last-child {
   border-bottom: none;
+}
+
+/* hover 反馈：行轻微高亮，标题转强调色 */
+.item:hover {
+  background: rgba(34, 211, 238, 0.06);
+}
+
+.item:hover .title {
+  color: var(--color-accent);
 }
 
 .rank {
@@ -56,6 +68,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color 0.15s;
 }
 
 .tags {

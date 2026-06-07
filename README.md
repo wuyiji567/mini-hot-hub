@@ -92,6 +92,34 @@ cd server && npm run build   # 编译到 server/dist
 cd client && npm run build   # 编译到 client/dist
 ```
 
+## 部署前检查表
+
+部署前逐项确认，避免常见线上问题：
+
+**端口与环境变量**
+
+| 项 | 本地默认 | 说明 |
+|----|----------|------|
+| 前端端口 | `5173` | Vite 开发端口；生产为静态产物，由托管平台分配 |
+| 后端端口 | `3001` | Express 默认监听端口 |
+| `PORT` | `3001` | 覆盖后端端口；多数云平台会注入此变量，后端已支持读取 |
+| `CACHE_TTL` | `300` | `hot:all` 缓存秒数；生产建议保持 300 秒，避免高频请求上游 |
+| `CLIENT_ORIGIN` | `http://localhost:5173` | 后端 CORS 允许的前端来源；**生产必须改为真实前端域名** |
+| `VITE_API_BASE` | （本地走 `/api` 代理，可不设） | 生产前端打包时指向后端真实地址，如 `https://api.example.com` |
+
+**代理与数据依赖**
+
+- **本地开发**：Vite 已把 `/api` 代理到 `http://localhost:3001`（见 `client/vite.config.ts`），前端用相对路径 `/api/hot` 即可，无需关心跨域。
+- **生产部署**：前端与后端通常不同域，不再有 Vite 代理，需通过 `VITE_API_BASE`（或反向代理）让前端请求到后端，并把后端 `CLIENT_ORIGIN` 设为前端域名。
+- **后端真实数据接口依赖外网**：微博/知乎/B站/GitHub 均为各平台公开接口，部署环境必须能访问公网，否则平台进入 `error` 降级态。
+- **GitHub 未认证 API 可能限流**：Search API 未认证时每 IP 约 10 次/分钟，被限流（403/429）时 GitHub 平台降级为 `error`，不影响其他平台；正常走 300 秒缓存不会触发。
+
+**安全与提交**
+
+- **不要提交** `.env`、任何 token / cookie / 密钥、`node_modules`、`dist`（已在 `.gitignore` 排除）。
+- 所有上游请求只在后端发起，前端不直接请求任何平台域名。
+- 上线前把页脚侵权联系方式确认为可用渠道（当前为「通过项目仓库 Issue 联系」）。
+
 ## 开发测试：模拟单平台失败
 
 后端支持环境变量 `MOCK_FAIL_<SOURCE>=1`，用于在**开发/测试**时强制某个平台失败，验证单平台降级体验。`<SOURCE>` 取大写平台名：`WEIBO` / `ZHIHU` / `BILIBILI` / `GITHUB`。

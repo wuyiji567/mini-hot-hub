@@ -40,7 +40,7 @@ function RankRow({ item }: { item: RankingItem }) {
       <span className={`${styles.trend} ${styles[`trend_${item.trend}`]}`}>
         {TREND_ICON[item.trend]}
       </span>
-      <span className={styles.heat}>{item.heat}</span>
+      {item.heat && <span className={styles.heat}>{item.heat}</span>}
     </li>
   );
 }
