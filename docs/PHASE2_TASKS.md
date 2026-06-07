@@ -24,24 +24,43 @@
 
 ## 推荐执行顺序（按依赖 + 评审价值排序）
 
-**先做低风险、可独立验证的平台（A）→ 再搭 AI 地基（B）→ 生成 AI 内容（C）→ 前端展示（D/E/F）→ 联调收尾（G）。**
+**两条并行轨：**
+- **前端轨**：组 0 视觉改版落地 → D/E/F 用新视觉写新组件
+- **后端轨**：A 平台 → B AI 地基 → C AI 内容
+- 两轨独立（改版只动样式、后端不碰视觉），最后 G 联调收尾。
+
 即使时间不够，做到 A+部分 D 也能演示「8 平台」；A+B+C1+F2 能演示「带 AI 标签」。
 
 ---
 
+## 组 0. 前端：整站视觉改版落地（前端轨起点，与 A/B 并行）
+
+> 来源：Claude Design 的整站视觉改版 HTML/CSS 静态稿（保留侧边栏 + 三视图结构）。
+> **先改版再写第二阶段 UI**，避免新组件画两遍皮。
+> 铁律：只动 `*.module.css` 与 JSX 结构，**不碰** `useHotData` / `fetchHot` / 类型 / 后端，保证已上线数据链路不破。
+
+- [ ] **0-0** 把设计稿放进 `docs/redesign/`（HTML/CSS），作为还原基准
+- [ ] **0-1** 抽取设计 token：配色/字体/圆角/间距更新进 `client/src/styles/variables.css`（沿用 CSS 变量，不引 UI 框架）
+- [ ] **0-2** 重构现有组件到新视觉：`Sidebar` / `TopBar` / `RankingList` / `PlatformCard` / `HotItem`（仅样式+结构，props 不变）
+- [ ] **0-3** 全局样式 `global.css` 与 Loading/Empty/Error/Toast 视觉对齐改版稿
+- [ ] **0-4** 逐屏比对设计稿：首页（综合热榜）、平台页还原度；移动端断点不破
+- [ ] **0-5** `npm run build` 通过，线上数据链路（fetchHot/VITE_API_BASE）不受影响
+
+**验收**：首页与平台页视觉与改版稿一致；数据、点击跳转、刷新、降级行为全部照旧。
+
 ## A. 后端：新增 4 个平台（独立、低风险，最先做）
 
 > 复用第一阶段 service 模式：`fetch` 公开 JSON → 解析为 `HotItem[]` → 错误抛清晰异常由 `fetchPlatform` 降级。
-> `MOCK_FAIL_<SOURCE>` 开关已通用，无需改。
+> `MOCK_FAIL_<SOURCE>` 开关已通用，无需改。接口已调研实测（见文末「平台接口调研结果」）。
 
-- [ ] **A1** `server/services/thepaper.ts`（澎湃）接入真实 JSON，≥10 条，注释说明解析字段
-- [ ] **A2** `server/services/kr36.ts`（36氪）接入真实 JSON；上游若返回 `36kr` 需映射为 `kr36`
-- [ ] **A3** `server/services/hupu.ts`（虎扑）接入真实 JSON，≥10 条
-- [ ] **A4** `server/services/toutiao.ts`（今日头条）接入真实 JSON，≥10 条
-- [ ] **A5** 在 `server/services/index.ts` 的 `SERVICES` 注册表加入这 4 个；`/api/hot` 默认聚合从 4 → 8 平台
-- [ ] **A6** 验证 `/api/hot?refresh=1`：8 平台都返回，单平台失败不拖垮其他；`ranking` 仍 ≥15 条
+- [ ] **A1** `server/services/toutiao.ts`（今日头条）：`GET toutiao.com/hot-event/hot-board`，`data[].Title/ClusterId`，≥10 条
+- [ ] **A2** `server/services/thepaper.ts`（澎湃）：`GET cache.thepaper.cn/contentapi/wwwIndex/rightSidebar`，`data.hotNews[].name/contId`
+- [ ] **A3** `server/services/kr36.ts`（36氪）：**POST** `gateway.36kr.com/api/mis/nav/home/nav/rank/hot`，`data.hotRankList[].templateMaterial.widgetTitle/itemId`；上游 `36kr` 映射为 `kr36`
+- [ ] **A4** `server/services/hupu.ts`（虎扑）：⚠️ 无稳定公开 JSON，**做成可降级平台**（接入失败显示「数据源维护中」，不阻塞其余 7 平台）
+- [ ] **A5** 在 `server/services/index.ts` 的 `SERVICES` 注册表加入新平台；`/api/hot` 默认聚合扩到 8 平台（虎扑可降级）
+- [ ] **A6** 验证 `/api/hot?refresh=1`：各平台返回正常，单平台失败不拖垮其他；`ranking` 仍 ≥15 条
 
-**验收**：8 个平台卡片全部展示真实数据；任一平台故障其余正常。
+**验收**：7 个平台真实数据 + 虎扑明确降级态；任一平台故障其余正常。
 
 ## B. 后端：AI 基础设施（地基，C 依赖它）
 
@@ -103,21 +122,34 @@
 
 ---
 
-## 一周建议节奏（可按实际调整）
+## 一周建议节奏（前端 / 后端双轨并行）
 
-| 时段 | 目标 |
-|------|------|
-| Day 1 | A1~A6：4 个平台接入，跑通 8 平台 `/api/hot` |
-| Day 2 | B1~B6：AI 地基（deepseek/prompts/parser/缓存/默认图） |
-| Day 3 | C1~C4：AI 标签 + featured/quick + 推荐 + 路由整合 |
-| Day 4 | D1~D4：首页今日最热轮播 + 热点速览 + 降级 |
-| Day 5 | E + F：个性推荐视图 + 平台视图 8 卡 + 标签筛选 |
-| Day 6 | G1~G6：联调、降级演练、文档、部署上线 |
-| Day 7 | 缓冲：评审彩排、修 bug、截图/演示稿 |
+| 时段 | 前端轨 | 后端轨 |
+|------|--------|--------|
+| Day 1 | 组 0-0~0-2：设计 token + 重构现有组件 | A1~A3：头条/澎湃/36氪接入 |
+| Day 2 | 组 0-3~0-5：全局样式对齐 + 还原比对 | A4~A6：虎扑降级 + 8 平台跑通 |
+| Day 3 | （改版收尾、待 AI 数据） | B1~B6：AI 地基 |
+| Day 4 | D1~D4：今日最热轮播 + 热点速览（新视觉） | C1~C4：AI 标签 + featured/quick + 推荐 |
+| Day 5 | E + F：个性推荐视图 + 平台 8 卡 + 标签筛选 | （配合联调） |
+| Day 6 | G1~G6：联调、降级演练、文档、部署上线 | — |
+| Day 7 | 缓冲：评审彩排、修 bug、截图/演示稿 | — |
 
 ## 评审兜底优先级（时间不够时按此保）
 
-1. **必保**：A（8 平台真实）+ C1/F2（AI 分类标签）—— 最直观的「AI 增强」证据
+1. **必保**：组 0（新视觉）+ A（多平台真实）+ C1/F2（AI 分类标签）—— 改版后的界面 + 最直观的「AI 增强」证据
 2. **强烈建议**：C2/D1（今日最热轮播）—— 首页最吸睛的展示点
 3. **尽量**：C3/E（个性推荐）
 4. 全程保证：AI 挂了也能演示基础热榜（降级是加分项，别让演示翻车）
+
+---
+
+## 附：平台接口调研结果（已 curl 实测）
+
+| 平台 | 接口 | 方法 | 数据路径 | 链接构造 | 状态 |
+|------|------|------|----------|----------|------|
+| 头条 `toutiao` | `https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc` | GET | `data[]` → `Title`/`ClusterId`/`HotValue` | `toutiao.com/trending/<ClusterId>/` | ✅ 干净 JSON |
+| 澎湃 `thepaper` | `https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar` | GET（带 Referer） | `data.hotNews[]` → `name`/`contId` | `thepaper.cn/newsDetail_forward_<contId>` | ✅ 20 条 |
+| 36氪 `kr36` | `https://gateway.36kr.com/api/mis/nav/home/nav/rank/hot` | POST（JSON body，`timestamp` 用 `Date.now()`） | `data.hotRankList[].templateMaterial` → `widgetTitle`/`itemId`/`statRead` | `36kr.com/p/<itemId>` | ✅ 30 条 |
+| 虎扑 `hupu` | 无稳定公开 JSON（参考项目用 HTML 解析） | — | — | — | ⚠️ 做可降级平台 |
+
+> 写 service 时请求头带合理 `User-Agent`；澎湃/36氪带 `Referer`；统一 10s 超时；失败抛清晰错误由 `fetchPlatform` 降级。虎扑若后续找到稳定 JSON 或愿意破例 HTML 解析，再补真实数据。
