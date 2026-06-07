@@ -2,13 +2,29 @@
 
 一个 AI 增强的多平台热搜聚合网站。聚合微博、知乎、B站、GitHub 等平台的实时热榜，并提供综合热榜排名，帮助用户一处看完全网热点。
 
-> **当前进度：MVP 第一阶段** —— 前后端框架已跑通，后端提供 **Mock API**（暂不接真实上游），前端通过 `/api/hot` 获取数据。AI 能力、抖音及其余平台为后续阶段。
+> **当前进度：MVP 第一阶段** —— 前后端框架已跑通，4 个平台均已接入**真实公开 JSON 接口**，前端通过 `/api/hot` 获取数据。AI 能力、抖音及其余平台为后续阶段。
 
 ## 技术栈
 
 - **前端**：React + TypeScript + Vite + CSS Modules（深色科技风）
 - **后端**：Node.js + Express + TypeScript（内存缓存）
-- **数据**：第一阶段为本地 Mock，4 个平台（weibo / zhihu / bilibili / github）
+- **数据**：4 个平台（weibo / zhihu / bilibili / github）均来自各平台公开 JSON 接口
+
+## 数据来源
+
+当前数据全部来自各平台的**公开 JSON 接口**，后端在服务端请求并统一解析为 `HotItem[]`，前端不直接请求任何上游：
+
+| 平台 | 接口 | 取数 |
+|------|------|------|
+| 微博 | `https://weibo.com/ajax/side/hotSearch` | `data.realtime`：词条、热度 |
+| 知乎 | `https://api.zhihu.com/topstory/hot-lists/total` | `data`：问题标题、热度、问题 id |
+| B站 | `https://api.bilibili.com/x/web-interface/popular` | `data.list`：标题、播放量、bvid |
+| GitHub | `https://api.github.com/search/repositories`（近 7 天按 star 排序） | `items`：full_name、star/fork、html_url |
+
+- 不解析 HTML 页面，不使用任何 cookie / token / 密钥；GitHub 走未认证 Search API（受 IP 限流）。
+- **缓存**：完整 `/api/hot` 响应缓存在内存 `hot:all`，**TTL 默认 300 秒**（可用 `CACHE_TTL` 环境变量覆盖），避免高频请求上游；开发时加 `?refresh=1` 可跳过缓存。
+- **降级**：任一平台请求失败/格式变化/数据为空时，该平台返回 `status:"error"` 并附清晰 `errorMessage`，其他平台不受影响。
+- 本站为**个人学习项目，非商用**，数据来源于各平台**公开信息，非官方**，仅供学习交流。
 
 ## 项目结构
 
