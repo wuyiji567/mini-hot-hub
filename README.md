@@ -92,33 +92,55 @@ cd server && npm run build   # 编译到 server/dist
 cd client && npm run build   # 编译到 client/dist
 ```
 
+## 部署（Deploy）
+
+本项目是 **monorepo**：`client/`（前端）与 `server/`（后端）是两个独立子目录，**分别部署**。前端推荐 Vercel（静态托管），后端推荐 Railway / Render（Node 服务）。在托管平台新建项目时，关键是把 **Root Directory 指到对应子目录**。
+
+### 前端（client/，例：Vercel）
+
+| 配置项 | 值 |
+|--------|-----|
+| Root Directory | `client` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| 环境变量 | `VITE_API_BASE` = 后端公网地址（如 `https://your-backend.up.railway.app`） |
+
+> `VITE_API_BASE` 是**构建期**变量，修改后需重新部署前端才能生效。本地不设置时前端走相对路径 `/api` + Vite 代理。
+
+### 后端（server/，例：Railway / Render）
+
+| 配置项 | 值 |
+|--------|-----|
+| Root Directory | `server` |
+| Build Command | `npm run build` |
+| Start Command | `npm start` |
+| 环境变量 | `PORT`（平台通常自动注入）、`CACHE_TTL=300`、`CLIENT_ORIGIN`=前端公网域名 |
+
+> 部署顺序建议：**先部署后端**拿到公网地址 → 填入前端 `VITE_API_BASE` 部署前端 → 用前端域名回填后端 `CLIENT_ORIGIN` 重新部署后端（CORS 才放行）。
+
+## 环境变量清单
+
+| 变量 | 作用 | 本地默认 | 生产填法 |
+|------|------|----------|----------|
+| `PORT` | 后端监听端口 | `3001` | 一般留空，由托管平台自动注入；后端已支持读取 |
+| `CACHE_TTL` | `hot:all` 缓存秒数 | `300` | 保持 `300`，避免高频请求上游 |
+| `CLIENT_ORIGIN` | 后端 CORS 允许的前端来源 | `http://localhost:5173` | **必须**改为前端真实域名，如 `https://your-app.vercel.app` |
+| `VITE_API_BASE` | 前端请求后端的基础地址（构建期注入） | 不设（走 `/api` 代理） | 后端公网地址，如 `https://your-backend.up.railway.app` |
+
 ## 部署前检查表
 
-部署前逐项确认，避免常见线上问题：
-
-**端口与环境变量**
-
-| 项 | 本地默认 | 说明 |
-|----|----------|------|
-| 前端端口 | `5173` | Vite 开发端口；生产为静态产物，由托管平台分配 |
-| 后端端口 | `3001` | Express 默认监听端口 |
-| `PORT` | `3001` | 覆盖后端端口；多数云平台会注入此变量，后端已支持读取 |
-| `CACHE_TTL` | `300` | `hot:all` 缓存秒数；生产建议保持 300 秒，避免高频请求上游 |
-| `CLIENT_ORIGIN` | `http://localhost:5173` | 后端 CORS 允许的前端来源；**生产必须改为真实前端域名** |
-| `VITE_API_BASE` | （本地走 `/api` 代理，可不设） | 生产前端打包时指向后端真实地址，如 `https://api.example.com` |
-
-**代理与数据依赖**
-
-- **本地开发**：Vite 已把 `/api` 代理到 `http://localhost:3001`（见 `client/vite.config.ts`），前端用相对路径 `/api/hot` 即可，无需关心跨域。
-- **生产部署**：前端与后端通常不同域，不再有 Vite 代理，需通过 `VITE_API_BASE`（或反向代理）让前端请求到后端，并把后端 `CLIENT_ORIGIN` 设为前端域名。
-- **后端真实数据接口依赖外网**：微博/知乎/B站/GitHub 均为各平台公开接口，部署环境必须能访问公网，否则平台进入 `error` 降级态。
-- **GitHub 未认证 API 可能限流**：Search API 未认证时每 IP 约 10 次/分钟，被限流（403/429）时 GitHub 平台降级为 `error`，不影响其他平台；正常走 300 秒缓存不会触发。
-
-**安全与提交**
-
-- **不要提交** `.env`、任何 token / cookie / 密钥、`node_modules`、`dist`（已在 `.gitignore` 排除）。
-- 所有上游请求只在后端发起，前端不直接请求任何平台域名。
-- 上线前把页脚侵权联系方式确认为可用渠道（当前为「通过项目仓库 Issue 联系」）。
+- [ ] `cd client && npm run build` 构建成功，生成 `client/dist`
+- [ ] `cd server && npm run build` 构建成功，生成 `server/dist`
+- [ ] `cd server && npm start` 能以生产方式启动
+- [ ] 前端 `VITE_API_BASE` 已设为后端公网地址
+- [ ] 后端 `CLIENT_ORIGIN` 已设为前端公网域名
+- [ ] 后端 `CACHE_TTL` 保持 `300`，`PORT` 交由平台注入
+- [ ] 未提交 `.env` / token / cookie / `node_modules` / `dist`（已在 `.gitignore` 排除）
+- [ ] 后端部署环境能访问外网：微博、知乎、B站、GitHub 公开接口
+- [ ] 知悉 GitHub 未认证 API 可能限流（403/429 时该平台降级，不影响其他平台）
+- [ ] 部署后 `<后端域名>/api/hot` 能返回 JSON
+- [ ] 部署后前端页面能正常展示综合热榜与平台数据
+- [ ] 上线前确认页脚侵权联系渠道可用（当前为「通过项目仓库 Issue 联系」）
 
 ## 开发测试：模拟单平台失败
 
