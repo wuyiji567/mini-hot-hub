@@ -6,6 +6,7 @@ import type { HotPlatform } from "../types";
 
 interface PlatformCardProps {
   platform: HotPlatform;
+  onRetry?: () => void; // 错误态重试
 }
 
 function formatRelative(iso: string | null): string {
@@ -17,7 +18,7 @@ function formatRelative(iso: string | null): string {
 }
 
 /** 单个平台卡片：图标 + 名称 + Top 列表 + 更新时间 */
-export default function PlatformCard({ platform }: PlatformCardProps) {
+export default function PlatformCard({ platform, onRetry }: PlatformCardProps) {
   return (
     <section className={styles.card}>
       <header className={styles.header}>
@@ -29,7 +30,7 @@ export default function PlatformCard({ platform }: PlatformCardProps) {
 
       <div className={styles.bodyWrap}>
         {platform.status === "error" ? (
-          <ErrorCard message={platform.errorMessage ?? "数据源暂时不可用"} />
+          <ErrorCard message={platform.errorMessage ?? "数据源暂时不可用"} onRetry={onRetry} />
         ) : platform.items.length === 0 ? (
           <EmptyState message="暂无数据" />
         ) : (

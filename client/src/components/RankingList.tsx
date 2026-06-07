@@ -25,9 +25,13 @@ function RankRow({ item }: { item: RankingItem }) {
   return (
     <li className={styles.row}>
       <span className={`${styles.rank} ${rankClass}`}>{item.rank}</span>
-      <a className={styles.title} href={item.url} target="_blank" rel="noopener noreferrer">
-        {item.title}
-      </a>
+      {item.url ? (
+        <a className={styles.title} href={item.url} target="_blank" rel="noopener noreferrer">
+          {item.title}
+        </a>
+      ) : (
+        <span className={styles.title}>{item.title}</span>
+      )}
       <span className={styles.platforms}>
         {item.platforms.map((p) => (
           <span key={p} className={styles.dot} title={p} />

@@ -52,7 +52,7 @@ export default function App() {
           ) : view === "home" ? (
             <HomeView data={data} loading={loading} />
           ) : view === "platform" ? (
-            <PlatformView data={data} loading={loading} />
+            <PlatformView data={data} loading={loading} onRetry={refresh} />
           ) : (
             <div className={styles.placeholder}>
               <h3>个性推荐</h3>

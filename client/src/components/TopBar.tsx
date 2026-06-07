@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import styles from "./TopBar.module.css";
 
 interface TopBarProps {
@@ -29,6 +30,13 @@ export default function TopBar({
   onRefresh,
   onToggleSidebar,
 }: TopBarProps) {
+  // 每 60s 触发一次重渲染，让「更新于 x 分钟前」随时间走动，避免缓存期内文案失真
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setTick((t) => t + 1), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <header className={styles.topbar}>
       <button className={styles.hamburger} onClick={onToggleSidebar} aria-label="展开导航">
