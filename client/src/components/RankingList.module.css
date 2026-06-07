@@ -1,6 +1,7 @@
 .columns {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr) 允许列收缩到内容以下，配合标题 overflow:hidden 实现截断，避免长标题撑破布局 */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px 28px;
 }
 
@@ -8,6 +9,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  min-width: 0;
 }
 
 .row {
