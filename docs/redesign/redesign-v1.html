@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="riso">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日热搜 - AI 增强的多平台热搜聚合</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;900&family=Noto+Serif+SC:wght@600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   CSS Variables - Dark Tech Theme
+   ============================================ */
+:root {
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-card: #151c2c;
+  --bg-card-hover: #1a2335;
+  --bg-ink: #0a0e17;
+  --bg-sidebar: #0f1520;
+  --bg-topbar: rgba(11,15,25,0.92);
+
+  --text-primary: #f0f4f8;
+  --text-secondary: #aab7c9;
+  --text-tertiary: #8696aa;
+  --text-inverse: #0b0f19;
+  --accent-ink: #0a0e17;
+
+  --accent-primary: #22d3ee;
+  --accent-primary-rgb: 34, 211, 238;
+  --accent-primary-light: #67e8f9;
+  --accent-primary-bg: rgba(var(--accent-primary-rgb), 0.1);
+  --accent-primary-bg-hover: rgba(var(--accent-primary-rgb), 0.18);
+  --accent-primary-glow: rgba(var(--accent-primary-rgb), 0.25);
+  --accent-warm: #f43f5e;
+  --accent-warm-rgb: 244, 63, 94;
+  --accent-warm-bg: rgba(var(--accent-warm-rgb), 0.1);
+  --accent-warm-glow: rgba(var(--accent-warm-rgb), 0.3);
+
+  --weibo: #e6162d;
+  --zhihu: #0084ff;
+  --bilibili: #fb7299;
+  --douyin: #ffffff;
+  --thepaper: #f59e0b;
+  --kr36: #10b981;
+  --hupu: #c01e2f;
+  --github: #f0f6fc;
+  --xiaohongshu: #ff2442;
+  --toutiao: #f04142;
+
+  --tag-tech: #38bdf8;
+  --tag-tech-bg: rgba(56,189,248,0.12);
+  --tag-entertainment: #f472b6;
+  --tag-entertainment-bg: rgba(244,114,182,0.12);
+  --tag-sports: #fbbf24;
+  --tag-sports-bg: rgba(251,191,36,0.12);
+  --tag-finance: #34d399;
+  --tag-finance-bg: rgba(52,211,153,0.12);
+  --tag-society: #a78bfa;
+  --tag-society-bg: rgba(167,139,250,0.12);
+  --tag-gaming: #22d3ee;
+  --tag-gaming-bg: rgba(34,211,238,0.12);
+  --tag-education: #fb923c;
+  --tag-education-bg: rgba(251,146,60,0.12);
+  --tag-international: #818cf8;
+  --tag-international-bg: rgba(129,140,248,0.12);
+  --tag-life: #a3e635;
+  --tag-life-bg: rgba(163,230,53,0.12);
+  --tag-other: #94a3b8;
+  --tag-other-bg: rgba(148,163,184,0.12);
+
+  --rank-gold: #fbbf24;
+  --rank-gold-bg: rgba(251,191,36,0.15);
+  --rank-silver: #94a3b8;
+  --rank-silver-bg: rgba(148,163,184,0.15);
+  --rank-bronze: #fb923c;
+  --rank-bronze-bg: rgba(251,146,60,0.15);
+
+  --border-light: rgba(148,163,184,0.12);
+  --border-card: rgba(148,163,184,0.08);
+  --shadow-card: 0 0 0 1px var(--border-card), 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 0 0 1px rgba(var(--accent-primary-rgb),0.15), 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(var(--accent-primary-rgb),0.06);
+  --shadow-sidebar: 2px 0 24px rgba(0,0,0,0.4);
+  --glow-cyan: 0 0 20px rgba(var(--accent-primary-rgb),0.15);
+  --glow-warm: 0 0 20px rgba(var(--accent-warm-rgb),0.15);
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 28px;
+  --space-3xl: 40px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-pill: 9999px;
+
+  --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Noto Serif SC', 'Noto Sans SC', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --sidebar-width: 212px;
+  --header-height: 52px;
+}
+
+/* ============================================
+   THEME · 酸性青柠 Acid Lime (dark / electric)
+   ============================================ */
+html[data-theme="acid"] {
+  --bg-primary: #0c0d0a;
+  --bg-secondary: #101109;
+  --bg-card: #15170f;
+  --bg-card-hover: #1c1f12;
+  --bg-ink: #0a0b07;
+  --bg-sidebar: #0e0f0a;
+
+  --text-primary: #f3f5ea;
+  --text-secondary: #c3c9b3;
+  --text-tertiary: #8b9173;
+  --text-inverse: #18210a;
+  --accent-ink: #1a2208;
+
+  --accent-primary: #c8ff1a;
+  --accent-primary-rgb: 200, 255, 26;
+  --accent-primary-light: #d9ff5c;
+  --accent-warm: #ff6a2c;
+  --accent-warm-rgb: 255, 106, 44;
+
+  --border-light: rgba(200,255,26,0.13);
+  --border-card: rgba(255,255,255,0.06);
+  --shadow-sidebar: 2px 0 24px rgba(0,0,0,0.5);
+  --bg-topbar: rgba(12,13,10,0.92);
+
+  --ph-base-a: #1a1f10;
+  --ph-base-b: #12150b;
+  --ph-base-c: #0c0d08;
+}
+
+/* ============================================
+   THEME · 荧光涂鸦 Riso Pop (light / duotone zine)
+   ============================================ */
+html[data-theme="riso"] {
+  --bg-primary: #f4f2ec;
+  --bg-secondary: #eceadf;
+  --bg-card: #ffffff;
+  --bg-card-hover: #faf9f3;
+  --bg-ink: #15151f;
+  --bg-sidebar: #efece4;
+
+  --text-primary: #15151f;
+  --text-secondary: #444452;
+  --text-tertiary: #8a8a97;
+  --text-inverse: #ffffff;
+  --accent-ink: #ffffff;
+
+  --accent-primary: #2b50ff;
+  --accent-primary-rgb: 43, 80, 255;
+  --accent-primary-light: #5b76ff;
+  --accent-warm: #ff3b6b;
+  --accent-warm-rgb: 255, 59, 107;
+
+  --border-light: rgba(20,20,30,0.12);
+  --border-card: rgba(20,20,30,0.10);
+  --shadow-card: 0 0 0 1px var(--border-card), 0 2px 8px rgba(20,20,40,0.06);
+  --shadow-card-hover: 0 0 0 1px rgba(var(--accent-primary-rgb),0.35), 0 8px 28px rgba(20,20,60,0.12);
+  --shadow-sidebar: 1px 0 0 rgba(20,20,30,0.08);
+  --bg-topbar: rgba(244,242,236,0.85);
+
+  --ph-base-a: #e6e3fb;
+  --ph-base-b: #eef0ff;
+  --ph-base-c: #f4f2ec;
+}
+
+/* ============================================
+   Reset & Base
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-primary); line-height: 1.5; min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.2); border-radius: 3px; }
+* { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,0.2) transparent; }
+
+/* ============================================
+   App Layout
+   ============================================ */
+.app { display: flex; min-height: 100vh; }
+
+/* ============================================
+   Sidebar
+   ============================================ */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sidebar);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-header { padding: var(--space-lg) var(--space-lg) var(--space-sm); }
+.sidebar-brand { display: flex; align-items: center; gap: var(--space-sm); }
+.sidebar-brand-icon {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-light));
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent-ink); font-weight: 800; font-size: 13px;
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+}
+.sidebar-brand-icon svg { width: 19px; height: 19px; display: block; overflow: visible; }
+.sidebar-brand-icon .brand-spark-main { transform-origin: 16px 16px; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.sidebar-brand-icon .brand-spark-dot { transform-origin: 25.5px 8.5px; transform: scale(1); opacity: .95; transition: transform .3s ease, opacity .3s ease; }
+.sidebar-brand:hover .brand-spark-main { transform: rotate(90deg); }
+.sidebar-brand:hover .brand-spark-dot { animation: brandTwinkle 1.1s ease-in-out infinite; }
+@keyframes brandTwinkle {
+  0%, 100% { transform: scale(1); opacity: .9; }
+  50% { transform: scale(1.55); opacity: 1; }
+}
+.sidebar-brand { cursor: pointer; }
+.sidebar-brand-text { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: 1px; white-space: nowrap; }
+.sidebar-brand-text span { color: var(--accent-primary); }
+.sidebar-desc { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; padding-left: 38px; white-space: nowrap; }
+
+.sidebar-search { padding: 0 var(--space-md) var(--space-md); }
+.search-box {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 7px 12px;
+  background: rgba(148,163,184,0.06);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  font-size: 12px; color: var(--text-tertiary);
+  cursor: text; transition: all var(--transition-fast);
+}
+.search-box:hover, .search-box:focus-within {
+  border-color: var(--accent-primary);
+  background: rgba(var(--accent-primary-rgb),0.05);
+  box-shadow: 0 0 12px rgba(var(--accent-primary-rgb),0.08);
+}
+.search-box svg { width: 13px; height: 13px; flex-shrink: 0; }
+.search-box span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Sidebar nav */
+.sidebar-nav { padding: 0 var(--space-sm); flex: 1; }
+.nav-section { margin-bottom: var(--space-sm); }
+.nav-section-title {
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  padding: var(--space-sm) var(--space-md);
+}
+.nav-item {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 8px var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition-fast);
+  margin-bottom: 2px; border: none; background: none;
+  width: 100%; text-align: left; font-family: var(--font-sans);
+}
+.nav-item:hover { background: rgba(148,163,184,0.08); color: var(--text-primary); }
+.nav-item.active {
+  background: var(--accent-primary-bg); color: var(--accent-primary);
+  font-weight: 600; box-shadow: 0 0 12px rgba(var(--accent-primary-rgb),0.08);
+}
+.nav-item.active .nav-icon { color: var(--accent-primary); }
+.nav-icon {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--text-tertiary);
+  transition: color var(--transition-fast);
+}
+.nav-item:hover .nav-icon { color: var(--text-primary); }
+.nav-badge {
+  margin-left: auto; font-size: 10px; padding: 2px 7px;
+  background: var(--accent-warm-bg); color: var(--accent-warm);
+  border-radius: var(--radius-pill); font-weight: 600;
+}
+
+.sidebar-footer {
+  padding: var(--space-md);
+  border-top: 1px solid var(--border-light);
+  font-size: 10px; color: var(--text-tertiary);
+  text-align: center; line-height: 1.6;
+}
+
+/* ============================================
+   Main Content Area
+   ============================================ */
+.main { flex: 1; margin-left: var(--sidebar-width); min-height: 100vh; }
+
+.top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-sm) var(--space-xl);
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-topbar);
+  backdrop-filter: blur(20px);
+  position: sticky; top: 0; z-index: 50;
+}
+.top-bar-left { display: flex; align-items: center; gap: var(--space-md); }
+.page-title { font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.3px; }
+.page-subtitle { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; }
+.top-bar-right { display: flex; align-items: center; gap: var(--space-md); }
+.datetime { text-align: right; }
+.datetime-time { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--accent-primary); }
+.datetime-date { font-size: 10px; color: var(--text-tertiary); }
+
+.btn-refresh {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 6px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  background: rgba(148,163,184,0.06);
+  color: var(--text-secondary);
+  font-size: 12px; font-family: var(--font-sans);
+  cursor: pointer; transition: all var(--transition-fast); font-weight: 500;
+}
+.btn-refresh:hover {
+  border-color: var(--accent-primary); color: var(--accent-primary);
+  background: var(--accent-primary-bg);
+  box-shadow: 0 0 12px rgba(var(--accent-primary-rgb),0.1);
+}
+.btn-refresh.loading svg { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.content { padding: var(--space-lg) var(--space-xl) var(--space-2xl); max-width: 1400px; }
+
+/* View Switching */
+.view { display: none; animation: fadeIn 0.35s var(--transition-slow); }
+.view.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============================================
+   Home Page Layout
+   ============================================ */
+.home-layout { display: flex; flex-direction: column; gap: var(--space-xl); }
+
+/* ============================================
+   Today's Hottest - Big Carousel
+   ============================================ */
+.carousel-section { margin-bottom: var(--space-lg); }
+.carousel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+.carousel-title {
+  font-size: 12px; font-weight: 600; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: var(--space-sm);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.carousel-title svg { width: 14px; height: 14px; color: var(--accent-primary); }
+
+.carousel-container {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+}
+
+/* Carousel side arrows — slim, reveal on hover so they don't obscure text */
+.carousel-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 80px; border: none;
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 10;
+  color: rgba(240,244,248,0.5);
+  transition: all 0.25s ease; border-radius: var(--radius-pill);
+}
+.carousel-container:hover .carousel-arrow { background: rgba(11,15,25,0.5); backdrop-filter: blur(3px); color: rgba(240,244,248,0.85); }
+.carousel-arrow:hover { background: rgba(11,15,25,0.8) !important; color: #fff; }
+.carousel-arrow.prev { left: 3px; }
+.carousel-arrow.next { right: 3px; }
+.carousel-arrow svg { width: 18px; height: 18px; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7)); }
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-slide { min-width: 100%; position: relative; }
+.carousel-slide img { width: 100%; height: 300px; object-fit: cover; display: block; }
+
+.carousel-slide-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(11,15,25,0.92) 0%, rgba(11,15,25,0.5) 50%, transparent 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: var(--space-xl) 46px;
+}
+
+.carousel-slide-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 13px;
+  background: var(--accent-primary); color: var(--accent-ink);
+  font-size: 11px; font-weight: 700;
+  border-radius: var(--radius-pill); width: fit-content;
+  margin-bottom: var(--space-sm);
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+}
+
+.carousel-slide-title {
+  font-size: 22px; font-weight: 700; color: #ffffff;
+  line-height: 1.3; margin-bottom: var(--space-sm); max-width: 600px;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.55);
+}
+
+.carousel-slide-ai {
+  font-size: 12px; color: rgba(255,255,255,0.92); line-height: 1.6;
+  max-width: 500px; margin-bottom: var(--space-sm);
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.12);
+  border-left: 2px solid var(--accent-primary-light);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  backdrop-filter: blur(2px);
+}
+.carousel-slide-ai-label {
+  color: #b9c6ff; font-weight: 600; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.carousel-slide-meta {
+  display: flex; align-items: center; gap: var(--space-md);
+  color: rgba(255,255,255,0.82); font-size: 12px; flex-wrap: wrap;
+}
+.carousel-slide-meta span { white-space: nowrap; }
+.carousel-slide-meta .heat {
+  display: flex; align-items: center; gap: 4px;
+  color: var(--accent-warm); font-weight: 600; white-space: nowrap; flex-shrink: 0;
+}
+
+/* Carousel dots */
+.carousel-dots {
+  display: flex; justify-content: center; gap: 6px;
+  margin-top: var(--space-md);
+}
+.carousel-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(148,163,184,0.25);
+  cursor: pointer; transition: all var(--transition-fast);
+  border: none;
+}
+.carousel-dot:hover { background: rgba(148,163,184,0.5); }
+.carousel-dot.active {
+  background: var(--accent-primary); width: 24px; border-radius: 4px;
+  box-shadow: 0 0 8px rgba(var(--accent-primary-rgb),0.3);
+}
+
+/* ============================================
+   Quick News Section - 2 small cards carousel
+   ============================================ */
+.quick-news-section { position: relative; margin-bottom: var(--space-xl); }
+.quick-news-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.quick-news-wrapper { position: relative; }
+
+.quick-news-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 22px; height: 64px; border: none;
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 10;
+  color: rgba(240,244,248,0.45); transition: all 0.25s ease;
+  border-radius: var(--radius-pill);
+}
+.quick-news-wrapper:hover .quick-news-arrow { background: rgba(11,15,25,0.5); backdrop-filter: blur(3px); color: rgba(240,244,248,0.85); }
+.quick-news-arrow:hover { background: rgba(11,15,25,0.8) !important; color: #fff; }
+.quick-news-arrow svg { width: 16px; height: 16px; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7)); }
+.quick-news-arrow.prev { left: 0; }
+.quick-news-arrow.next { right: 0; }
+
+.quick-news-viewport { overflow: hidden; border-radius: var(--radius-xl); }
+.quick-news-track {
+  display: flex;
+  gap: var(--space-md);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.quick-news-track > .quick-news-card {
+  flex: 0 0 calc((100% - var(--space-md)) / 2);
+}
+.quick-news-dots {
+  display: flex; justify-content: center; gap: 6px;
+  margin-top: var(--space-md);
+}
+.quick-news-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(148,163,184,0.25);
+  cursor: pointer; transition: all var(--transition-normal);
+  border: none; padding: 0;
+}
+.quick-news-dot:hover { background: rgba(148,163,184,0.5); }
+.quick-news-dot.active {
+  background: var(--accent-primary); width: 24px; border-radius: 4px;
+  box-shadow: 0 0 8px rgba(var(--accent-primary-rgb),0.3);
+}
+
+.quick-news-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden; transition: all var(--transition-normal);
+  cursor: pointer; position: relative;
+}
+.quick-news-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+.quick-news-card-inner { position: relative; }
+.quick-news-card-inner img {
+  width: 100%; height: 160px; object-fit: cover; display: block;
+}
+.quick-news-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(11,15,25,0.92) 0%, rgba(11,15,25,0.4) 50%, transparent 100%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: var(--space-md) 30px;
+}
+.quick-news-card-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  width: fit-content; margin-bottom: var(--space-xs); font-weight: 600;
+}
+.quick-news-card-tag.tech { color: var(--bg-ink); background: var(--tag-tech); }
+.quick-news-card-tag.society { color: var(--bg-ink); background: var(--tag-society); }
+.quick-news-card-tag.finance { color: var(--bg-ink); background: var(--tag-finance); }
+.quick-news-card-tag.entertainment { color: var(--bg-ink); background: var(--tag-entertainment); }
+
+.quick-news-card-title {
+  font-size: 14px; font-weight: 600; color: #ffffff;
+  line-height: 1.4; margin-bottom: var(--space-xs);
+  text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+}
+.quick-news-card-ai {
+  font-size: 11px; color: rgba(255,255,255,0.9); line-height: 1.5;
+  margin-bottom: var(--space-xs);
+  opacity: 1;
+}
+.quick-news-card-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: rgba(255,255,255,0.78); gap: var(--space-sm);
+}
+.quick-news-card-meta > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.quick-news-card-heat {
+  color: var(--accent-warm); font-weight: 600; font-family: var(--font-mono); white-space: nowrap; flex-shrink: 0;
+}
+
+/* ============================================
+   Ranking List - Two Columns
+   ============================================ */
+.ranking-section { margin-bottom: var(--space-lg); }
+.ranking-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-md); }
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+.section-title {
+  font-size: 13px; font-weight: 700; color: var(--text-primary);
+  display: flex; align-items: center; gap: var(--space-sm); letter-spacing: 0.3px;
+}
+.section-title .tag {
+  font-size: 10px; font-weight: 600; padding: 1px 7px;
+  background: var(--accent-warm-bg); color: var(--accent-warm);
+  border-radius: var(--radius-pill); box-shadow: 0 0 8px var(--accent-warm-glow);
+}
+
+.ranking-list {
+  background: var(--bg-card); border-radius: var(--radius-lg);
+  border: 1px solid var(--border-card); box-shadow: var(--shadow-card); overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+.ranking-list:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-3px); }
+.ranking-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px var(--space-md);
+  border-bottom: 1px solid var(--border-card);
+  transition: all var(--transition-fast); cursor: pointer;
+}
+.ranking-item:last-child { border-bottom: none; }
+.ranking-item:hover { background: var(--bg-card-hover); }
+/* champion row highlight */
+.ranking-item:has(.ranking-num.rank-1) {
+  background: linear-gradient(90deg, rgba(234,160,17,0.14) 0%, rgba(234,160,17,0.03) 60%, transparent 100%);
+  box-shadow: inset 2px 0 0 rgba(234,160,17,0.65);
+}
+.ranking-item:has(.ranking-num.rank-1):hover {
+  background: linear-gradient(90deg, rgba(234,160,17,0.2) 0%, rgba(234,160,17,0.05) 60%, transparent 100%);
+}
+
+.ranking-num {
+  width: 22px; height: 22px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+  flex-shrink: 0; color: var(--text-tertiary);
+}
+/* Top-3 medals */
+.ranking-num.rank-1, .ranking-num.rank-2, .ranking-num.rank-3 {
+  position: relative; width: 26px; height: 26px; border-radius: 50%;
+  font-weight: 800; overflow: visible;
+}
+.ranking-num.rank-1 {
+  background: radial-gradient(circle at 35% 28%, #fff7d6, #ffd24a 38%, #eaa011 74%, #b9760d);
+  color: #5a3c00;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55), inset 0 -2px 3px rgba(150,90,0,0.35), 0 2px 5px rgba(0,0,0,0.18), 0 0 12px rgba(234,160,17,0.45);
+}
+.ranking-num.rank-2 {
+  background: radial-gradient(circle at 35% 28%, #ffffff, #e4e9f0 40%, #a9b3c1 74%, #7c8896);
+  color: #2a313d;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7), inset 0 -2px 3px rgba(90,100,115,0.3), 0 2px 5px rgba(0,0,0,0.16), 0 0 9px rgba(148,163,184,0.3);
+}
+.ranking-num.rank-3 {
+  background: radial-gradient(circle at 35% 28%, #ffe6c8, #f3a866 42%, #d27d35 78%, #9c531d);
+  color: #4a2600;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5), inset 0 -2px 3px rgba(120,60,10,0.35), 0 2px 5px rgba(0,0,0,0.18), 0 0 10px rgba(210,125,53,0.4);
+}
+/* glossy shine */
+.ranking-num.rank-1::before, .ranking-num.rank-2::before, .ranking-num.rank-3::before {
+  content: ''; position: absolute; top: 2px; left: 3px; right: 3px; height: 42%;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.75), rgba(255,255,255,0));
+  pointer-events: none;
+}
+/* crown above #1 */
+.ranking-num.rank-1::after {
+  content: ''; position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  width: 17px; height: 13px;
+  background: linear-gradient(160deg, #ffdf6b, #eaa011);
+  -webkit-mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M3 17L5 7l4.5 5.5L12 4l2.5 8.5L19 7l2 10z'/%3E%3Crect x='3.5' y='17.5' width='17' height='2.6' rx='0.6'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M3 17L5 7l4.5 5.5L12 4l2.5 8.5L19 7l2 10z'/%3E%3Crect x='3.5' y='17.5' width='17' height='2.6' rx='0.6'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(120,70,0,0.45));
+  pointer-events: none;
+}
+
+.ranking-content { flex: 1; min-width: 0; }
+.ranking-title {
+  font-size: 13px; font-weight: 500; color: var(--text-primary);
+  line-height: 1.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ranking-meta { display: flex; align-items: center; gap: var(--space-xs); margin-top: 4px; }
+.ranking-platforms { display: flex; gap: 3px; }
+.platform-dot { width: 5px; height: 5px; border-radius: 50%; }
+.platform-dot.weibo { background: var(--weibo); }
+.platform-dot.zhihu { background: var(--zhihu); }
+.platform-dot.bilibili { background: var(--bilibili); }
+.platform-dot.douyin { background: var(--douyin); }
+.platform-dot.thepaper { background: var(--thepaper); }
+.platform-dot.kr36 { background: var(--kr36); }
+.platform-dot.hupu { background: var(--hupu); }
+.platform-dot.github { background: var(--github); }
+.platform-dot.xiaohongshu { background: var(--xiaohongshu); }
+.platform-dot.toutiao { background: var(--toutiao); }
+.platform-count { font-size: 10px; color: var(--text-tertiary); white-space: nowrap; }
+
+.ranking-heat { font-size: 11px; font-weight: 600; color: var(--accent-warm); font-family: var(--font-mono); white-space: nowrap; }
+.ranking-trend { width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; }
+.ranking-trend.up { color: var(--accent-warm); }
+.ranking-trend.down { color: #34d399; }
+.ranking-trend.flat { color: var(--text-tertiary); }
+
+/* ============================================
+   Interest / Personalized Recommendation Page
+   ============================================ */
+.interest-filter {
+  display: flex; gap: var(--space-sm); margin-bottom: var(--space-lg); flex-wrap: wrap;
+}
+.interest-filter-btn {
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border-light);
+  background: rgba(148,163,184,0.06); color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition-fast);
+  font-family: var(--font-sans); white-space: nowrap;
+}
+.interest-filter-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: var(--accent-primary-bg); }
+.interest-filter-btn.active {
+  background: var(--accent-primary); color: var(--accent-ink);
+  border-color: var(--accent-primary); font-weight: 600;
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+}
+.interest-filter-btn.add { border-style: dashed; color: var(--text-tertiary); }
+
+/* Card style for personalized recommendations — vertical media-top cards in a grid */
+.interest-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: var(--space-md); align-items: start; }
+
+.interest-big-card {
+  display: flex; flex-direction: column;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden; transition: all var(--transition-normal);
+  cursor: pointer;
+}
+.interest-big-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+.interest-big-card-inner { position: relative; width: 100%; height: 148px; flex-shrink: 0; overflow: hidden; border-bottom: 1px solid var(--border-card); }
+.interest-big-card-inner img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.interest-big-card-overlay {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.interest-card-reason-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; padding: 3px 10px;
+  border-radius: var(--radius-pill); width: fit-content;
+  margin-bottom: var(--space-sm); font-weight: 600;
+}
+.interest-card-reason-tag.follow {
+  background: var(--accent-primary); color: var(--accent-ink);
+  box-shadow: 0 0 8px var(--accent-primary-glow);
+}
+.interest-card-reason-tag.similar {
+  background: #a78bfa; color: var(--bg-ink);
+  box-shadow: 0 0 8px rgba(167,139,250,0.3);
+}
+
+.interest-big-card-title {
+  font-size: 17px; font-weight: 700; color: var(--text-primary);
+  line-height: 1.35; margin-bottom: var(--space-sm); max-width: none;
+}
+.interest-big-card-ai {
+  font-size: 12px; color: var(--text-secondary); line-height: 1.6;
+  max-width: none; margin-bottom: var(--space-sm);
+  padding: 6px 10px;
+  background: rgba(var(--accent-primary-rgb),0.06);
+  border-left: 2px solid var(--accent-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.interest-big-card-ai-label {
+  color: var(--accent-primary); font-weight: 600; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;
+}
+.interest-big-card-meta {
+  display: flex; align-items: center; gap: var(--space-md);
+  color: var(--text-secondary); font-size: 12px; flex-wrap: wrap;
+}
+.interest-big-card-meta span { white-space: nowrap; }
+.interest-big-card-meta .heat {
+  display: flex; align-items: center; gap: 4px;
+  color: var(--accent-warm); font-weight: 600; white-space: nowrap; flex-shrink: 0;
+}
+
+.platform-mini-icon {
+  width: 14px; height: 14px; border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; color: white;
+}
+.platform-mini-icon.weibo { background: var(--weibo); }
+.platform-mini-icon.zhihu { background: var(--zhihu); }
+.platform-mini-icon.bilibili { background: var(--bilibili); }
+.platform-mini-icon.douyin { background: var(--douyin); color: var(--bg-ink); }
+.platform-mini-icon.thepaper { background: var(--thepaper); }
+.platform-mini-icon.kr36 { background: var(--kr36); }
+.platform-mini-icon.hupu { background: var(--hupu); }
+.platform-mini-icon.github { background: var(--github); color: var(--bg-ink); }
+.platform-mini-icon.xiaohongshu { background: var(--xiaohongshu); }
+.platform-mini-icon.toutiao { background: var(--toutiao); }
+
+/* ============================================
+   Platform Page
+   ============================================ */
+.platform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-md); }
+
+.platform-big-card {
+  background: var(--bg-card); border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card); box-shadow: var(--shadow-card);
+  overflow: hidden; transition: all var(--transition-normal);
+}
+.platform-big-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-3px); }
+
+.platform-big-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-card);
+}
+.platform-big-header-left { display: flex; align-items: center; gap: var(--space-sm); }
+.platform-big-icon {
+  width: 30px; height: 30px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+}
+.platform-big-icon.weibo { background: var(--weibo); }
+.platform-big-icon.zhihu { background: var(--zhihu); }
+.platform-big-icon.bilibili { background: var(--bilibili); }
+.platform-big-icon.douyin { background: var(--douyin); color: var(--bg-ink); }
+.platform-big-icon.thepaper { background: var(--thepaper); }
+.platform-big-icon.kr36 { background: var(--kr36); }
+.platform-big-icon.hupu { background: var(--hupu); }
+.platform-big-icon.github { background: var(--github); color: var(--bg-ink); }
+.platform-big-icon.xiaohongshu { background: var(--xiaohongshu); }
+.platform-big-icon.toutiao { background: var(--toutiao); }
+
+.platform-big-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.platform-big-list-type { font-size: 10px; color: var(--text-tertiary); }
+.platform-big-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border-light); color: var(--text-tertiary);
+  background: rgba(148,163,184,0.06);
+}
+.platform-big-body { padding: var(--space-xs) var(--space-md) var(--space-sm); }
+.platform-big-item {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 6px 0; border-bottom: 1px solid var(--border-card);
+  cursor: pointer; transition: all var(--transition-fast); border-radius: var(--radius-sm);
+}
+.platform-big-item:last-child { border-bottom: none; }
+.platform-big-item:hover { background: var(--bg-card-hover); padding-left: 5px; padding-right: 5px; margin: 0 -5px; }
+
+.platform-big-rank {
+  width: 20px; height: 20px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+  flex-shrink: 0; color: var(--text-tertiary);
+}
+.platform-big-rank.rank-1 { background: linear-gradient(140deg, #fde68a, #f59e0b); color: #3a2800; font-weight: 800; box-shadow: 0 0 10px rgba(251,191,36,0.4); }
+.platform-big-rank.rank-2 { background: linear-gradient(140deg, #eef2f7, #94a3b8); color: #1e2530; font-weight: 800; }
+.platform-big-rank.rank-3 { background: linear-gradient(140deg, #fdba74, #ea7c2b); color: #3a1d00; font-weight: 800; }
+
+.platform-big-title { flex: 1; font-size: 12px; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.platform-big-heat { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); white-space: nowrap; }
+.platform-big-trend { width: 12px; height: 12px; flex-shrink: 0; font-size: 10px; }
+.platform-big-trend.up { color: var(--accent-warm); }
+.platform-big-trend.down { color: #34d399; }
+.platform-big-trend.flat { color: var(--text-tertiary); }
+
+.platform-big-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  border-top: 1px solid var(--border-card); font-size: 11px;
+}
+.platform-big-viewall { color: var(--accent-primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.platform-big-viewall:hover { text-decoration: underline; }
+.platform-big-update { color: var(--text-tertiary); white-space: nowrap; }
+
+/* ============================================
+   AI Reason — collapsible (one line + expand)
+   ============================================ */
+.ai-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); margin-bottom: 3px; }
+.ai-head > .carousel-slide-ai-label,
+.ai-head > .interest-big-card-ai-label { white-space: nowrap; flex-shrink: 0; margin-bottom: 0; }
+.ai-toggle {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer; padding: 0;
+  color: var(--accent-primary); font-size: 10px; font-weight: 600;
+  font-family: var(--font-sans); white-space: nowrap; flex-shrink: 0;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ai-toggle svg { width: 11px; height: 11px; transition: transform var(--transition-fast); }
+.ai-collapsible:not(.collapsed) .ai-toggle svg { transform: rotate(180deg); }
+.ai-body { transition: none; }
+.ai-collapsible.collapsed .ai-body {
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* ============================================
+   Media Placeholder (stable, on-brand)
+   ============================================ */
+.media-ph {
+  position: relative; width: 100%; display: block; overflow: hidden;
+  background:
+    radial-gradient(120% 130% at 18% 0%, var(--ph-glow-a, rgba(var(--accent-primary-rgb),0.20)), transparent 58%),
+    radial-gradient(110% 120% at 100% 100%, var(--ph-glow-b, rgba(var(--accent-primary-rgb),0.10)), transparent 55%),
+    linear-gradient(140deg, var(--ph-base-a, #161f30) 0%, var(--ph-base-b, #0e1521) 60%, var(--ph-base-c, #0b1019) 100%);
+}
+.media-ph::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(148,163,184,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,0.05) 1px, transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(120% 120% at 50% 40%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 120% at 50% 40%, #000 30%, transparent 78%);
+}
+.media-ph-glyph {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--ph-ink, var(--accent-primary)); opacity: 0.9;
+}
+.media-ph-glyph svg { width: 40px; height: 40px; opacity: 0.85; filter: drop-shadow(0 0 14px var(--ph-glow-a, rgba(var(--accent-primary-rgb),0.3))); }
+.media-ph-glyph span {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-tertiary); opacity: 0.75;
+}
+.media-ph.cat-tech          { --ph-glow-a: rgba(56,189,248,0.22); --ph-glow-b: rgba(34,211,238,0.12); --ph-ink: #67e8f9; }
+.media-ph.cat-society       { --ph-glow-a: rgba(167,139,250,0.22); --ph-glow-b: rgba(129,140,248,0.12); --ph-ink: #c4b5fd; }
+.media-ph.cat-finance       { --ph-glow-a: rgba(52,211,153,0.22); --ph-glow-b: rgba(16,185,129,0.12); --ph-ink: #6ee7b7; }
+.media-ph.cat-entertainment { --ph-glow-a: rgba(244,114,182,0.22); --ph-glow-b: rgba(244,63,94,0.12); --ph-ink: #f9a8d4; }
+.media-ph.cat-life          { --ph-glow-a: rgba(163,230,53,0.20); --ph-glow-b: rgba(132,204,22,0.12); --ph-ink: #bef264; }
+.media-ph.cat-sports        { --ph-glow-a: rgba(251,191,36,0.22); --ph-glow-b: rgba(245,158,11,0.12); --ph-ink: #fcd34d; }
+
+.carousel-slide .media-ph     { height: 300px; }
+.quick-news-card-inner .media-ph { height: 160px; }
+.interest-big-card-inner .media-ph { position: absolute; inset: 0; height: 100%; min-height: 0; }
+@media (max-width: 768px) { .carousel-slide .media-ph { height: 220px; } }
+
+/* Real photos: cover their slot, sit under the scrim */
+.media-photo { display: block; }
+.interest-big-card-inner .media-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Category-tinted scrim over media — gives each topic its own mood while keeping text legible */
+.carousel-slide, .quick-news-card-inner, .interest-big-card-inner { position: relative; }
+.media-cat-tech::after, .media-cat-society::after, .media-cat-finance::after,
+.media-cat-entertainment::after, .media-cat-life::after, .media-cat-sports::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: linear-gradient(120deg, var(--cat-scrim, transparent) 0%, transparent 60%);
+  mix-blend-mode: screen;
+}
+.media-cat-tech          { --cat-scrim: rgba(56,189,248,0.30); }
+.media-cat-society       { --cat-scrim: rgba(167,139,250,0.30); }
+.media-cat-finance       { --cat-scrim: rgba(52,211,153,0.28); }
+.media-cat-entertainment { --cat-scrim: rgba(244,114,182,0.30); }
+.media-cat-life          { --cat-scrim: rgba(163,230,53,0.26); }
+.media-cat-sports        { --cat-scrim: rgba(251,191,36,0.28); }
+/* keep overlay text/content above the scrim */
+.carousel-slide-overlay, .quick-news-card-overlay { z-index: 2; }
+
+/* Category-tinted carousel tags */
+.carousel-slide-tag.tagcat-tech          { background: rgba(56,189,248,0.92); color: #04222e; }
+.carousel-slide-tag.tagcat-society       { background: rgba(167,139,250,0.92); color: #1c0f3a; }
+.carousel-slide-tag.tagcat-finance       { background: rgba(52,211,153,0.92); color: #042318; }
+.carousel-slide-tag.tagcat-entertainment { background: rgba(244,114,182,0.92); color: #340a22; }
+.carousel-slide-tag.tagcat-life          { background: rgba(163,230,53,0.92); color: #1a2400; }
+.carousel-slide-tag.tagcat-sports        { background: rgba(251,191,36,0.92); color: #2a1c00; }
+
+/* ============================================
+   Toast
+   ============================================ */
+.toast {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-md));
+  left: 50%; transform: translateX(-50%) translateY(-20px);
+  background: var(--bg-card); color: var(--text-primary);
+  padding: 8px 18px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 500;
+  box-shadow: var(--shadow-card-hover);
+  border: 1px solid var(--border-light);
+  opacity: 0; pointer-events: none;
+  transition: all var(--transition-normal);
+  z-index: 1000; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1024px) {
+  .platform-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+}
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform var(--transition-normal); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .content { padding: var(--space-md); }
+  .top-bar { padding: var(--space-sm) var(--space-md); }
+  .carousel-slide img { height: 220px; }
+  .carousel-slide-title { font-size: 16px; }
+  .quick-news-grid { grid-template-columns: 1fr; }
+  .ranking-grid { grid-template-columns: 1fr; }
+  .platform-grid { grid-template-columns: 1fr; }
+  .interest-big-card { flex-direction: column; }
+  .interest-big-card-inner { width: 100%; height: 170px; min-height: 0; border-right: none; border-bottom: 1px solid var(--border-card); }
+  .interest-big-card-inner .media-ph { height: 100%; }
+  .interest-big-card-overlay { padding: var(--space-lg); }
+  .mobile-toggle { display: flex; }
+}
+
+.mobile-toggle {
+  display: none; width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: rgba(148,163,184,0.06);
+  align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary);
+}
+@media (max-width: 768px) { .mobile-toggle { display: flex; } }
+
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 99;
+}
+@media (max-width: 768px) { .sidebar-overlay.show { display: block; } }
+
+/* ============================================
+   Theme switcher (floating)
+   ============================================ */
+.theme-switcher {
+  position: fixed; right: 16px; bottom: 16px; z-index: 200;
+  display: flex; align-items: center; gap: 4px;
+  padding: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+  backdrop-filter: blur(8px);
+}
+.theme-switcher-label {
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  padding: 0 6px 0 8px; letter-spacing: 0.5px; white-space: nowrap;
+}
+.theme-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: none; cursor: pointer;
+  background: transparent; color: var(--text-secondary);
+  font-family: var(--font-sans); font-size: 12px; font-weight: 600;
+  border-radius: var(--radius-pill); transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+.theme-chip:hover { background: rgba(148,163,184,0.12); color: var(--text-primary); }
+.theme-chip.active {
+  background: var(--accent-primary-bg); color: var(--accent-primary);
+  box-shadow: inset 0 0 0 1px var(--accent-primary-bg-hover);
+}
+.theme-dot {
+  width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.12);
+}
+@media (max-width: 768px) {
+  .theme-switcher-label { display: none; }
+  .theme-chip { padding: 6px 9px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============================================
+       Sidebar
+       ============================================ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path class="brand-spark-main" d="M16 2c.7 7 4 10.3 14 14-10 3.7-13.3 7-14 14-.7-7-4-10.3-14-14C12 12.3 15.3 9 16 2Z" fill="currentColor"/>
+            <path class="brand-spark-dot" d="M25.5 3.5c.3 2.6 1.4 3.7 4.5 5-3.1 1.3-4.2 2.4-4.5 5-.3-2.6-1.4-3.7-4.5-5 3.1-1.3 4.2-2.4 4.5-5Z" fill="#ff3b6b"/>
+          </svg>
+        </div>
+        <div class="sidebar-brand-text">今日<span>热搜</span></div>
+      </div>
+      <div class="sidebar-desc">汇聚全网热点</div>
+    </div>
+
+    <div class="sidebar-search">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>搜索话题 / 平台...</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Navigation: 首页 → 个性推荐 → 平台 -->
+      <div class="nav-section">
+        <div class="nav-section-title">导航</div>
+        <button class="nav-item active" data-view="home" onclick="switchView('home')">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </span>
+          首页
+        </button>
+        <button class="nav-item" data-view="interest" onclick="switchView('interest')">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </span>
+          个性推荐
+          <span class="nav-badge">AI</span>
+        </button>
+        <button class="nav-item" data-view="platforms" onclick="switchView('platforms')">
+          <span class="nav-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </span>
+          平台
+        </button>
+      </div>
+
+      <!-- Hot Tags -->
+      <div class="nav-section">
+        <div class="nav-section-title">热门标签</div>
+        <button class="nav-item" onclick="switchView('interest'); filterInterest('tech')">
+          <span class="nav-icon" style="color: var(--tag-tech)">●</span>
+          科技
+        </button>
+        <button class="nav-item" onclick="switchView('interest'); filterInterest('entertainment')">
+          <span class="nav-icon" style="color: var(--tag-entertainment)">●</span>
+          娱乐
+        </button>
+        <button class="nav-item" onclick="switchView('interest'); filterInterest('sports')">
+          <span class="nav-icon" style="color: var(--tag-sports)">●</span>
+          体育
+        </button>
+        <button class="nav-item" onclick="switchView('interest'); filterInterest('finance')">
+          <span class="nav-icon" style="color: var(--tag-finance)">●</span>
+          财经
+        </button>
+        <button class="nav-item" onclick="switchView('interest'); filterInterest('society')">
+          <span class="nav-icon" style="color: var(--tag-society)">●</span>
+          社会
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      今日热搜 · 用 AI 读懂全网热点<br>
+      数据仅供参考
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- ============================================
+       Main Content
+       ============================================ -->
+  <main class="main">
+
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <button class="mobile-toggle" onclick="toggleSidebar()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div>
+          <div class="page-title" id="pageTitle">首页 · 综合热点</div>
+          <div class="page-subtitle" id="pageSubtitle">今日最热 · 热点速览 · 综合热榜</div>
+        </div>
+      </div>
+      <div class="top-bar-right">
+        <div class="datetime">
+          <div class="datetime-time" id="datetimeTime">06:23</div>
+          <div class="datetime-date" id="datetimeDate">2026-06-04 丙午年 · 四月十九 · 周四</div>
+        </div>
+        <button class="btn-refresh" id="refreshBtn" onclick="handleRefresh()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          刷新
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ==========================================
+           HOME VIEW
+           ========================================== -->
+      <div class="view active" id="view-home">
+        <div class="home-layout">
+
+          <!-- 1. 今日最热 - Big Carousel -->
+          <div class="carousel-section">
+            <div class="carousel-header">
+              <div class="carousel-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                今日最热
+              </div>
+            </div>
+
+            <div class="carousel-container">
+              <button class="carousel-arrow prev" onclick="prevSlide()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button class="carousel-arrow next" onclick="nextSlide()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <div class="carousel-track" id="carouselTrack">
+                <!-- Slide 1 -->
+                <div class="carousel-slide">
+                  <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=500&fit=crop" alt="">
+                  <div class="carousel-slide-overlay">
+                    <div class="carousel-slide-tag">社会 · 民生</div>
+                    <div class="carousel-slide-title">高考首日：各地交通管制 + 爱心送考</div>
+                    <div class="carousel-slide-ai">
+                      <div class="carousel-slide-ai-label">AI 热门原因</div>
+                      全国 1098 万考生迎来高考，多地启动最高等级交通管制，爱心送考车队、免费矿泉水等暖心举措引发全网讨论。
+                    </div>
+                    <div class="carousel-slide-meta">
+                      <span class="heat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        1098万
+                      </span>
+                      <span>5 个平台在讨论</span>
+                      <span>今晨登顶</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-slide">
+                  <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=500&fit=crop" alt="">
+                  <div class="carousel-slide-overlay">
+                    <div class="carousel-slide-tag">科技 · AI</div>
+                    <div class="carousel-slide-title">国产大模型发布会引热议：性能对标 GPT-4</div>
+                    <div class="carousel-slide-ai">
+                      <div class="carousel-slide-ai-label">AI 热门原因</div>
+                      多项基准测试超越国际同类产品，首次实现中文场景全面领先，开发者社区评价积极，引发 AI 国产替代讨论潮。
+                    </div>
+                    <div class="carousel-slide-meta">
+                      <span class="heat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        964万
+                      </span>
+                      <span>3 个平台在讨论</span>
+                      <span>持续升温</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="carousel-slide">
+                  <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&h=500&fit=crop" alt="">
+                  <div class="carousel-slide-overlay">
+                    <div class="carousel-slide-tag">科技 · 新能源</div>
+                    <div class="carousel-slide-title">新能源车下乡补贴细则公布：最高补贴 3 万元</div>
+                    <div class="carousel-slide-ai">
+                      <div class="carousel-slide-ai-label">AI 热门原因</div>
+                      补贴力度为历年之最，覆盖 80+ 车型，三四线城市消费者购车热情高涨，经销商订单量激增。
+                    </div>
+                    <div class="carousel-slide-meta">
+                      <span class="heat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        1142万
+                      </span>
+                      <span>4 个平台在讨论</span>
+                      <span>政策热点</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Slide 4 -->
+                <div class="carousel-slide">
+                  <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1200&h=500&fit=crop" alt="">
+                  <div class="carousel-slide-overlay">
+                    <div class="carousel-slide-tag">财经 · 能源</div>
+                    <div class="carousel-slide-title">油价或迎年内最大降幅：每升下调 0.4 元</div>
+                    <div class="carousel-slide-ai">
+                      <div class="carousel-slide-ai-label">AI 热门原因</div>
+                      国际原油价格连续下跌，国内成品油调价窗口开启，预计每升降幅达 0.4 元，直接影响亿万车主出行成本。
+                    </div>
+                    <div class="carousel-slide-meta">
+                      <span class="heat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        902万
+                      </span>
+                      <span>3 个平台在讨论</span>
+                      <span>民生关注</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Slide 5 -->
+                <div class="carousel-slide">
+                  <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&h=500&fit=crop" alt="">
+                  <div class="carousel-slide-overlay">
+                    <div class="carousel-slide-tag">娱乐 · 综艺</div>
+                    <div class="carousel-slide-title">热门综艺收官全网刷屏：收视率创新高</div>
+                    <div class="carousel-slide-ai">
+                      <div class="carousel-slide-ai-label">AI 热门原因</div>
+                      决赛收视率破 3%，社交平台相关话题阅读量超 40 亿，选手表现引发大量二创与讨论。
+                    </div>
+                    <div class="carousel-slide-meta">
+                      <span class="heat">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        877万
+                      </span>
+                      <span>3 个平台在讨论</span>
+                      <span>娱乐爆款</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-dots" id="carouselDots">
+              <button class="carousel-dot active" onclick="goToSlide(0)"></button>
+              <button class="carousel-dot" onclick="goToSlide(1)"></button>
+              <button class="carousel-dot" onclick="goToSlide(2)"></button>
+              <button class="carousel-dot" onclick="goToSlide(3)"></button>
+              <button class="carousel-dot" onclick="goToSlide(4)"></button>
+            </div>
+          </div>
+
+          <!-- 2. 热点速览 - Two Small Cards Carousel -->
+          <div class="quick-news-section">
+            <div class="quick-news-header">
+              <div class="section-title">
+                热点速览
+                <span class="tag">实时</span>
+              </div>
+            </div>
+            <div class="quick-news-wrapper">
+              <button class="quick-news-arrow prev" onclick="prevQuickNews()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button class="quick-news-arrow next" onclick="nextQuickNews()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+              <div class="quick-news-viewport">
+                <div class="quick-news-track" id="quickNewsTrack">
+                <div class="quick-news-card">
+                  <div class="quick-news-card-inner">
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=300&fit=crop" alt="">
+                    <div class="quick-news-card-overlay">
+                      <div class="quick-news-card-tag tech">AI · 医疗</div>
+                      <div class="quick-news-card-title">AI 辅助诊断进入基层医院</div>
+                      <div class="quick-news-card-ai">覆盖 200+ 县级医院，误诊率下降 35%，让优质医疗资源触达基层。</div>
+                      <div class="quick-news-card-meta">
+                        <span>知乎 · 36氪</span>
+                        <span class="quick-news-card-heat">702万</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-news-card">
+                  <div class="quick-news-card-inner">
+                    <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&h=300&fit=crop" alt="">
+                    <div class="quick-news-card-overlay">
+                      <div class="quick-news-card-tag society">汽车 · 市场</div>
+                      <div class="quick-news-card-title">多家车企同日开启价格战</div>
+                      <div class="quick-news-card-ai">头部车企集体降价，最高降幅超 5 万元，消费者持币观望情绪加重。</div>
+                      <div class="quick-news-card-meta">
+                        <span>今日头条</span>
+                        <span class="quick-news-card-heat">688万</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-news-card">
+                  <div class="quick-news-card-inner">
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=300&fit=crop" alt="">
+                    <div class="quick-news-card-overlay">
+                      <div class="quick-news-card-tag tech">科技 · 芯片</div>
+                      <div class="quick-news-card-title">国产 3nm 芯片试产成功</div>
+                      <div class="quick-news-card-ai">突破关键制程工艺，良率达到量产标准，半导体国产化进程迎来里程碑。</div>
+                      <div class="quick-news-card-meta">
+                        <span>36氪 · 知乎</span>
+                        <span class="quick-news-card-heat">856万</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-news-card">
+                  <div class="quick-news-card-inner">
+                    <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=300&fit=crop" alt="">
+                    <div class="quick-news-card-overlay">
+                      <div class="quick-news-card-tag finance">财经 · 股市</div>
+                      <div class="quick-news-card-title">A股三大指数集体收涨</div>
+                      <div class="quick-news-card-ai">科技股领涨，北向资金净流入超 120 亿，市场信心回暖信号明显。</div>
+                      <div class="quick-news-card-meta">
+                        <span>财新 · 微博</span>
+                        <span class="quick-news-card-heat">623万</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="quick-news-card">
+                  <div class="quick-news-card-inner">
+                    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&h=300&fit=crop" alt="">
+                    <div class="quick-news-card-overlay">
+                      <div class="quick-news-card-tag entertainment">影视 · 票房</div>
+                      <div class="quick-news-card-title">暑期档电影预售总票房破亿</div>
+                      <div class="quick-news-card-ai">多部头部影片定档同期，预售开启 48 小时票房破亿，暑期档竞争提前升温。</div>
+                      <div class="quick-news-card-meta">
+                        <span>猫眼 · 微博</span>
+                        <span class="quick-news-card-heat">765万</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+            <div class="quick-news-dots" id="quickNewsDots">
+              <button class="quick-news-dot active" onclick="goToQuickNews(0)"></button>
+              <button class="quick-news-dot" onclick="goToQuickNews(1)"></button>
+              <button class="quick-news-dot" onclick="goToQuickNews(2)"></button>
+              <button class="quick-news-dot" onclick="goToQuickNews(3)"></button>
+              <button class="quick-news-dot" onclick="goToQuickNews(4)"></button>
+            </div>
+          </div>
+
+          <!-- 3. 综合热榜 - Two Columns -->
+          <div class="ranking-section">
+            <div class="section-header">
+              <div class="section-title">
+                综合热榜
+                <span class="tag">实时</span>
+              </div>
+            </div>
+            <div class="ranking-grid">
+              <!-- Left Column -->
+              <div class="ranking-list">
+                <div class="ranking-item">
+                  <div class="ranking-num rank-1">1</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">全国多地气温创入夏新高</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot weibo"></span><span class="platform-dot toutiao"></span><span class="platform-dot zhihu"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">1286万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num rank-2">2</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">新能源车下乡补贴细则公布</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot toutiao"></span><span class="platform-dot zhihu"></span><span class="platform-dot weibo"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">1142万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num rank-3">3</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">高考首日各地启动交通管制</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot weibo"></span><span class="platform-dot douyin"></span><span class="platform-dot toutiao"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">1098万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">4</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">国产大模型发布会引热议</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot zhihu"></span><span class="platform-dot bilibili"></span><span class="platform-dot weibo"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">964万</div>
+                  <div class="ranking-trend flat">-</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">5</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">油价或迎年内最大降幅</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot toutiao"></span><span class="platform-dot weibo"></span><span class="platform-dot douyin"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">902万</div>
+                  <div class="ranking-trend flat">-</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">6</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">热门综艺收官全网刷屏</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot weibo"></span><span class="platform-dot xiaohongshu"></span><span class="platform-dot douyin"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">877万</div>
+                  <div class="ranking-trend down">▼</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">7</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">城市夜经济出现新玩法</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot xiaohongshu"></span><span class="platform-dot douyin"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">813万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">8</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">暑期档电影预售正式开启</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot weibo"></span><span class="platform-dot bilibili"></span><span class="platform-dot toutiao"></span></div>
+                      <span class="platform-count">3 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">766万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">9</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">AI 辅助诊断进入基层医院</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot zhihu"></span><span class="platform-dot toutiao"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">702万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+              </div>
+              <!-- Right Column -->
+              <div class="ranking-list">
+                <div class="ranking-item">
+                  <div class="ranking-num">10</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">多家车企开启价格战</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot toutiao"></span><span class="platform-dot zhihu"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">688万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">11</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">县域旅游成出行新热点</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot douyin"></span><span class="platform-dot xiaohongshu"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">612万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">12</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">国产 3nm 芯片试产成功</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot zhihu"></span><span class="platform-dot kr36"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">856万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">13</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">A股三大指数集体收涨</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot toutiao"></span><span class="platform-dot weibo"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">623万</div>
+                  <div class="ranking-trend flat">-</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">14</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">老字号品牌跨界联名上新</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot xiaohongshu"></span><span class="platform-dot weibo"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">540万</div>
+                  <div class="ranking-trend down">▼</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">15</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">外卖骑手暖心故事走红</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot weibo"></span><span class="platform-dot douyin"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">487万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">16</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">夏日防晒产品评测合集</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot xiaohongshu"></span><span class="platform-dot bilibili"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">445万</div>
+                  <div class="ranking-trend flat">-</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">17</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">演唱会实名制新规落地</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot weibo"></span><span class="platform-dot douyin"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">398万</div>
+                  <div class="ranking-trend up">▲</div>
+                </div>
+                <div class="ranking-item">
+                  <div class="ranking-num">18</div>
+                  <div class="ranking-content">
+                    <div class="ranking-title">面食新吃法走红社交平台</div>
+                    <div class="ranking-meta">
+                      <div class="ranking-platforms"><span class="platform-dot douyin"></span><span class="platform-dot xiaohongshu"></span></div>
+                      <span class="platform-count">2 个平台</span>
+                    </div>
+                  </div>
+                  <div class="ranking-heat">356万</div>
+                  <div class="ranking-trend down">▼</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==========================================
+           INTEREST / PERSONALIZED VIEW
+           ========================================== -->
+      <div class="view" id="view-interest">
+        <div class="interest-filter">
+          <button class="interest-filter-btn active" onclick="filterInterest('all')">全部</button>
+          <button class="interest-filter-btn" onclick="filterInterest('tech')">科技</button>
+          <button class="interest-filter-btn" onclick="filterInterest('finance')">财经</button>
+          <button class="interest-filter-btn" onclick="filterInterest('entertainment')">影视</button>
+          <button class="interest-filter-btn" onclick="filterInterest('society')">汽车</button>
+          <button class="interest-filter-btn add">+ 我关注的平台</button>
+          <button class="interest-filter-btn add">+ 我关注的标签</button>
+        </div>
+
+        <div class="interest-cards" id="interestCards">
+          <!-- Card 1 -->
+          <div class="interest-big-card" data-tags="tech">
+            <div class="interest-big-card-inner">
+              <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=500&fit=crop" alt="">
+              <div class="interest-big-card-overlay">
+                <div class="interest-card-reason-tag follow">★ 你关注 · 科技</div>
+                <div class="interest-big-card-title">国产大模型发布会引热议：性能对标 GPT-4</div>
+                <div class="interest-big-card-ai">
+                  <div class="interest-big-card-ai-label">AI 推荐理由</div>
+                  你关注了「AI」和「科技」标签，该话题在知乎、B站热度飙升，与你近期浏览的 AI 内容高度相关。
+                </div>
+                <div class="interest-big-card-meta">
+                  <span class="heat">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    964万
+                  </span>
+                  <span><span class="platform-mini-icon zhihu">知</span> 知乎</span>
+                  <span>3 个平台在讨论</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="interest-big-card" data-tags="society">
+            <div class="interest-big-card-inner">
+              <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&h=500&fit=crop" alt="">
+              <div class="interest-big-card-overlay">
+                <div class="interest-card-reason-tag follow">★ 你关注 · 汽车</div>
+                <div class="interest-big-card-title">多家车企同日开启价格战，最高降幅超 5 万</div>
+                <div class="interest-big-card-ai">
+                  <div class="interest-big-card-ai-label">AI 推荐理由</div>
+                  你关注了「汽车」标签，头部车企集体降价引发市场震动，消费者观望情绪与你近期关注的购车话题匹配。
+                </div>
+                <div class="interest-big-card-meta">
+                  <span class="heat">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    688万
+                  </span>
+                  <span><span class="platform-mini-icon toutiao">头</span> 今日头条</span>
+                  <span>2 个平台在讨论</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="interest-big-card" data-tags="life">
+            <div class="interest-big-card-inner">
+              <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&h=500&fit=crop" alt="">
+              <div class="interest-big-card-overlay">
+                <div class="interest-card-reason-tag follow">★ 你关注 · 生活</div>
+                <div class="interest-big-card-title">县域旅游成出行新热点：小城故事多</div>
+                <div class="interest-big-card-ai">
+                  <div class="interest-big-card-ai-label">AI 推荐理由</div>
+                  你近期多次浏览旅行攻略，县域游以高性价比和独特人文成为抖音、小红书热门话题。
+                </div>
+                <div class="interest-big-card-meta">
+                  <span class="heat">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    612万
+                  </span>
+                  <span><span class="platform-mini-icon douyin">抖</span> 抖音</span>
+                  <span>2 个平台在讨论</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="interest-big-card" data-tags="society">
+            <div class="interest-big-card-inner">
+              <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&h=500&fit=crop" alt="">
+              <div class="interest-big-card-overlay">
+                <div class="interest-card-reason-tag follow">★ 你关注 · 小红书</div>
+                <div class="interest-big-card-title">城市夜经济出现新玩法：夜市 + 文创</div>
+                <div class="interest-big-card-ai">
+                  <div class="interest-big-card-ai-label">AI 推荐理由</div>
+                  你常浏览小红书生活板块，各地夜经济创新模式在社交平台引爆讨论。
+                </div>
+                <div class="interest-big-card-meta">
+                  <span class="heat">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    813万
+                  </span>
+                  <span><span class="platform-mini-icon xiaohongshu">红</span> 小红书</span>
+                  <span>2 个平台在讨论</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="interest-big-card" data-tags="entertainment">
+            <div class="interest-big-card-inner">
+              <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&h=500&fit=crop" alt="">
+              <div class="interest-big-card-overlay">
+                <div class="interest-card-reason-tag similar">★ 相似偏好</div>
+                <div class="interest-big-card-title">老字号品牌跨界联名上新：国潮回归</div>
+                <div class="interest-big-card-ai">
+                  <div class="interest-big-card-ai-label">AI 推荐理由</div>
+                  与你偏好相似的用户高频关注此话题，国潮联名产品在小红书引发开箱热潮。
+                </div>
+                <div class="interest-big-card-meta">
+                  <span class="heat">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    540万
+                  </span>
+                  <span><span class="platform-mini-icon xiaohongshu">红</span> 小红书</span>
+                  <span>2 个平台在讨论</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 6 -->
+          <div class="interest-big-card" data-tags="entertainment">
+            <div class="interest-big-card-inner">
+              <img src="https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=1200&h=500&fit=crop" alt="">
+              <div class="interest-big-card-overlay">
+                <div class="interest-card-reason-tag similar">★ 相似偏好</div>
+                <div class="interest-big-card-title">热门综艺收官刷屏：决赛收视率破 3%</div>
+                <div class="interest-big-card-ai">
+                  <div class="interest-big-card-ai-label">AI 推荐理由</div>
+                  与你兴趣相近的用户大量讨论该综艺，收官话题在微博阅读量超 40 亿。
+                </div>
+                <div class="interest-big-card-meta">
+                  <span class="heat">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    877万
+                  </span>
+                  <span><span class="platform-mini-icon weibo">微</span> 微博</span>
+                  <span>3 个平台在讨论</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           PLATFORMS VIEW (unchanged)
+           ========================================== -->
+      <div class="view" id="view-platforms">
+        <div class="platform-grid">
+          <!-- 微博 -->
+          <div class="platform-big-card">
+            <div class="platform-big-header">
+              <div class="platform-big-header-left">
+                <div class="platform-big-icon weibo">微</div>
+                <div><div class="platform-big-name">微博</div><div class="platform-big-list-type">热搜榜</div></div>
+              </div>
+              <div class="platform-big-badge">实时热榜</div>
+            </div>
+            <div class="platform-big-body">
+              <div class="platform-big-item"><div class="platform-big-rank rank-1">1</div><div class="platform-big-title">原价场景下消费者仍观望</div><div class="platform-big-heat">534万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-2">2</div><div class="platform-big-title">某剧集大结局</div><div class="platform-big-heat">492万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-3">3</div><div class="platform-big-title">美丽中国行</div><div class="platform-big-heat">450万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">4</div><div class="platform-big-title">面食新吃法走红</div><div class="platform-big-heat">408万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">5</div><div class="platform-big-title">城市烟火气</div><div class="platform-big-heat">366万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">6</div><div class="platform-big-title">外卖骑手故事</div><div class="platform-big-heat">324万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">7</div><div class="platform-big-title">高考首日现场</div><div class="platform-big-heat">282万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">8</div><div class="platform-big-title">演唱会实名制</div><div class="platform-big-heat">240万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">9</div><div class="platform-big-title">县域游走红</div><div class="platform-big-heat">198万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">10</div><div class="platform-big-title">车企价格战</div><div class="platform-big-heat">156万</div><div class="platform-big-trend flat">-</div></div>
+            </div>
+            <div class="platform-big-footer"><div class="platform-big-viewall">查看完整榜单 →</div><div class="platform-big-update">共 50 条 · 几秒前更新</div></div>
+          </div>
+
+          <!-- 小红书 -->
+          <div class="platform-big-card">
+            <div class="platform-big-header">
+              <div class="platform-big-header-left">
+                <div class="platform-big-icon xiaohongshu">书</div>
+                <div><div class="platform-big-name">小红书</div><div class="platform-big-list-type">实时热榜</div></div>
+              </div>
+              <div class="platform-big-badge">实时热榜</div>
+            </div>
+            <div class="platform-big-body">
+              <div class="platform-big-item"><div class="platform-big-rank rank-1">1</div><div class="platform-big-title">万能旅行拍照姿势</div><div class="platform-big-heat">541万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-2">2</div><div class="platform-big-title">三年拍下古诗词里的中国</div><div class="platform-big-heat">499万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-3">3</div><div class="platform-big-title">我拍到了海鸥雨</div><div class="platform-big-heat">457万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">4</div><div class="platform-big-title">超日常美食教程</div><div class="platform-big-heat">415万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">5</div><div class="platform-big-title">日照金山定格</div><div class="platform-big-heat">373万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">6</div><div class="platform-big-title">赛里木湖的美景</div><div class="platform-big-heat">331万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">7</div><div class="platform-big-title">夏日穿搭灵感</div><div class="platform-big-heat">289万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">8</div><div class="platform-big-title">露营装备清单</div><div class="platform-big-heat">247万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">9</div><div class="platform-big-title">小众咖啡馆</div><div class="platform-big-heat">205万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">10</div><div class="platform-big-title">citywalk 路线</div><div class="platform-big-heat">163万</div><div class="platform-big-trend flat">-</div></div>
+            </div>
+            <div class="platform-big-footer"><div class="platform-big-viewall">查看完整榜单 →</div><div class="platform-big-update">共 50 条 · 几秒前更新</div></div>
+          </div>
+
+          <!-- 哔哩哔哩 -->
+          <div class="platform-big-card">
+            <div class="platform-big-header">
+              <div class="platform-big-header-left">
+                <div class="platform-big-icon bilibili">B</div>
+                <div><div class="platform-big-name">哔哩哔哩</div><div class="platform-big-list-type">热门榜</div></div>
+              </div>
+              <div class="platform-big-badge">热门榜</div>
+            </div>
+            <div class="platform-big-body">
+              <div class="platform-big-item"><div class="platform-big-rank rank-1">1</div><div class="platform-big-title">回忆永远是加分项</div><div class="platform-big-heat">576万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-2">2</div><div class="platform-big-title">初中生斗胆跳一段</div><div class="platform-big-heat">534万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-3">3</div><div class="platform-big-title">三块钱一顿饭</div><div class="platform-big-heat">492万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">4</div><div class="platform-big-title">世界杯主题曲翻唱</div><div class="platform-big-heat">450万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">5</div><div class="platform-big-title">野餐 · 现在是2012</div><div class="platform-big-heat">408万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">6</div><div class="platform-big-title">新角色 PV 上线</div><div class="platform-big-heat">366万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">7</div><div class="platform-big-title">硬核科普视频</div><div class="platform-big-heat">324万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">8</div><div class="platform-big-title">游戏速通纪录</div><div class="platform-big-heat">282万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">9</div><div class="platform-big-title">美食教程合集</div><div class="platform-big-heat">240万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">10</div><div class="platform-big-title">怀旧动画混剪</div><div class="platform-big-heat">198万</div><div class="platform-big-trend flat">-</div></div>
+            </div>
+            <div class="platform-big-footer"><div class="platform-big-viewall">查看完整榜单 →</div><div class="platform-big-update">共 50 条 · 几秒前更新</div></div>
+          </div>
+
+          <!-- 抖音 -->
+          <div class="platform-big-card">
+            <div class="platform-big-header">
+              <div class="platform-big-header-left">
+                <div class="platform-big-icon douyin">抖</div>
+                <div><div class="platform-big-name">抖音</div><div class="platform-big-list-type">热点榜</div></div>
+              </div>
+              <div class="platform-big-badge">热点榜</div>
+            </div>
+            <div class="platform-big-body">
+              <div class="platform-big-item"><div class="platform-big-rank rank-1">1</div><div class="platform-big-title">高考首日各地现场</div><div class="platform-big-heat">892万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-2">2</div><div class="platform-big-title">全国多地高温预警</div><div class="platform-big-heat">756万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-3">3</div><div class="platform-big-title">油价下调最新消息</div><div class="platform-big-heat">623万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">4</div><div class="platform-big-title">新能源车补贴细则</div><div class="platform-big-heat">534万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">5</div><div class="platform-big-title">某明星官宣恋情</div><div class="platform-big-heat">487万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">6</div><div class="platform-big-title">夏日防晒神器推荐</div><div class="platform-big-heat">445万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">7</div><div class="platform-big-title">热门挑战舞蹈教学</div><div class="platform-big-heat">398万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">8</div><div class="platform-big-title">美食探店 vlog</div><div class="platform-big-heat">356万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">9</div><div class="platform-big-title">旅行攻略分享</div><div class="platform-big-heat">312万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">10</div><div class="platform-big-title">萌宠日常合集</div><div class="platform-big-heat">289万</div><div class="platform-big-trend down">▼</div></div>
+            </div>
+            <div class="platform-big-footer"><div class="platform-big-viewall">查看完整榜单 →</div><div class="platform-big-update">共 50 条 · 几秒前更新</div></div>
+          </div>
+
+          <!-- 今日头条 -->
+          <div class="platform-big-card">
+            <div class="platform-big-header">
+              <div class="platform-big-header-left">
+                <div class="platform-big-icon toutiao">头</div>
+                <div><div class="platform-big-name">今日头条</div><div class="platform-big-list-type">热榜</div></div>
+              </div>
+              <div class="platform-big-badge">热榜</div>
+            </div>
+            <div class="platform-big-body">
+              <div class="platform-big-item"><div class="platform-big-rank rank-1">1</div><div class="platform-big-title">全国多地气温创入夏新高</div><div class="platform-big-heat">1286万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-2">2</div><div class="platform-big-title">新能源车下乡补贴细则公布</div><div class="platform-big-heat">1142万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-3">3</div><div class="platform-big-title">高考首日各地启动交通管制</div><div class="platform-big-heat">1098万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">4</div><div class="platform-big-title">油价或迎年内最大降幅</div><div class="platform-big-heat">902万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">5</div><div class="platform-big-title">热门综艺收官全网刷屏</div><div class="platform-big-heat">877万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">6</div><div class="platform-big-title">AI 辅助诊断进入基层医院</div><div class="platform-big-heat">702万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">7</div><div class="platform-big-title">多家车企开启价格战</div><div class="platform-big-heat">688万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">8</div><div class="platform-big-title">暑期档电影预售正式开启</div><div class="platform-big-heat">766万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">9</div><div class="platform-big-title">城市夜经济出现新玩法</div><div class="platform-big-heat">813万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">10</div><div class="platform-big-title">国产大模型发布会引热议</div><div class="platform-big-heat">964万</div><div class="platform-big-trend flat">-</div></div>
+            </div>
+            <div class="platform-big-footer"><div class="platform-big-viewall">查看完整榜单 →</div><div class="platform-big-update">共 50 条 · 几秒前更新</div></div>
+          </div>
+
+          <!-- 知乎 -->
+          <div class="platform-big-card">
+            <div class="platform-big-header">
+              <div class="platform-big-header-left">
+                <div class="platform-big-icon zhihu">知</div>
+                <div><div class="platform-big-name">知乎</div><div class="platform-big-list-type">热榜</div></div>
+              </div>
+              <div class="platform-big-badge">热榜</div>
+            </div>
+            <div class="platform-big-body">
+              <div class="platform-big-item"><div class="platform-big-rank rank-1">1</div><div class="platform-big-title">如何看待国产大模型对标 GPT-4？</div><div class="platform-big-heat">1842万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-2">2</div><div class="platform-big-title">高考改革对考生有哪些影响？</div><div class="platform-big-heat">1567万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank rank-3">3</div><div class="platform-big-title">油价下调对普通人意味着什么？</div><div class="platform-big-heat">1234万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">4</div><div class="platform-big-title">AI 辅助诊断可靠吗？</div><div class="platform-big-heat">987万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">5</div><div class="platform-big-title">新能源车补贴值得买吗？</div><div class="platform-big-heat">876万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">6</div><div class="platform-big-title">城市夜经济新玩法有哪些？</div><div class="platform-big-heat">765万</div><div class="platform-big-trend flat">-</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">7</div><div class="platform-big-title">车企价格战会持续多久？</div><div class="platform-big-heat">654万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">8</div><div class="platform-big-title">暑期档电影哪部值得看？</div><div class="platform-big-heat">543万</div><div class="platform-big-trend up">▲</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">9</div><div class="platform-big-title">如何看待综艺收官刷屏？</div><div class="platform-big-heat">432万</div><div class="platform-big-trend down">▼</div></div>
+              <div class="platform-big-item"><div class="platform-big-rank">10</div><div class="platform-big-title">县域旅游为什么火了？</div><div class="platform-big-heat">321万</div><div class="platform-big-trend up">▲</div></div>
+            </div>
+            <div class="platform-big-footer"><div class="platform-big-viewall">查看完整榜单 →</div><div class="platform-big-update">共 50 条 · 几秒前更新</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================
+function switchView(viewName) {
+  document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+    item.classList.toggle('active', item.dataset.view === viewName);
+  });
+  document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+  document.getElementById('view-' + viewName).classList.add('active');
+  const titles = {
+    home: { title: '首页 · 综合热点', subtitle: '今日最热 · 热点速览 · 综合热榜' },
+    interest: { title: '个性推荐', subtitle: 'AI 为你精选的热点内容' },
+    platforms: { title: '按平台浏览', subtitle: '每个平台一张卡 · 实时 Top10' }
+  };
+  document.getElementById('pageTitle').textContent = titles[viewName].title;
+  document.getElementById('pageSubtitle').textContent = titles[viewName].subtitle;
+  if (window.innerWidth <= 768) toggleSidebar();
+}
+
+// ============================================
+// Carousel - Today's Hottest
+// ============================================
+let currentSlide = 0;
+const totalSlides = 5;
+
+function updateCarousel() {
+  document.getElementById('carouselTrack').style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+  document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentSlide);
+  });
+}
+
+function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateCarousel(); }
+function prevSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateCarousel(); }
+function goToSlide(i) { currentSlide = i; updateCarousel(); }
+
+// Auto-advance with hover-pause
+let carouselTimer = setInterval(nextSlide, 5000);
+const carouselContainerEl = document.querySelector('.carousel-container');
+if (carouselContainerEl) {
+  carouselContainerEl.addEventListener('mouseenter', () => clearInterval(carouselTimer));
+  carouselContainerEl.addEventListener('mouseleave', () => { carouselTimer = setInterval(nextSlide, 5000); });
+}
+
+// ============================================
+// Quick News Carousel — 5 cards, 2 visible, one-step forward rotation
+// (mirrors 今日最热: same forward direction & 5-item cycle)
+// ============================================
+const qnTrack = document.getElementById('quickNewsTrack');
+const qnDots = document.querySelectorAll('.quick-news-dot');
+const QN_COUNT = 5;     // real cards in the cycle
+const QN_VISIBLE = 2;   // cards shown at once
+let quickNewsIndex = 0;
+let qnAnimating = false;
+
+// Clone the first QN_VISIBLE cards onto the end so the forward wrap is seamless
+(function initQuickNews() {
+  if (!qnTrack) return;
+  Array.from(qnTrack.children).slice(0, QN_VISIBLE).forEach(c => {
+    const clone = c.cloneNode(true);
+    clone.classList.add('qn-clone');
+    qnTrack.appendChild(clone);
+  });
+})();
+
+function qnSetTransform(animate) {
+  if (!qnTrack) return;
+  qnTrack.style.transition = animate ? '' : 'none';
+  // one step = one card + gap = 50% of viewport + half the 12px gap
+  qnTrack.style.transform = 'translateX(calc(-1 * ' + quickNewsIndex + ' * (50% + 6px)))';
+  if (!animate) { void qnTrack.offsetWidth; qnTrack.style.transition = ''; }
+}
+
+function qnUpdateDots() {
+  const active = ((quickNewsIndex % QN_COUNT) + QN_COUNT) % QN_COUNT;
+  qnDots.forEach((d, i) => d.classList.toggle('active', i === active));
+}
+
+function nextQuickNews() {
+  if (qnAnimating) return;
+  qnAnimating = true;
+  quickNewsIndex++;
+  qnSetTransform(true);
+  qnUpdateDots();
+  if (quickNewsIndex >= QN_COUNT) {
+    // landed on the cloned pair — after the slide finishes, snap back to the start
+    setTimeout(() => { quickNewsIndex = 0; qnSetTransform(false); qnAnimating = false; }, 520);
+  } else {
+    setTimeout(() => { qnAnimating = false; }, 520);
+  }
+}
+
+function prevQuickNews() {
+  if (qnAnimating) return;
+  qnAnimating = true;
+  if (quickNewsIndex <= 0) {
+    // jump (no anim) to the clone pair mirroring index 0, then slide back to the last real pair
+    quickNewsIndex = QN_COUNT; qnSetTransform(false);
+    void qnTrack.offsetWidth;
+    quickNewsIndex = QN_COUNT - 1; qnSetTransform(true);
+  } else {
+    quickNewsIndex--; qnSetTransform(true);
+  }
+  qnUpdateDots();
+  setTimeout(() => { qnAnimating = false; }, 520);
+}
+
+function goToQuickNews(i) {
+  const cur = ((quickNewsIndex % QN_COUNT) + QN_COUNT) % QN_COUNT;
+  if (qnAnimating || i === cur) return;
+  qnAnimating = true;
+  quickNewsIndex = i;
+  qnSetTransform(true);
+  qnUpdateDots();
+  setTimeout(() => { qnAnimating = false; }, 520);
+}
+
+// Auto-advance forward every 5s (same cadence & direction as 今日最热), pause on hover
+let quickNewsTimer = setInterval(nextQuickNews, 5000);
+const quickNewsWrapperEl = document.querySelector('.quick-news-wrapper');
+if (quickNewsWrapperEl) {
+  quickNewsWrapperEl.addEventListener('mouseenter', () => clearInterval(quickNewsTimer));
+  quickNewsWrapperEl.addEventListener('mouseleave', () => { quickNewsTimer = setInterval(nextQuickNews, 5000); });
+}
+qnUpdateDots();
+
+// ============================================
+// Interest Filter
+// ============================================
+function filterInterest(tag) {
+  document.querySelectorAll('.interest-filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.textContent.includes('全部') && tag === 'all') btn.classList.add('active');
+    if (btn.textContent.includes('科技') && tag === 'tech') btn.classList.add('active');
+    if (btn.textContent.includes('财经') && tag === 'finance') btn.classList.add('active');
+    if (btn.textContent.includes('影视') && tag === 'entertainment') btn.classList.add('active');
+    if (btn.textContent.includes('汽车') && tag === 'society') btn.classList.add('active');
+  });
+  document.querySelectorAll('.interest-big-card').forEach(card => {
+    card.style.display = (tag === 'all' || card.dataset.tags === tag) ? 'block' : 'none';
+  });
+}
+
+// ============================================
+// Refresh
+// ============================================
+function handleRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  setTimeout(() => { btn.classList.remove('loading'); showToast('数据已更新'); }, 1500);
+}
+
+// ============================================
+// Toast
+// ============================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================
+// Mobile Sidebar
+// ============================================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// ============================================
+// AI Reason — collapsible toggles
+// ============================================
+function setupAiToggles(boxSel, labelSel) {
+  const chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+  document.querySelectorAll(boxSel).forEach(box => {
+    const label = box.querySelector(labelSel);
+    if (!label) return;
+    let text = '';
+    box.childNodes.forEach(n => { if (n !== label) text += n.textContent; });
+    text = text.trim();
+    box.textContent = '';
+
+    const head = document.createElement('div'); head.className = 'ai-head';
+    head.appendChild(label);
+    const toggle = document.createElement('button');
+    toggle.type = 'button'; toggle.className = 'ai-toggle';
+    const tlabel = document.createElement('span'); tlabel.textContent = '展开';
+    toggle.appendChild(tlabel);
+    toggle.insertAdjacentHTML('beforeend', chevron);
+    head.appendChild(toggle);
+
+    const body = document.createElement('div'); body.className = 'ai-body'; body.textContent = text;
+
+    box.appendChild(head); box.appendChild(body);
+    box.classList.add('ai-collapsible', 'collapsed');
+
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      box.classList.toggle('collapsed');
+      tlabel.textContent = box.classList.contains('collapsed') ? '展开' : '收起';
+    });
+  });
+}
+setupAiToggles('.carousel-slide-ai', '.carousel-slide-ai-label');
+setupAiToggles('.interest-big-card-ai', '.interest-big-card-ai-label');
+
+// ============================================
+// Media Placeholders (replace remote images with stable, on-brand placeholders)
+// ============================================
+const PH_ICON = {
+  tech: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"></path><rect x="10" y="10" width="4" height="4"></rect></svg>',
+  society: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+  finance: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-8"></path><path d="M14 7h7v7"></path></svg>',
+  entertainment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"></rect><path d="M7 3v18M17 3v18M2 9h5M2 15h5M17 9h5M17 15h5"></path></svg>',
+  life: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+  sports: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14 14 0 0 0 0 20M12 2a14 14 0 0 1 0 20M2 12h20"></path></svg>'
+};
+const PH_LABEL = { tech: 'TECH', society: 'SOCIETY', finance: 'FINANCE', entertainment: 'CULTURE', life: 'LIFE', sports: 'SPORTS' };
+
+function catFromText(t) {
+  if (/科技|AI|芯片|大模型|新能源|数码|互联网/.test(t)) return 'tech';
+  if (/财经|股|油价|经济|金融|能源|市场/.test(t)) return 'finance';
+  if (/娱乐|综艺|影视|电影|音乐|国潮/.test(t)) return 'entertainment';
+  if (/生活|旅游|旅行|美食|夜经济|县域/.test(t)) return 'life';
+  if (/体育|赛/.test(t)) return 'sports';
+  return 'society';
+}
+
+function makePh(cat) {
+  const d = document.createElement('div');
+  d.className = 'media-ph cat-' + cat;
+  d.innerHTML = '<div class="media-ph-glyph">' + (PH_ICON[cat] || PH_ICON.society) +
+    '<span>' + (PH_LABEL[cat] || 'NEWS') + '</span></div>';
+  return d;
+}
+
+function replaceImg(img, cat) {
+  if (!img || !img.parentNode) return;
+  const ph = makePh(cat);
+  img.parentNode.insertBefore(ph, img);
+  img.remove();
+}
+
+// Keep real photos; fall back to an on-brand placeholder only if a photo fails to load.
+function themeMedia(container, img, cat) {
+  if (container) container.classList.add('media-cat-' + cat);
+  if (!img) return;
+  img.classList.add('media-photo');
+  const fail = () => replaceImg(img, cat);
+  img.addEventListener('error', fail);
+  if (img.complete && img.naturalWidth === 0) fail();
+}
+
+function buildPlaceholders() {
+  // Carousel
+  document.querySelectorAll('.carousel-slide').forEach(slide => {
+    const img = slide.querySelector('img');
+    const tag = slide.querySelector('.carousel-slide-tag');
+    const cat = catFromText(tag ? tag.textContent : '');
+    if (tag) tag.classList.add('tagcat-' + cat);
+    themeMedia(slide, img, cat);
+  });
+  // Quick news (category class already present)
+  document.querySelectorAll('.quick-news-card-inner').forEach(inner => {
+    const img = inner.querySelector('img');
+    const tag = inner.querySelector('.quick-news-card-tag');
+    let cat = 'society';
+    if (tag) { ['tech','society','finance','entertainment','life','sports'].forEach(c => { if (tag.classList.contains(c)) cat = c; }); }
+    if (tag && cat === 'society') cat = catFromText(tag.textContent);
+    themeMedia(inner, img, cat);
+  });
+  // Interest cards (data-tags on card)
+  document.querySelectorAll('.interest-big-card').forEach(card => {
+    const inner = card.querySelector('.interest-big-card-inner');
+    if (!inner) return;
+    const img = inner.querySelector('img');
+    const reason = card.querySelector('.interest-card-reason-tag');
+    const map = { tech: 'tech', finance: 'finance', entertainment: 'entertainment', life: 'life', society: 'society' };
+    let cat = map[card.dataset.tags] || catFromText(reason ? reason.textContent : '');
+    if (reason && /汽车|夜经济|价格战/.test(reason.textContent)) cat = 'society';
+    themeMedia(inner, img, cat);
+    // overlay is nested inside inner — lift it out to sit below the media as a flex sibling
+    const ov = inner.querySelector('.interest-big-card-overlay');
+    if (ov) card.appendChild(ov);
+  });
+}
+buildPlaceholders();
+
+// ============================================
+// DateTime
+// ============================================
+function updateDateTime() {
+  const now = new Date();
+  document.getElementById('datetimeTime').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+setInterval(updateDateTime, 60000);
+updateDateTime();
+</script>
+
+</body>
+</html>
