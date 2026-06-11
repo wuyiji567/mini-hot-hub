@@ -77,8 +77,7 @@ export interface HotResponse {
   sources: HotPlatform[];
 }
 
-/** 第一阶段实际聚合的平台 */
-export const ACTIVE_SOURCES: Source[] = ["weibo", "zhihu", "bilibili", "github"];
+// 实际聚合的平台以 services/index.ts 的 SERVICES 注册表为准（避免两处定义不一致）。
 
 /** 全部合法 source（用于 /api/hot/:source 校验） */
 export const VALID_SOURCES: Source[] = [

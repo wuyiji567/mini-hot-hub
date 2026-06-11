@@ -6,6 +6,9 @@ import { fetchWeibo } from "./weibo.js";
 import { fetchZhihu } from "./zhihu.js";
 import { fetchBilibili } from "./bilibili.js";
 import { fetchGithub } from "./github.js";
+import { fetchToutiao } from "./toutiao.js";
+import { fetchThepaper } from "./thepaper.js";
+import { fetchKr36 } from "./kr36.js";
 
 interface ServiceMeta {
   source: Source;
@@ -14,12 +17,15 @@ interface ServiceMeta {
   fetch: () => Promise<HotItem[]>;
 }
 
-/** 第一阶段已接入的平台注册表 */
+/** 已接入的平台注册表（第二阶段步骤 4：扩展到 7 个，虎扑步骤 5 接入） */
 export const SERVICES: Record<string, ServiceMeta> = {
   weibo: { source: "weibo", name: "微博", listName: "热搜榜", fetch: fetchWeibo },
   zhihu: { source: "zhihu", name: "知乎", listName: "热榜", fetch: fetchZhihu },
   bilibili: { source: "bilibili", name: "哔哩哔哩", listName: "热门榜", fetch: fetchBilibili },
   github: { source: "github", name: "GitHub", listName: "Trending", fetch: fetchGithub },
+  toutiao: { source: "toutiao", name: "今日头条", listName: "热榜", fetch: fetchToutiao },
+  thepaper: { source: "thepaper", name: "澎湃", listName: "热榜", fetch: fetchThepaper },
+  kr36: { source: "kr36", name: "36氪", listName: "热榜", fetch: fetchKr36 },
 };
 
 /** 抓取单个平台，失败时返回 error 态而非抛出 */
