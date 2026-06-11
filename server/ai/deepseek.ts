@@ -2,7 +2,8 @@
 // 模型与密钥全部从环境变量读取，不硬编码；AI_ENABLED !== "true" 时不调用。
 
 const DEFAULT_BASE_URL = "https://api.deepseek.com/chat/completions";
-const TIMEOUT_MS = 10000;
+// 单次调用超时（毫秒）。默认 15s——非推理模型调用很快，余量充足；可用 AI_TIMEOUT_MS 覆盖。
+const TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS ?? 15000);
 
 /** AI 总开关：仅当环境变量 AI_ENABLED === "true" 时启用 */
 export function isAiEnabled(): boolean {
@@ -33,6 +34,21 @@ export async function callDeepseek(messages: ChatMessage[]): Promise<string> {
 
   const baseUrl = (process.env.DEEPSEEK_BASE_URL ?? DEFAULT_BASE_URL).trim();
 
+  const body: Record<string, unknown> = {
+    model,
+    messages,
+    temperature: 0.3, // 分类/归纳类任务低温更稳定、更守 JSON 格式（非思考模式下生效）
+    stream: false,
+    response_format: { type: "json_object" },
+  };
+
+  // 思考模式：默认 disabled（关思考，快且省 token，适合分类/归纳类任务）。
+  // DEEPSEEK_THINKING=enabled 可开启；设为 none/off 时不带该参数（兼容不支持 thinking 的模型/代理）。
+  const thinking = (process.env.DEEPSEEK_THINKING ?? "disabled").trim();
+  if (thinking === "disabled" || thinking === "enabled") {
+    body.thinking = { type: thinking };
+  }
+
   let res: Response;
   try {
     res = await fetch(baseUrl, {
@@ -41,13 +57,7 @@ export async function callDeepseek(messages: ChatMessage[]): Promise<string> {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.7,
-        stream: false,
-        response_format: { type: "json_object" },
-      }),
+      body: JSON.stringify(body),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
   } catch (err) {

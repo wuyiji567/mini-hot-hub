@@ -12,8 +12,8 @@ export interface SlimItem {
 
 const TAG_LIST = TAG_ENUM.join("、");
 
-/** 从精简条目列表生成紧凑文本，控制行数避免超长 */
-function renderItems(items: SlimItem[], limit = 60): string {
+/** 从精简条目列表生成紧凑文本，控制行数避免超长（归纳类 prompt 输入越大、推理越慢） */
+function renderItems(items: SlimItem[], limit = 36): string {
   return items
     .slice(0, limit)
     .map((it) => `${it.platform}#${it.rank} ${it.title}`)
@@ -51,10 +51,14 @@ export function buildFeaturedPrompt(items: SlimItem[]): ChatMessage[] {
     {
       role: "user",
       content:
-        `基于以下多平台热搜，输出 JSON：\n` +
-        `{"featured":[{"eventTitle":"","hotReason":"","tag":"科技 · AI","heat":"","trend":"","section":"featured"}],` +
-        `"quick":[{"eventTitle":"","hotReason":"","tag":"","heat":"","trend":"","section":"quick"}]}\n` +
-        `featured 5 条（最值得关注），quick 8~10 条（次级热点，不与 featured 重复）。\n\n` +
+        `基于以下多平台热搜（每行格式「平台#排名 标题」），输出 JSON：\n` +
+        `{"featured":[{"eventTitle":"","hotReason":"","tag":"科技 · AI","heat":"","trend":"",` +
+        `"platforms":[{"source":"weibo","rank":1}],"section":"featured"}],` +
+        `"quick":[{"eventTitle":"","hotReason":"","tag":"","heat":"","trend":"",` +
+        `"platforms":[{"source":"zhihu","rank":2}],"section":"quick"}]}\n` +
+        `featured 5 条（最值得关注），quick 8~10 条（次级热点，不与 featured 重复）。\n` +
+        `platforms 必须取自下方真实出现的「平台#排名」，source 用平台标识、rank 用对应数字，` +
+        `每条至少 1 个来源平台。\n\n` +
         renderItems(items),
     },
   ];

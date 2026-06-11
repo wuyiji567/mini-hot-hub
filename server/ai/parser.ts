@@ -73,6 +73,22 @@ function isSource(v: unknown): v is Source {
   return typeof v === "string" && (VALID_SOURCES as string[]).includes(v);
 }
 
+/** 校验 AI 返回的 platforms：source 必须是合法 Source、rank 必须是数字；去重、丢非法 */
+export function sanitizePlatforms(raw: unknown): { source: Source; rank: number }[] {
+  if (!Array.isArray(raw)) return [];
+  const out: { source: Source; rank: number }[] = [];
+  const seen = new Set<Source>();
+  for (const p of raw) {
+    const src = (p as { source?: unknown })?.source;
+    const rank = (p as { rank?: unknown })?.rank;
+    if (isSource(src) && typeof rank === "number" && Number.isFinite(rank) && !seen.has(src)) {
+      seen.add(src);
+      out.push({ source: src, rank });
+    }
+  }
+  return out;
+}
+
 /** 解析 C1 标签结果：{ results: [{ index, tags }] } → Map<index, tags[]> */
 export function parseTagResults(json: unknown): Map<number, string[]> {
   const map = new Map<number, string[]>();
@@ -102,7 +118,7 @@ export function parseFeatured(json: unknown): AIFeatured[] {
         hotReason,
         tag: sanitizeTagLabel(r.tag),
         imageUrl: "", // 由 ai/index.ts 按分类填充，AI 不产图
-        platforms: [],
+        platforms: sanitizePlatforms(r.platforms), // 校验后的来源平台；空则由编排层兜底匹配
         heat: truncate(r.heat, 30),
         trend: truncate(r.trend, 20),
         section,
