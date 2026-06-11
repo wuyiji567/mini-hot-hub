@@ -1,32 +1,105 @@
-/* 深色科技风设计变量 —— 见 AGENTS.md「设计规范」 */
+/* 设计变量 —— 米白 riso 浅色主题（来源：docs/redesign/redesign-v1.html 的 data-theme="riso"）
+ * 第二阶段步骤 1：色板切换为米白。沿用第一阶段已有变量名（值改为 riso），
+ * 并新增 riso 全套 token（平台色/标签色/间距/阴影等）供步骤 2 组件重构复用。
+ */
 :root {
-  /* 背景与卡片 */
-  --color-bg: #0b0f19;
-  --color-card: #151c2c;
-  --color-card-hover: #1b2540;
-  --color-border: #26304a;
+  /* ---------- 背景与卡片 ---------- */
+  --color-bg: #f4f2ec; /* 奶白主背景 */
+  --color-card: #ffffff; /* 卡片白底 */
+  --color-card-hover: #faf9f3;
+  --color-border: rgba(20, 20, 30, 0.12); /* 浅色描边 */
 
-  /* 强调色 */
-  --color-accent: #22d3ee; /* 青 */
-  --color-heat: #f43f5e; /* 热度玫红 */
+  --color-bg-secondary: #eceadf; /* 次级背景 */
+  --color-sidebar: #efece4; /* 侧边栏底色 */
+  --color-topbar: rgba(244, 242, 236, 0.85); /* 顶栏半透明 */
+  --color-ink: #15151f; /* 深墨（用于深色元素/反白文字底） */
 
-  /* 排名 1~3 金银铜 */
+  /* ---------- 强调色 ---------- */
+  --color-accent: #2b50ff; /* 主强调：riso 蓝 */
+  --color-accent-rgb: 43, 80, 255;
+  --color-accent-light: #5b76ff;
+  --color-heat: #ff3b6b; /* 热度：riso 粉红 */
+  --color-heat-rgb: 255, 59, 107;
+
+  /* ---------- 文本 ---------- */
+  --color-text: #15151f; /* 主文字（深墨） */
+  --color-text-muted: #444452; /* 次级文字 */
+  --color-text-dim: #8a8a97; /* 弱文字 */
+  --color-text-inverse: #ffffff; /* 反白文字（深底/强调底上） */
+
+  /* ---------- 排名金银铜（深浅主题通用） ---------- */
   --color-rank-1: #fbbf24;
+  --color-rank-1-bg: rgba(251, 191, 36, 0.18);
   --color-rank-2: #94a3b8;
+  --color-rank-2-bg: rgba(148, 163, 184, 0.18);
   --color-rank-3: #fb923c;
+  --color-rank-3-bg: rgba(251, 146, 60, 0.18);
 
-  /* 文本 */
-  --color-text: #e6edf6;
-  --color-text-muted: #8b97ab;
-  --color-text-dim: #5c6678;
+  /* ---------- 平台色 ---------- */
+  --platform-weibo: #e6162d;
+  --platform-zhihu: #0084ff;
+  --platform-bilibili: #fb7299;
+  --platform-douyin: #161823;
+  --platform-thepaper: #f59e0b;
+  --platform-kr36: #10b981;
+  --platform-hupu: #c01e2f;
+  --platform-github: #24292f;
+  --platform-toutiao: #f04142;
 
-  /* 尺寸 */
+  /* ---------- 分类标签色（固定 11 类枚举） ---------- */
+  --tag-tech: #2563eb;
+  --tag-tech-bg: rgba(37, 99, 235, 0.1);
+  --tag-entertainment: #db2777;
+  --tag-entertainment-bg: rgba(219, 39, 119, 0.1);
+  --tag-sports: #d97706;
+  --tag-sports-bg: rgba(217, 119, 6, 0.1);
+  --tag-finance: #059669;
+  --tag-finance-bg: rgba(5, 150, 105, 0.1);
+  --tag-society: #7c3aed;
+  --tag-society-bg: rgba(124, 58, 237, 0.1);
+  --tag-gaming: #0891b2;
+  --tag-gaming-bg: rgba(8, 145, 178, 0.1);
+  --tag-education: #ea580c;
+  --tag-education-bg: rgba(234, 88, 12, 0.1);
+  --tag-auto: #4f46e5; /* 汽车（第二阶段加入） */
+  --tag-auto-bg: rgba(79, 70, 229, 0.1);
+  --tag-international: #4338ca;
+  --tag-international-bg: rgba(67, 56, 202, 0.1);
+  --tag-life: #65a30d;
+  --tag-life-bg: rgba(101, 163, 13, 0.1);
+  --tag-other: #64748b;
+  --tag-other-bg: rgba(100, 116, 139, 0.1);
+
+  /* ---------- 边框与阴影（riso 浅色） ---------- */
+  --border-light: rgba(20, 20, 30, 0.12);
+  --border-card: rgba(20, 20, 30, 0.1);
+  --shadow-card: 0 0 0 1px var(--border-card), 0 2px 8px rgba(20, 20, 40, 0.06);
+  --shadow-card-hover: 0 0 0 1px rgba(var(--color-accent-rgb), 0.35), 0 8px 28px rgba(20, 20, 60, 0.12);
+  --shadow-sidebar: 1px 0 0 rgba(20, 20, 30, 0.08);
+
+  /* ---------- 间距 ---------- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 28px;
+  --space-3xl: 40px;
+
+  /* ---------- 圆角 ---------- */
+  --radius-sm: 6px;
+  --radius: 10px; /* = riso radius-md，第一阶段组件沿用 */
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-pill: 9999px;
+
+  /* ---------- 尺寸 ---------- */
   --sidebar-width: 200px;
   --content-max: 1100px;
-  --radius: 10px;
-  --radius-sm: 6px;
 
-  /* 字体 */
-  --font-sans: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  /* ---------- 字体 ---------- */
+  --font-sans: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+  --font-display: "Noto Serif SC", "Noto Sans SC", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
 }
