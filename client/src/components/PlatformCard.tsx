@@ -22,6 +22,9 @@ export default function PlatformCard({ platform, onRetry }: PlatformCardProps) {
   return (
     <section className={styles.card}>
       <header className={styles.header}>
+        <span className={styles.icon} style={{ background: `var(--platform-${platform.source})` }}>
+          {platform.name.slice(0, 1)}
+        </span>
         <span className={styles.name}>
           {platform.name}
           <span className={styles.listName}> · {platform.listName}</span>

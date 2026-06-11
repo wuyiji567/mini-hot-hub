@@ -102,4 +102,9 @@
   --font-sans: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
   --font-display: "Noto Serif SC", "Noto Sans SC", serif;
   --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+
+  /* ---------- 过渡 ---------- */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }

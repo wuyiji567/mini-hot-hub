@@ -34,7 +34,12 @@ function RankRow({ item }: { item: RankingItem }) {
       )}
       <span className={styles.platforms}>
         {item.platforms.map((p) => (
-          <span key={p} className={styles.dot} title={p} />
+          <span
+            key={p}
+            className={styles.dot}
+            title={p}
+            style={{ background: `var(--platform-${p})` }}
+          />
         ))}
       </span>
       <span className={`${styles.trend} ${styles[`trend_${item.trend}`]}`}>

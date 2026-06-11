@@ -16,7 +16,7 @@
   width: 100%;
   max-width: var(--content-max);
   margin: 0 auto;
-  padding: 24px 28px 64px;
+  padding: var(--space-lg) var(--space-xl) var(--space-3xl);
 }
 
 .placeholder {
@@ -37,6 +37,6 @@
   }
 
   .content {
-    padding: 16px 16px 48px;
+    padding: var(--space-md) var(--space-md) var(--space-2xl);
   }
 }

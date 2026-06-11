@@ -1,31 +1,43 @@
 .columns {
   display: grid;
-  /* minmax(0, 1fr) 允许列收缩到内容以下，配合标题 overflow:hidden 实现截断，避免长标题撑破布局 */
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 8px 28px;
+  gap: var(--space-md);
 }
 
+/* 每列是一张白卡片 */
 .column {
   list-style: none;
   margin: 0;
   padding: 0;
   min-width: 0;
+  background: var(--color-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.column:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
 }
 
 .row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 6px;
-  margin: 0 -6px;
-  border-radius: var(--radius-sm);
-  border-bottom: 1px solid rgba(38, 48, 74, 0.5);
-  transition: background 0.15s;
+  gap: 11px;
+  padding: 11px var(--space-md);
+  border-bottom: 1px solid var(--border-card);
+  transition: background var(--transition-fast);
 }
 
-/* hover 反馈：行轻微高亮，标题转强调色 */
+.row:last-child {
+  border-bottom: none;
+}
+
 .row:hover {
-  background: rgba(34, 211, 238, 0.06);
+  background: var(--color-card-hover);
 }
 
 .row:hover .title {
@@ -39,38 +51,55 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  border-radius: var(--radius-sm);
+  border-radius: 5px;
   font-family: var(--font-mono);
+  color: var(--color-text-dim);
 }
 
 .rankNormal {
   color: var(--color-text-dim);
 }
 
-.rank1 {
-  background: var(--color-rank-1);
-  color: #1a1a1a;
-}
-.rank2 {
-  background: var(--color-rank-2);
-  color: #1a1a1a;
-}
+/* Top-3 金银铜奖牌 */
+.rank1,
+.rank2,
 .rank3 {
-  background: var(--color-rank-3);
-  color: #1a1a1a;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.rank1 {
+  background: radial-gradient(circle at 35% 28%, #fff7d6, #ffd24a 38%, #eaa011 74%, #b9760d);
+  color: #5a3c00;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.rank2 {
+  background: radial-gradient(circle at 35% 28%, #ffffff, #e4e9f0 40%, #a9b3c1 74%, #7c8896);
+  color: #2a313d;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rank3 {
+  background: radial-gradient(circle at 35% 28%, #ffe6c8, #f3a866 42%, #d27d35 78%, #9c531d);
+  color: #4a2600;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5), 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 
 .title {
   flex: 1;
   min-width: 0;
   font-size: 13px;
+  font-weight: 500;
   color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: color 0.15s;
+  transition: color var(--transition-fast);
 }
 
 .platforms {
@@ -80,17 +109,16 @@
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--color-accent);
-  opacity: 0.7;
 }
 
 .trend {
   flex-shrink: 0;
   font-size: 10px;
-  width: 14px;
+  width: 12px;
   text-align: center;
 }
 
@@ -98,7 +126,7 @@
   color: var(--color-heat);
 }
 .trend_down {
-  color: #34d399;
+  color: #16a34a;
 }
 .trend_flat {
   color: var(--color-text-dim);
@@ -106,11 +134,12 @@
 
 .heat {
   flex-shrink: 0;
-  width: 92px;
   text-align: right;
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--color-text-muted);
+  font-weight: 600;
+  color: var(--color-heat);
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
