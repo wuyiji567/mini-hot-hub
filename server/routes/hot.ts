@@ -5,29 +5,22 @@ import type { HotResponse } from "../types/index.js";
 import { VALID_SOURCES } from "../types/index.js";
 import { fetchAllPlatforms, fetchSinglePlatform } from "../services/index.js";
 import { buildRanking } from "../ranking/buildRanking.js";
+import { buildAi } from "../ai/index.js";
 import { getCache, setCache, deleteCache } from "../utils/cache.js";
 
 const router = Router();
 
 const HOT_ALL_KEY = "hot:all";
 
-/** 第一阶段固定的 AI 区域：不可用 */
-function emptyAi(): HotResponse["ai"] {
-  return {
-    available: false,
-    status: "unavailable",
-    featured: [],
-    recommendations: [],
-  };
-}
-
 /** 构建完整 /api/hot 响应（未命中缓存时） */
 async function buildHotResponse(): Promise<HotResponse> {
   const sources = await fetchAllPlatforms();
   const ranking = buildRanking(sources);
+  // AI 增强：buildAi 永不抛错，失败/未开启时返回 unavailable，不影响 ranking/sources
+  const ai = await buildAi(sources);
   return {
     updatedAt: new Date().toISOString(),
-    ai: emptyAi(),
+    ai,
     ranking,
     sources,
   };

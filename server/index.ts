@@ -1,4 +1,6 @@
-// Express 入口 —— MVP 第一阶段后端空壳。
+// Express 入口。
+// 最先加载 server/.env（本地开发与 npm start 都生效）；放在最顶部，确保后续模块读 env 时已就绪。
+import "dotenv/config";
 
 import express from "express";
 import cors from "cors";
