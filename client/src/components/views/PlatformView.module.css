@@ -1,7 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  /* 自适应换行：每卡最小 300px，自动决定列数，避免横向溢出 */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
   align-items: start;
 }
 
@@ -11,15 +12,8 @@
   color: var(--color-text-muted);
 }
 
-/* 平板：2 列 */
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* 手机：1 列 */
-@media (max-width: 768px) {
+/* 小屏：强制单列，防止 300px 最小宽撑出横向滚动 */
+@media (max-width: 640px) {
   .grid {
     grid-template-columns: 1fr;
   }

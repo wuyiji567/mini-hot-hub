@@ -11,10 +11,10 @@
   padding: 10px 18px;
   background: var(--color-card);
   border: 1px solid var(--color-heat);
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   color: var(--color-text);
   font-size: 13px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 28px rgba(20, 20, 40, 0.16);
   animation: slideUp 0.25s ease;
 }
 
