@@ -8,14 +8,13 @@
 .filterBar {
   display: flex;
   flex-wrap: wrap;
-  column-gap: var(--space-sm);
-  row-gap: 6px;
+  gap: var(--space-sm);
 }
 
 .filterBtn {
   flex-shrink: 0;
-  padding: 6px 12px;
-  background: var(--color-card);
+  padding: 5px 13px;
+  background: rgba(148, 163, 184, 0.06);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-pill);
   color: var(--color-text-muted);
@@ -30,9 +29,12 @@
 .filterBtn:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.05);
 }
 
-.filterActive {
+/* 选中态：清楚但克制（淡青底 + 描边 + 加粗，不做实心重底） */
+.filterActive,
+.filterActive:hover {
   background: rgba(var(--color-accent-rgb), 0.1);
   border-color: var(--color-accent);
   color: var(--color-accent);

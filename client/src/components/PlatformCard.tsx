@@ -33,15 +33,22 @@ export default function PlatformCard({
         <span className={styles.icon} style={{ background: `var(--platform-${platform.source})` }}>
           {platform.name.slice(0, 1)}
         </span>
-        <span className={styles.name}>
-          {platform.name}
-          <span className={styles.listName}> · {platform.listName}</span>
+        {/* 名称 / 榜单名纵向堆叠，层级更清晰 */}
+        <span className={styles.titleGroup}>
+          <span className={styles.name}>{platform.name}</span>
+          <span className={styles.listName}>{platform.listName}</span>
         </span>
+        {/* 降级态：头部右侧轻量「维护中」徽章（非崩溃） */}
+        {platform.status === "error" && <span className={styles.statusBadge}>维护中</span>}
       </header>
 
       <div className={styles.bodyWrap}>
         {platform.status === "error" ? (
-          <ErrorCard message={platform.errorMessage ?? "数据源暂时不可用"} onRetry={onRetry} />
+          <ErrorCard
+            variant="maintenance"
+            message={platform.errorMessage ?? "数据源暂时不可用"}
+            onRetry={onRetry}
+          />
         ) : displayItems.length === 0 ? (
           <EmptyState message={emptyMessage} />
         ) : (

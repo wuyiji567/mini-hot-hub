@@ -2,7 +2,7 @@
   display: flex;
   align-items: flex-start;
   gap: var(--space-sm);
-  padding: 7px 6px;
+  padding: 6px;
   margin: 0 -6px;
   border-radius: var(--radius-sm);
   border-bottom: 1px solid var(--border-card);
@@ -44,6 +44,7 @@
   background: linear-gradient(140deg, #fde68a, #f59e0b);
   color: #3a2800;
   font-weight: 800;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.35);
 }
 
 .rank2 {
@@ -58,13 +59,13 @@
   font-weight: 800;
 }
 
-/* 内容主区：标题行 + 标签行 纵向排列 */
+/* 内容主区：标题行 + 标签行 纵向排列（标签与标题留统一小间距，不紧贴） */
 .body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 /* 第一行：标题占主区，热度靠右 */

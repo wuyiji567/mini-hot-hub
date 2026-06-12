@@ -1,9 +1,11 @@
+/* 分类标签：轻量 meta，不抢标题（字号略小、字重更轻，颜色/背景由内联 style 调淡） */
 .badge {
   display: inline-block;
-  padding: 1px 7px;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.6;
+  padding: 1px 6px;
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
 }
