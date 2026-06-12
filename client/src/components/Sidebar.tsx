@@ -9,14 +9,57 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const NAV_ITEMS: { key: ViewKey; label: string; icon: string }[] = [
-  { key: "home", label: "首页", icon: "🏠" },
-  { key: "interest", label: "个性推荐", icon: "✨" },
-  { key: "platform", label: "平台", icon: "📊" },
+const NAV_ITEMS: { key: ViewKey; label: string; badge?: string }[] = [
+  { key: "home", label: "首页" },
+  { key: "interest", label: "个性推荐", badge: "AI" },
+  { key: "platform", label: "平台" },
 ];
 
-// 热门标签（第一阶段为占位，点击暂跳转到个性推荐入口）
-const HOT_TAGS = ["科技", "娱乐", "体育", "财经", "社会"];
+/** 导航线性 SVG 图标（房子 / 星光 / 网格） */
+function NavIcon({ view }: { view: ViewKey }) {
+  const common = {
+    width: 16,
+    height: 16,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  } as const;
+  if (view === "home") {
+    return (
+      <svg {...common}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    );
+  }
+  if (view === "interest") {
+    return (
+      <svg {...common}>
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+      <line x1="8" y1="21" x2="16" y2="21" />
+      <line x1="12" y1="17" x2="12" y2="21" />
+    </svg>
+  );
+}
+
+// 热门标签：行式导航 + 彩色圆点（点击跳个性推荐并筛选）
+const HOT_TAGS: { label: string; key: string }[] = [
+  { label: "科技", key: "tech" },
+  { label: "娱乐", key: "entertainment" },
+  { label: "体育", key: "sports" },
+  { label: "财经", key: "finance" },
+  { label: "社会", key: "society" },
+];
 
 export default function Sidebar({
   activeView,
@@ -47,13 +90,25 @@ export default function Sidebar({
             </svg>
           </div>
           <div>
-            <div className={styles.siteName}>今日热搜</div>
-            <div className={styles.tagline}>Mini Hot Hub</div>
+            <div className={styles.siteName}>
+              今日<span className={styles.siteNameAccent}>热搜</span>
+            </div>
+            <div className={styles.tagline}>汇聚全网热点</div>
           </div>
         </div>
 
         <div className={styles.search}>
-          <input type="text" placeholder="搜索（即将上线）" disabled />
+          {/* 占位搜索框（不实现真实搜索） */}
+          <div className={styles.searchBox} aria-disabled="true">
+            <svg
+              width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span>搜索话题 / 平台...</span>
+          </div>
         </div>
 
         <nav className={styles.nav}>
@@ -63,18 +118,31 @@ export default function Sidebar({
               className={`${styles.navItem} ${activeView === item.key ? styles.active : ""}`}
               onClick={() => onSelectView(item.key)}
             >
-              <span className={styles.navIcon}>{item.icon}</span>
+              <span className={styles.navIcon}>
+                <NavIcon view={item.key} />
+              </span>
               {item.label}
+              {item.badge && <span className={styles.navBadge}>{item.badge}</span>}
             </button>
           ))}
         </nav>
 
         <div className={styles.tagsSection}>
           <div className={styles.sectionTitle}>热门标签</div>
-          <div className={styles.tagList}>
+          <div className={styles.hotTagList}>
             {HOT_TAGS.map((tag) => (
-              <button key={tag} className={styles.tag} onClick={() => onSelectTag(tag)}>
-                {tag}
+              <button
+                key={tag.key}
+                className={styles.navItem}
+                onClick={() => onSelectTag(tag.label)}
+              >
+                <span className={styles.navIcon}>
+                  <span
+                    className={styles.hotTagDot}
+                    style={{ background: `var(--tag-${tag.key})` }}
+                  />
+                </span>
+                {tag.label}
               </button>
             ))}
           </div>

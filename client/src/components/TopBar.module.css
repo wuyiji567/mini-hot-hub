@@ -5,32 +5,37 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-sm) var(--space-xl);
+  padding: 10px var(--space-xl);
   background: var(--color-topbar);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid var(--border-card);
 }
 
 .hamburger {
   display: none;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: none;
   color: var(--color-text);
-  font-size: 20px;
   cursor: pointer;
+  padding: 0;
 }
 
+/* 标题 + 副标题纵向堆叠（贴近设计稿），收紧行高保持轻薄 */
 .titleBlock {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-md);
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
   min-width: 0;
 }
 
 .title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.3px;
+  line-height: 1.25;
   margin: 0;
   color: var(--color-text);
   white-space: nowrap;
@@ -38,6 +43,7 @@
 
 .subtitle {
   font-size: 11px;
+  line-height: 1.2;
   color: var(--color-text-dim);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -51,9 +57,24 @@
   gap: var(--space-md);
 }
 
-.updated {
+/* 时间区：时钟为主（青色等宽）+ 更新于小字 */
+.datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+
+.clock {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.updated {
+  font-size: 10px;
   color: var(--color-text-dim);
   white-space: nowrap;
 }
@@ -87,7 +108,7 @@
 }
 
 .spinning {
-  display: inline-block;
+  transform-origin: center;
   animation: spin 0.8s linear infinite;
 }
 
@@ -103,7 +124,7 @@
   }
 
   .hamburger {
-    display: block;
+    display: inline-flex;
   }
 
   .subtitle {

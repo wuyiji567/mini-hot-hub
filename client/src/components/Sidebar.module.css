@@ -81,6 +81,11 @@
   color: var(--color-text);
 }
 
+/* 「热搜」二字青蓝强调 */
+.siteNameAccent {
+  color: var(--color-accent);
+}
+
 .tagline {
   font-size: 11px;
   color: var(--color-text-dim);
@@ -92,18 +97,34 @@
   padding: 0 var(--space-md) var(--space-md);
 }
 
-.search input {
-  width: 100%;
+/* 占位搜索框（药丸、轻边框、hover 高亮；不实现真实搜索） */
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   padding: 7px 12px;
   background: rgba(20, 20, 30, 0.04);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-pill);
-  color: var(--color-text);
+  color: var(--color-text-dim);
   font-size: 12px;
+  cursor: text;
+  transition: all var(--transition-fast);
 }
 
-.search input::placeholder {
-  color: var(--color-text-dim);
+.searchBox:hover {
+  border-color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.05);
+}
+
+.searchBox svg {
+  flex-shrink: 0;
+}
+
+.searchBox span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nav {
@@ -144,12 +165,39 @@
 }
 
 .navIcon {
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-dim);
+  transition: color var(--transition-fast);
+}
+
+/* 图标颜色跟随导航项状态 */
+.navItem:hover .navIcon {
+  color: var(--color-text);
+}
+
+.active .navIcon {
+  color: var(--color-accent);
+}
+
+/* 「AI」小徽章：靠右、青底、克制 */
+.navBadge {
+  margin-left: auto;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.12);
+  border-radius: var(--radius-pill);
 }
 
 .tagsSection {
-  margin-top: var(--space-lg);
-  padding: 0 var(--space-sm);
+  margin-top: var(--space-md);
 }
 
 .sectionTitle {
@@ -158,31 +206,22 @@
   color: var(--color-text-dim);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  margin-bottom: var(--space-sm);
-  padding: 0 var(--space-md);
+  margin-bottom: 2px;
+  padding: var(--space-sm) var(--space-md);
 }
 
-.tagList {
+/* 热门标签：与导航同款行式按钮 */
+.hotTagList {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 0 var(--space-md);
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-sm);
 }
 
-.tag {
-  padding: 4px 10px;
-  background: var(--color-card);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
-  color: var(--color-text-muted);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.tag:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+.hotTagDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
 .footer {

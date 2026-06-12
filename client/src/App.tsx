@@ -12,9 +12,9 @@ import { useHotData } from "./hooks/useHotData";
 export type ViewKey = "home" | "interest" | "platform";
 
 const VIEW_META: Record<ViewKey, { title: string; subtitle: string }> = {
-  home: { title: "首页", subtitle: "一处看完全网正在发生什么" },
-  interest: { title: "个性推荐", subtitle: "基于兴趣标签的 AI 推荐" },
-  platform: { title: "平台热榜", subtitle: "各平台独立实时热榜" },
+  home: { title: "首页 · 综合热点", subtitle: "正在捕捉全网温度" },
+  interest: { title: "个性推荐", subtitle: "为你调频" },
+  platform: { title: "平台热榜", subtitle: "各站现场" },
 };
 
 export default function App() {
