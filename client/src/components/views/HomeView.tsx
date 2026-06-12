@@ -148,6 +148,16 @@ function Controls({
   );
 }
 
+/**
+ * 解析卡片图片地址。当前仅透传 AIFeatured.imageUrl（后端给的分类默认图，可能为空串）。
+ * 预留扩展位：后续「时事图片 provider」可在此把事件标题/标签映射成更贴切的图片 URL，
+ * 本次不实现——保持纯函数、无副作用、不联网。
+ */
+function resolveImageUrl(item: AIFeatured): string | null {
+  const url = (item.imageUrl || "").trim();
+  return url ? url : null;
+}
+
 /** AI 卡片（今日最热 big / 热点速览 small 共用） */
 function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" }) {
   // 分类渐变铺满背景，让卡片不像空白文字卡；大卡更浓、小卡更淡。
@@ -159,11 +169,33 @@ function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" 
     background: `radial-gradient(130% 120% at 0% 0%, color-mix(in srgb, var(--tag-${key}) ${mix}, var(--color-card)), var(--color-card) ${fade})`,
   };
 
+  // 图片层：有 imageUrl 且未加载失败时叠在渐变之上；加载失败 → 回落分类渐变，不出现破图。
+  const imageUrl = resolveImageUrl(item);
+  const [imgFailed, setImgFailed] = useState(false);
+  // 数据刷新换图后重置失败标记，避免旧失败状态误伤新图。
+  useEffect(() => setImgFailed(false), [imageUrl]);
+  const hasImage = imageUrl !== null && !imgFailed;
+
   return (
     <article
-      className={`${styles.card} ${size === "big" ? styles.cardBig : styles.cardSmall}`}
+      className={`${styles.card} ${size === "big" ? styles.cardBig : styles.cardSmall} ${
+        hasImage ? styles.hasImage : ""
+      }`}
       style={bgStyle}
     >
+      {hasImage && (
+        <>
+          {/* 图片铺满 + 深色渐变遮罩，保证叠加文字可读 */}
+          <img
+            className={styles.bgImage}
+            src={imageUrl}
+            alt=""
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+          />
+          <span className={styles.bgScrim} aria-hidden="true" />
+        </>
+      )}
       <div className={styles.cardHead}>
         {item.tag && (
           <span className={styles.tag} style={tagColorVars(item.tag)}>

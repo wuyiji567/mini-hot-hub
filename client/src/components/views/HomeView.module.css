@@ -186,6 +186,7 @@
 
 /* ---------- AI 卡片 ---------- */
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
@@ -195,12 +196,71 @@
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+  overflow: hidden; /* 裁切铺底图片到圆角内 */
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-card-hover);
+}
+
+/* ---------- 图片铺底层（imageUrl 存在且加载成功时）---------- */
+.bgImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 深色渐变遮罩：底部更重，托住标题/原因/热度，保证文字可读 */
+.bgScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 12, 20, 0.28) 0%,
+    rgba(10, 12, 20, 0.52) 52%,
+    rgba(10, 12, 20, 0.8) 100%
+  );
+}
+
+/* 有图时内容统一抬到图层之上 */
+.hasImage .cardHead,
+.hasImage .cardTitle,
+.hasImage .reason,
+.hasImage .meta {
+  position: relative;
+  z-index: 1;
+}
+
+/* 有图时文字转浅色、加轻投影，叠在深色遮罩上清晰可读 */
+.hasImage .cardTitle {
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hasImage .trend {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* 分类标签在图上换成近白底，保留分类色文字，保证对比 */
+.hasImage .tag {
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* AI 原因块在图上换成毛玻璃式浅底 + 浅竖线 */
+.hasImage .reason {
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.14);
+  border-left-color: rgba(255, 255, 255, 0.75);
+}
+
+.hasImage .reasonLabel {
+  color: #fff;
 }
 
 .cardBig {
