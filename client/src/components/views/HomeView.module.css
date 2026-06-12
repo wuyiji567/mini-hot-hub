@@ -10,6 +10,24 @@
   color: var(--color-text-muted);
 }
 
+/* ---------- 区块标题 ---------- */
+.sectionTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 var(--space-md);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.sectionHint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-dim);
+}
+
+/* ---------- AI 区域占位（降级态）---------- */
 .aiPlaceholder {
   position: relative;
   padding: var(--space-xl);
@@ -36,6 +54,152 @@
   border-radius: var(--radius-pill);
 }
 
+/* ---------- 今日最热 / 热点速览 网格 ---------- */
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-sm);
+}
+
+/* ---------- AI 卡片 ---------- */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 0;
+  background: var(--color-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.cardBig {
+  padding: var(--space-lg);
+}
+
+.cardSmall {
+  padding: var(--space-md);
+  gap: 6px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.trend {
+  font-size: 11px;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardSmall .cardTitle {
+  font-size: 13px;
+}
+
+/* AI 原因：左侧强调竖线 + 半透明高亮（riso） */
+.reason {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  padding: 6px 10px;
+  background: rgba(var(--color-accent-rgb), 0.06);
+  border-left: 2px solid var(--color-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reasonLabel {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+.heat {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-heat);
+  white-space: nowrap;
+}
+
+.platforms {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.platformPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.platformRank {
+  opacity: 0.8;
+  font-family: var(--font-mono);
+}
+
+/* ---------- 综合热榜外框 ---------- */
 .section {
   background: var(--color-card);
   border: 1px solid var(--border-card);
@@ -44,18 +208,7 @@
   padding: var(--space-lg) var(--space-xl);
 }
 
-.sectionTitle {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin: 0 0 14px;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.sectionHint {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--color-text-dim);
+/* 综合热榜区块标题与卡片背景同色，去掉外层重复 padding 影响 */
+.section .sectionTitle {
+  margin-bottom: var(--space-md);
 }
