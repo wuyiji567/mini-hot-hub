@@ -20,7 +20,7 @@
 
 .column:hover {
   box-shadow: var(--shadow-card-hover);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 /* 榜单行：徽章 | 内容块（标题 + meta） | 热度 | 趋势 */
