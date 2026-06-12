@@ -20,7 +20,13 @@ const FAIL_TTL = 120; // 失败熔断 120 秒，避免疯狂重试
 /** 默认兴趣标签（MVP 预设，无登录画像） */
 const DEFAULT_INTERESTS = ["科技", "财经", "社会"];
 
-/** 分类默认图映射（imageUrl 用 /images/category/*.jpg；AI 不编造图片 URL） */
+/**
+ * 分类 → 默认图文件名映射（未来挂钩）。
+ * 当前这些 /images/category/*.jpg 文件尚未随产物部署，返回它们会让前端 <img> 404。
+ * 因此 imageForCategory 目前一律返回 ""（空串）——前端图片管线对空 imageUrl 直接走渐变兜底，
+ * 既不破图也不产生 404。待把分类占位图放进 client/public/images/category/ 后，
+ * 再让本函数返回对应路径即可启用该兜底层。
+ */
 const CATEGORY_IMAGES: Record<string, string> = {
   科技: "/images/category/tech.jpg",
   娱乐: "/images/category/entertainment.jpg",
@@ -34,11 +40,15 @@ const CATEGORY_IMAGES: Record<string, string> = {
   生活: "/images/category/life.jpg",
   其他: "/images/category/default.jpg",
 };
+// 保留引用避免 TS 未使用告警；当前不返回这些路径（见上方说明）。
+void CATEGORY_IMAGES;
 
-/** 由标签文案（如「科技 · AI」）取分类默认图，找不到用 default */
-export function imageForCategory(tag: string | undefined): string {
-  const main = (tag ?? "").split("·")[0]?.trim();
-  return CATEGORY_IMAGES[main ?? ""] ?? CATEGORY_IMAGES["其他"];
+/**
+ * 由标签文案（如「科技 · AI」）取分类默认图。
+ * 当前实现：恒返回 ""，让缺少真实 OG 图的卡片在前端走渐变兜底（不破图、不 404）。
+ */
+export function imageForCategory(_tag: string | undefined): string {
+  return "";
 }
 
 // 缓存载荷：除 AI 卡片外，也缓存「标题→标签」映射，便于 hot:all 重建时回填 items.tags。
