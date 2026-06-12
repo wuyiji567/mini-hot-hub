@@ -4,6 +4,7 @@ import type { ViewKey } from "../App";
 interface SidebarProps {
   activeView: ViewKey;
   onSelectView: (view: ViewKey) => void;
+  onSelectTag: (tag: string) => void; // 热门标签点击：跳个性推荐并筛选该标签
   open: boolean; // 移动端是否展开
   onClose: () => void;
 }
@@ -17,7 +18,13 @@ const NAV_ITEMS: { key: ViewKey; label: string; icon: string }[] = [
 // 热门标签（第一阶段为占位，点击暂跳转到个性推荐入口）
 const HOT_TAGS = ["科技", "娱乐", "体育", "财经", "社会"];
 
-export default function Sidebar({ activeView, onSelectView, open, onClose }: SidebarProps) {
+export default function Sidebar({
+  activeView,
+  onSelectView,
+  onSelectTag,
+  open,
+  onClose,
+}: SidebarProps) {
   return (
     <>
       {open && <div className={styles.overlay} onClick={onClose} />}
@@ -52,7 +59,7 @@ export default function Sidebar({ activeView, onSelectView, open, onClose }: Sid
           <div className={styles.sectionTitle}>热门标签</div>
           <div className={styles.tagList}>
             {HOT_TAGS.map((tag) => (
-              <button key={tag} className={styles.tag} onClick={() => onSelectView("interest")}>
+              <button key={tag} className={styles.tag} onClick={() => onSelectTag(tag)}>
                 {tag}
               </button>
             ))}

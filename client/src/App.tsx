@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import HomeView from "./components/views/HomeView";
 import PlatformView from "./components/views/PlatformView";
+import InterestView from "./components/views/InterestView";
 import ErrorCard from "./components/ErrorCard";
 import Toast from "./components/Toast";
 import { useHotData } from "./hooks/useHotData";
@@ -12,13 +13,15 @@ export type ViewKey = "home" | "interest" | "platform";
 
 const VIEW_META: Record<ViewKey, { title: string; subtitle: string }> = {
   home: { title: "首页", subtitle: "一处看完全网正在发生什么" },
-  interest: { title: "个性推荐", subtitle: "基于兴趣标签的智能推荐（即将上线）" },
+  interest: { title: "个性推荐", subtitle: "基于兴趣标签的 AI 推荐" },
   platform: { title: "平台热榜", subtitle: "各平台独立实时热榜" },
 };
 
 export default function App() {
   const [view, setView] = useState<ViewKey>("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // 外部请求的个性推荐筛选标签（侧边栏热门标签点击）；消费后清空，避免覆盖用户在页内的手动切换
+  const [interestTag, setInterestTag] = useState<string | null>(null);
   const { data, loading, refreshing, error, refreshFailed, refresh, dismissRefreshFailed } =
     useHotData();
 
@@ -30,6 +33,11 @@ export default function App() {
         activeView={view}
         onSelectView={(v) => {
           setView(v);
+          setSidebarOpen(false);
+        }}
+        onSelectTag={(tag) => {
+          setInterestTag(tag);
+          setView("interest");
           setSidebarOpen(false);
         }}
         open={sidebarOpen}
@@ -54,10 +62,12 @@ export default function App() {
           ) : view === "platform" ? (
             <PlatformView data={data} loading={loading} onRetry={refresh} />
           ) : (
-            <div className={styles.placeholder}>
-              <h3>个性推荐</h3>
-              <p>该功能将在 MVP 第二阶段接入 AI 后上线，敬请期待。</p>
-            </div>
+            <InterestView
+              data={data}
+              loading={loading}
+              externalTag={interestTag}
+              onConsumeExternalTag={() => setInterestTag(null)}
+            />
           )}
         </main>
       </div>
