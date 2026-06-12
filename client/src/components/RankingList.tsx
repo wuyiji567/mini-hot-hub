@@ -21,31 +21,40 @@ function RankRow({ item }: { item: RankingItem }) {
         : item.rank === 3
           ? styles.rank3
           : styles.rankNormal;
+  // 冠军行整行高亮（仅第 1 名）
+  const rowClass = item.rank === 1 ? `${styles.row} ${styles.champion}` : styles.row;
 
   return (
-    <li className={styles.row}>
+    <li className={rowClass}>
       <span className={`${styles.rank} ${rankClass}`}>{item.rank}</span>
-      {item.url ? (
-        <a className={styles.title} href={item.url} target="_blank" rel="noopener noreferrer">
-          {item.title}
-        </a>
-      ) : (
-        <span className={styles.title}>{item.title}</span>
-      )}
-      <span className={styles.platforms}>
-        {item.platforms.map((p) => (
-          <span
-            key={p}
-            className={styles.dot}
-            title={p}
-            style={{ background: `var(--platform-${p})` }}
-          />
-        ))}
-      </span>
+      <div className={styles.content}>
+        {item.url ? (
+          <a className={styles.title} href={item.url} target="_blank" rel="noopener noreferrer">
+            {item.title}
+          </a>
+        ) : (
+          <span className={styles.title}>{item.title}</span>
+        )}
+        <div className={styles.meta}>
+          <span className={styles.platforms}>
+            {item.platforms.map((p) => (
+              <span
+                key={p}
+                className={styles.dot}
+                title={p}
+                style={{ background: `var(--platform-${p})` }}
+              />
+            ))}
+          </span>
+          {item.platforms.length > 0 && (
+            <span className={styles.platformCount}>{item.platforms.length} 个平台</span>
+          )}
+        </div>
+      </div>
+      {item.heat && <span className={styles.heat}>{item.heat}</span>}
       <span className={`${styles.trend} ${styles[`trend_${item.trend}`]}`}>
         {TREND_ICON[item.trend]}
       </span>
-      {item.heat && <span className={styles.heat}>{item.heat}</span>}
     </li>
   );
 }

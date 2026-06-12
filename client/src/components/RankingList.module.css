@@ -4,7 +4,7 @@
   gap: var(--space-md);
 }
 
-/* 每列是一张白卡片 */
+/* 每列是一张轻量榜单卡（边框/阴影克制，更像榜单而非表格） */
 .column {
   list-style: none;
   margin: 0;
@@ -23,11 +23,12 @@
   transform: translateY(-3px);
 }
 
+/* 榜单行：徽章 | 内容块（标题 + meta） | 热度 | 趋势 */
 .row {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 11px var(--space-md);
+  padding: 9px var(--space-md);
   border-bottom: 1px solid var(--border-card);
   transition: background var(--transition-fast);
 }
@@ -44,6 +45,27 @@
   color: var(--color-accent);
 }
 
+/* 冠军行整行轻微高亮 + 左侧金色强调条（Riso 米白，不夸张） */
+.champion {
+  background: linear-gradient(
+    90deg,
+    rgba(234, 160, 17, 0.13) 0%,
+    rgba(234, 160, 17, 0.03) 60%,
+    transparent 100%
+  );
+  box-shadow: inset 2px 0 0 rgba(234, 160, 17, 0.6);
+}
+
+.champion:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(234, 160, 17, 0.19) 0%,
+    rgba(234, 160, 17, 0.05) 60%,
+    transparent 100%
+  );
+}
+
+/* 排名徽章：4-20 弱化但可读 */
 .rank {
   flex-shrink: 0;
   width: 22px;
@@ -62,44 +84,107 @@
   color: var(--color-text-dim);
 }
 
-/* Top-3 金银铜奖牌 */
+/* Top-3 金银铜奖牌（带高光，第 1 名加皇冠） */
 .rank1,
 .rank2,
 .rank3 {
-  width: 24px;
-  height: 24px;
+  position: relative;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   font-weight: 800;
+  overflow: visible;
 }
 
 .rank1 {
   background: radial-gradient(circle at 35% 28%, #fff7d6, #ffd24a 38%, #eaa011 74%, #b9760d);
   color: #5a3c00;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 2px 5px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 3px rgba(150, 90, 0, 0.35),
+    0 2px 5px rgba(0, 0, 0, 0.16),
+    0 0 10px rgba(234, 160, 17, 0.4);
 }
 
 .rank2 {
   background: radial-gradient(circle at 35% 28%, #ffffff, #e4e9f0 40%, #a9b3c1 74%, #7c8896);
   color: #2a313d;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(90, 100, 115, 0.3),
+    0 2px 5px rgba(0, 0, 0, 0.14),
+    0 0 8px rgba(148, 163, 184, 0.28);
 }
 
 .rank3 {
   background: radial-gradient(circle at 35% 28%, #ffe6c8, #f3a866 42%, #d27d35 78%, #9c531d);
   color: #4a2600;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5), 0 2px 5px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 3px rgba(120, 60, 10, 0.35),
+    0 2px 5px rgba(0, 0, 0, 0.16),
+    0 0 9px rgba(210, 125, 53, 0.36);
 }
 
-.title {
+/* 奖牌顶部高光弧 */
+.rank1::before,
+.rank2::before,
+.rank3::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  right: 3px;
+  height: 42%;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+/* 第 1 名小皇冠 */
+.rank1::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 12px;
+  background: linear-gradient(160deg, #ffdf6b, #eaa011);
+  -webkit-mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M3 17L5 7l4.5 5.5L12 4l2.5 8.5L19 7l2 10z'/%3E%3Crect x='3.5' y='17.5' width='17' height='2.6' rx='0.6'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M3 17L5 7l4.5 5.5L12 4l2.5 8.5L19 7l2 10z'/%3E%3Crect x='3.5' y='17.5' width='17' height='2.6' rx='0.6'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  filter: drop-shadow(0 1px 1px rgba(120, 70, 0, 0.4));
+  pointer-events: none;
+}
+
+/* 内容块：标题 + meta 纵向堆叠，撑满中段 */
+.content {
   flex: 1;
   min-width: 0;
+}
+
+/* 标题：单行省略，长标题不撑坏布局、不遮挡热度/趋势 */
+.title {
+  display: block;
   font-size: 13px;
   font-weight: 500;
+  line-height: 1.45;
   color: var(--color-text);
+  text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color var(--transition-fast);
+}
+
+/* meta 行：平台彩点 + 平台数，位置整齐 */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: 3px;
 }
 
 .platforms {
@@ -115,10 +200,28 @@
   background: var(--color-accent);
 }
 
+.platformCount {
+  font-size: 10px;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+}
+
+/* 综合热度：醒目但克制 */
+.heat {
+  flex-shrink: 0;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-heat);
+  white-space: nowrap;
+}
+
+/* 趋势：定宽居右，保证对齐 */
 .trend {
   flex-shrink: 0;
-  font-size: 10px;
   width: 12px;
+  font-size: 10px;
   text-align: center;
 }
 
@@ -130,16 +233,6 @@
 }
 .trend_flat {
   color: var(--color-text-dim);
-}
-
-.heat {
-  flex-shrink: 0;
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-heat);
-  white-space: nowrap;
 }
 
 @media (max-width: 768px) {
