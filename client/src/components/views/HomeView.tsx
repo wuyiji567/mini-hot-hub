@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import styles from "./HomeView.module.css";
 import RankingList from "../RankingList";
 import Loading from "../Loading";
@@ -8,7 +9,9 @@ interface HomeViewProps {
   loading: boolean;
 }
 
-// 平台标识 → 中文简称（来源小标签展示用）
+const AUTO_MS = 10000;
+
+// 平台标识 → 中文简称
 const PLATFORM_NAMES: Record<string, string> = {
   weibo: "微博",
   zhihu: "知乎",
@@ -36,19 +39,131 @@ const CATEGORY_VAR: Record<string, string> = {
   其他: "other",
 };
 
-function tagColorVars(tag: string): React.CSSProperties {
+function categoryKey(tag: string): string {
   const main = (tag || "").split("·")[0]?.trim();
-  const key = CATEGORY_VAR[main ?? ""] ?? "other";
-  return {
-    color: `var(--tag-${key})`,
-    background: `var(--tag-${key}-bg)`,
-  };
+  return CATEGORY_VAR[main ?? ""] ?? "other";
 }
 
-/** AI 卡片（今日最热 / 热点速览共用，size 控制大小） */
-function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" }) {
+function tagColorVars(tag: string): React.CSSProperties {
+  const key = categoryKey(tag);
+  return { color: `var(--tag-${key})`, background: `var(--tag-${key}-bg)` };
+}
+
+/**
+ * 自动轮播：10s 自动切下一页，hover 暂停；任何手动操作（改 page）会让定时器从当前页重新计时
+ * （effect 依赖 page，page 一变即重置 timeout）。crossfade 切换，无方向性回绕问题。
+ */
+function useAutoCarousel(pageCount: number, intervalMs: number) {
+  const [page, setPage] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    setPage((p) => (p >= pageCount ? 0 : p));
+  }, [pageCount]);
+
+  useEffect(() => {
+    if (paused || pageCount <= 1) return;
+    const t = setTimeout(() => setPage((p) => (p + 1) % pageCount), intervalMs);
+    return () => clearTimeout(t);
+  }, [page, paused, pageCount, intervalMs]);
+
+  const go = (i: number) => setPage(((i % pageCount) + pageCount) % pageCount);
+  return { page, setPaused, go, next: () => go(page + 1), prev: () => go(page - 1) };
+}
+
+/** 桌面 3 / 平板 2 / 手机 1 张每页 */
+function usePerPage(): number {
+  const get = () => {
+    if (typeof window === "undefined") return 3;
+    if (window.matchMedia("(max-width: 640px)").matches) return 1;
+    if (window.matchMedia("(max-width: 1024px)").matches) return 2;
+    return 3;
+  };
+  const [perPage, setPerPage] = useState(get);
+  useEffect(() => {
+    const onResize = () => setPerPage(get());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return perPage;
+}
+
+function ChevronLeft({ size }: { size: number }) {
   return (
-    <article className={`${styles.card} ${size === "big" ? styles.cardBig : styles.cardSmall}`}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="15 3 7 12 15 21" />
+    </svg>
+  );
+}
+function ChevronRight({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="9 3 17 12 9 21" />
+    </svg>
+  );
+}
+
+/** 左右切换箭头 + 圆点指示器（共用） */
+function Controls({
+  pageCount,
+  page,
+  go,
+  next,
+  prev,
+  unit,
+  compact = false,
+}: {
+  pageCount: number;
+  page: number;
+  go: (i: number) => void;
+  next: () => void;
+  prev: () => void;
+  unit: string;
+  compact?: boolean;
+}) {
+  if (pageCount <= 1) return null;
+  const arrowCls = `${styles.arrow} ${compact ? styles.arrowSm : ""}`;
+  const iconSize = compact ? 16 : 18;
+  return (
+    <>
+      <button className={`${arrowCls} ${styles.arrowPrev}`} onClick={prev} aria-label={`上一${unit}`}>
+        <ChevronLeft size={iconSize} />
+      </button>
+      <button className={`${arrowCls} ${styles.arrowNext}`} onClick={next} aria-label={`下一${unit}`}>
+        <ChevronRight size={iconSize} />
+      </button>
+      <div className={styles.dots}>
+        {Array.from({ length: pageCount }).map((_, i) => (
+          <button
+            key={i}
+            className={`${styles.dot} ${i === page ? styles.dotActive : ""}`}
+            onClick={() => go(i)}
+            aria-label={`第 ${i + 1} ${unit}`}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
+/** AI 卡片（今日最热 big / 热点速览 small 共用） */
+function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" }) {
+  // 分类渐变铺满背景，让卡片不像空白文字卡；大卡更浓、小卡更淡。
+  // color-mix 不支持时整条 background 失效，自动回退到卡片白底（优雅降级）。
+  const key = categoryKey(item.tag);
+  const mix = size === "big" ? "20%" : "11%";
+  const fade = size === "big" ? "70%" : "80%";
+  const bgStyle: React.CSSProperties = {
+    background: `radial-gradient(130% 120% at 0% 0%, color-mix(in srgb, var(--tag-${key}) ${mix}, var(--color-card)), var(--color-card) ${fade})`,
+  };
+
+  return (
+    <article
+      className={`${styles.card} ${size === "big" ? styles.cardBig : styles.cardSmall}`}
+      style={bgStyle}
+    >
       <div className={styles.cardHead}>
         {item.tag && (
           <span className={styles.tag} style={tagColorVars(item.tag)}>
@@ -88,9 +203,74 @@ function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" 
   );
 }
 
+/** 今日最热：大卡 crossfade 轮播，一次 1 张 */
+function FeaturedCarousel({ items }: { items: AIFeatured[] }) {
+  const count = items.length;
+  const { page, setPaused, go, next, prev } = useAutoCarousel(count, AUTO_MS);
+
+  return (
+    <div
+      className={styles.carousel}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className={styles.stack}>
+        {items.map((it, i) => (
+          <div
+            key={`f-${i}`}
+            className={`${styles.slide} ${i === page ? styles.slideActive : ""}`}
+            aria-hidden={i !== page}
+          >
+            <FeaturedCard item={it} size="big" />
+          </div>
+        ))}
+      </div>
+      <Controls pageCount={count} page={page} go={go} next={next} prev={prev} unit="条" />
+    </div>
+  );
+}
+
+/** 热点速览：小卡 crossfade 轮播，每页 2~3 张（响应式），移动端 1 张 */
+function QuickCarousel({ items }: { items: AIFeatured[] }) {
+  const perPage = usePerPage();
+  const pages: AIFeatured[][] = [];
+  for (let i = 0; i < items.length; i += perPage) pages.push(items.slice(i, i + perPage));
+  const pageCount = Math.max(1, pages.length);
+  const { page, setPaused, go, next, prev } = useAutoCarousel(pageCount, AUTO_MS);
+
+  return (
+    <div
+      className={styles.carousel}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className={styles.stack}>
+        {pages.map((pageItems, pi) => (
+          <div
+            key={`p-${pi}`}
+            className={`${styles.slide} ${pi === page ? styles.slideActive : ""}`}
+            aria-hidden={pi !== page}
+          >
+            <div
+              className={styles.quickRow}
+              style={{ gridTemplateColumns: `repeat(${perPage}, minmax(0, 1fr))` }}
+            >
+              {pageItems.map((it, i) => (
+                <FeaturedCard key={`q-${pi}-${i}`} item={it} size="small" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <Controls pageCount={pageCount} page={page} go={go} next={next} prev={prev} unit="页" compact />
+    </div>
+  );
+}
+
 /**
  * 首页视图：
- * - 今日最热（featured）/ 热点速览（quick）：AI ready 且有数据时展示真实内容，否则降级占位
+ * - 今日最热（featured）大卡 crossfade 轮播 / 热点速览（quick）小卡 crossfade 轮播
+ * - AI ready 且有数据时展示，否则降级占位
  * - 综合热榜：始终展示
  */
 export default function HomeView({ data, loading }: HomeViewProps) {
@@ -103,7 +283,6 @@ export default function HomeView({ data, loading }: HomeViewProps) {
   const featured = aiReady ? ai.featured.filter((f) => f.section === "featured") : [];
   const quick = aiReady ? ai.featured.filter((f) => f.section === "quick") : [];
 
-  // AI 不可用时的占位文案（按状态区分）
   const placeholderText =
     ai?.status === "pending"
       ? "AI 内容生成中，请稍候…"
@@ -118,11 +297,7 @@ export default function HomeView({ data, loading }: HomeViewProps) {
           <span className={styles.sectionHint}>AI 精选 · 最值得关注</span>
         </h2>
         {featured.length > 0 ? (
-          <div className={styles.featuredGrid}>
-            {featured.map((item, i) => (
-              <FeaturedCard key={`f-${i}`} item={item} size="big" />
-            ))}
-          </div>
+          <FeaturedCarousel items={featured} />
         ) : (
           <div className={styles.aiPlaceholder}>
             <div className={styles.placeholderTag}>今日最热</div>
@@ -138,11 +313,7 @@ export default function HomeView({ data, loading }: HomeViewProps) {
           <span className={styles.sectionHint}>AI 速览 · 次级热点</span>
         </h2>
         {quick.length > 0 ? (
-          <div className={styles.quickGrid}>
-            {quick.map((item, i) => (
-              <FeaturedCard key={`q-${i}`} item={item} size="small" />
-            ))}
-          </div>
+          <QuickCarousel items={quick} />
         ) : (
           <div className={styles.aiPlaceholder}>
             <div className={styles.placeholderTag}>热点速览</div>

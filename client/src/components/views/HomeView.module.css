@@ -54,17 +54,134 @@
   border-radius: var(--radius-pill);
 }
 
-/* ---------- 今日最热 / 热点速览 网格 ---------- */
-.featuredGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-md);
+/* ---------- 轮播（今日最热 / 热点速览共用）---------- */
+.carousel {
+  position: relative;
+  /* 形成独立层叠上下文，确保箭头稳定盖在卡片之上（卡片 slideActive 有 z-index） */
+  isolation: isolate;
+  /* 不留 gutter：卡片满宽，与下方综合热榜对齐；箭头改为卡片内侧薄透明条 */
 }
 
-.quickGrid {
+/* crossfade 层叠：所有 slide 叠在同一网格单元，按透明度切换，单元自动取最高内容高度 */
+.stack {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.slide {
+  grid-area: 1 / 1;
+  display: flex;
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.slideActive {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* 热点速览每页的卡片行（列数由内联 style 按 perPage 给） */
+.quickRow {
+  display: grid;
   gap: var(--space-sm);
+  width: 100%;
+}
+
+/* 行首/行尾卡片在箭头一侧加安全内边距，避免被薄透明条遮住正文（比主卡更小） */
+.quickRow > :first-child {
+  padding-left: 28px;
+}
+.quickRow > :last-child {
+  padding-right: 28px;
+}
+
+/* 贴边箭头：默认几乎无容器（透明无边框无阴影），靠箭头本身可见；hover 才浮出淡色容器 */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 21px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  z-index: 5;
+}
+
+/* 箭头描边直接设色：默认中等深度（浅色卡片上可见），hover 加深 */
+.arrow svg {
+  stroke: rgba(51, 65, 85, 0.55);
+  stroke-width: 2.6;
+}
+
+.arrow:hover {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  border-color: rgba(var(--color-accent-rgb), 0.25);
+}
+
+.arrow:hover svg {
+  stroke: rgba(15, 23, 42, 0.82);
+}
+
+/* 热点速览小卡：本体略小（仍轻、透明、细长） */
+.arrowSm {
+  width: 20px;
+  height: 52px;
+}
+
+/* 热点速览箭头：图标更大、描边更粗、默认更易见（CSS 覆盖 svg 尺寸，不动 tsx） */
+.arrowSm svg {
+  width: 19px;
+  height: 19px;
+  stroke: rgba(51, 65, 85, 0.66);
+  stroke-width: 2.8;
+}
+
+.arrowPrev {
+  left: 5px;
+}
+
+.arrowNext {
+  right: 5px;
+}
+
+/* 底部圆点指示器 */
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: var(--space-sm);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 20, 30, 0.18);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dot:hover {
+  background: rgba(20, 20, 30, 0.4);
+}
+
+.dotActive {
+  width: 18px;
+  background: var(--color-accent);
 }
 
 /* ---------- AI 卡片 ---------- */
@@ -72,6 +189,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  width: 100%;
   min-width: 0;
   background: var(--color-card);
   border: 1px solid var(--border-card);
@@ -81,12 +199,13 @@
 }
 
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-card-hover);
 }
 
 .cardBig {
-  padding: var(--space-lg);
+  padding: var(--space-lg) 30px;
+  min-height: 200px;
 }
 
 .cardSmall {
@@ -211,4 +330,28 @@
 /* 综合热榜区块标题与卡片背景同色，去掉外层重复 padding 影响 */
 .section .sectionTitle {
   margin-bottom: var(--space-md);
+}
+
+/* 移动端：箭头更小、正文安全内边距相应缩小 */
+@media (max-width: 640px) {
+  .arrow {
+    width: 16px;
+    height: 54px;
+  }
+
+  .arrowSm {
+    width: 15px;
+    height: 46px;
+  }
+
+  .cardBig {
+    padding: var(--space-md) 22px;
+  }
+
+  .quickRow > :first-child {
+    padding-left: 22px;
+  }
+  .quickRow > :last-child {
+    padding-right: 22px;
+  }
 }
