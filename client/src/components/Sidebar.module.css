@@ -28,10 +28,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
   border-radius: var(--radius-sm);
   box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.25);
+}
+
+/* 星芒图标：主芒用反白色（蓝底上），小点用热度粉 */
+.logoSvg {
+  width: 19px;
+  height: 19px;
+  display: block;
+  overflow: visible;
+  color: var(--color-text-inverse);
+}
+
+.sparkMain {
+  transform-origin: 16px 16px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sparkDot {
+  transform-origin: 25.5px 8.5px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* hover：主芒旋转 90°，小点闪烁 */
+.brand:hover .sparkMain {
+  transform: rotate(90deg);
+}
+
+.brand:hover .sparkDot {
+  animation: brandTwinkle 1.1s ease-in-out infinite;
+}
+
+@keyframes brandTwinkle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.55);
+    opacity: 1;
+  }
 }
 
 .siteName {

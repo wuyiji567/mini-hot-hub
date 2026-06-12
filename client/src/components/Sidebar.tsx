@@ -31,7 +31,21 @@ export default function Sidebar({
 
       <aside className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`}>
         <div className={styles.brand}>
-          <div className={styles.logo}>🔥</div>
+          <div className={styles.logo}>
+            {/* 品牌星芒图标（来自设计稿，内联 SVG，非 emoji） */}
+            <svg className={styles.logoSvg} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path
+                className={styles.sparkMain}
+                d="M16 2c.7 7 4 10.3 14 14-10 3.7-13.3 7-14 14-.7-7-4-10.3-14-14C12 12.3 15.3 9 16 2Z"
+                fill="currentColor"
+              />
+              <path
+                className={styles.sparkDot}
+                d="M25.5 3.5c.3 2.6 1.4 3.7 4.5 5-3.1 1.3-4.2 2.4-4.5 5-.3-2.6-1.4-3.7-4.5-5 3.1-1.3 4.2-2.4 4.5-5Z"
+                fill="var(--color-heat)"
+              />
+            </svg>
+          </div>
           <div>
             <div className={styles.siteName}>今日热搜</div>
             <div className={styles.tagline}>Mini Hot Hub</div>
