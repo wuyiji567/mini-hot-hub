@@ -6,29 +6,37 @@
 
 > 前端部署于 Vercel，后端部署于 Railway（`https://mini-hot-hub-production-66e2.up.railway.app`）。
 
-> **当前进度：MVP 第一阶段** —— 前后端框架已跑通，4 个平台均已接入**真实公开 JSON 接口**，前端通过 `/api/hot` 获取数据。AI 能力、抖音及其余平台为后续阶段。
+> **当前进度：MVP 第二阶段核心功能已完成** —— 8 平台体系、AI 分类标签、首页今日最热/热点速览、个性推荐、平台页标签筛选均已接入。前端通过 `/api/hot` 获取数据，AI 不可用时基础热榜照常。
 
 ## 技术栈
 
-- **前端**：React + TypeScript + Vite + CSS Modules（深色科技风）
+- **前端**：React + TypeScript + Vite + CSS Modules（米白 Riso 浅色主题）
 - **后端**：Node.js + Express + TypeScript（内存缓存）
-- **数据**：4 个平台（weibo / zhihu / bilibili / github）均来自各平台公开 JSON 接口
+- **AI**：DeepSeek（分类标签 / 事件归纳 / 个性推荐），可通过 `AI_ENABLED` 开关；非思考模式，失败自动降级
+- **数据**：8 个平台（weibo / zhihu / bilibili / github / toutiao / thepaper / kr36 / hupu），除虎扑外均来自各平台公开 JSON 接口
 
 ## 数据来源
 
-当前数据全部来自各平台的**公开 JSON 接口**，后端在服务端请求并统一解析为 `HotItem[]`，前端不直接请求任何上游：
+数据来自各平台的**公开 JSON 接口**，后端在服务端请求并统一解析为 `HotItem[]`，前端不直接请求任何上游：
 
 | 平台 | 接口 | 取数 |
 |------|------|------|
-| 微博 | `https://weibo.com/ajax/side/hotSearch` | `data.realtime`：词条、热度 |
-| 知乎 | `https://api.zhihu.com/topstory/hot-lists/total` | `data`：问题标题、热度、问题 id |
-| B站 | `https://api.bilibili.com/x/web-interface/popular` | `data.list`：标题、播放量、bvid |
-| GitHub | `https://api.github.com/search/repositories`（近 7 天按 star 排序） | `items`：full_name、star/fork、html_url |
+| 微博 weibo | `https://weibo.com/ajax/side/hotSearch` | `data.realtime`：词条、热度 |
+| 知乎 zhihu | `https://api.zhihu.com/topstory/hot-lists/total` | `data`：问题标题、热度、问题 id |
+| B站 bilibili | `https://api.bilibili.com/x/web-interface/popular` | `data.list`：标题、播放量、bvid |
+| GitHub github | `https://api.github.com/search/repositories`（近 7 天按 star 排序） | `items`：full_name、star/fork、html_url |
+| 今日头条 toutiao | `https://www.toutiao.com/hot-event/hot-board/` | `data`：Title、ClusterId、HotValue |
+| 澎湃 thepaper | `https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar` | `data.hotNews`：name、contId |
+| 36氪 kr36 | `POST https://gateway.36kr.com/api/mis/nav/home/nav/rank/hot` | `data.hotRankList[].templateMaterial`：widgetTitle、itemId、statRead |
+| 虎扑 hupu | ⚠️ **可降级平台** | 暂无稳定公开 JSON 数据源，页面显示「数据源维护中」，不影响其他平台 |
 
 - 不解析 HTML 页面，不使用任何 cookie / token / 密钥；GitHub 走未认证 Search API（受 IP 限流）。
-- **缓存**：完整 `/api/hot` 响应缓存在内存 `hot:all`，**TTL 默认 300 秒**（可用 `CACHE_TTL` 环境变量覆盖），避免高频请求上游；开发时加 `?refresh=1` 可跳过缓存。
-- **降级**：任一平台请求失败/格式变化/数据为空时，该平台返回 `status:"error"` 并附清晰 `errorMessage`，其他平台不受影响。
+- **虎扑**：当前无稳定公开 JSON 接口，作为可降级平台 —— `status:"error"` + 维护中提示，不阻塞其余 7 平台与综合热榜。
+- **AI 分类标签**：每条热搜由 DeepSeek 打 1~2 个固定枚举标签（科技/娱乐/体育/财经/社会/游戏/教育/汽车/国际/生活/其他），非法标签后端过滤。
+- **缓存**：完整 `/api/hot` 响应缓存在内存 `hot:all`，**TTL 默认 300 秒**（可用 `CACHE_TTL` 覆盖）；AI 结果缓存 `ai:result`，失败短期熔断。开发时加 `?refresh=1` 跳过缓存。
+- **降级**：任一平台失败仅该平台 `status:"error"`，其他平台不受影响；**AI 不可用（未开启/无 key/超时/格式错）时，`ranking` 和 `sources` 正常返回，`ai.status:"unavailable"`，前端显示降级占位、不崩溃**。
 - 本站为**个人学习项目，非商用**，数据来源于各平台**公开信息，非官方**，仅供学习交流。
+- **AI 合规**：AI 推荐和标签由 AI 自动生成，仅供参考，本站不对 AI 生成内容作事实保证。
 
 ## 项目结构
 
@@ -81,11 +89,10 @@ cd client && npm run dev
 |------|------|------|
 | GET | `/api/health` | 健康检查，返回 `{ "ok": true }` |
 | GET | `/api/hot` | 全量数据：`updatedAt` + `ai` + `ranking` + `sources` |
-| GET | `/api/hot/weibo` | 单平台：微博 |
-| GET | `/api/hot/zhihu` | 单平台：知乎 |
-| GET | `/api/hot/bilibili` | 单平台：B站 |
-| GET | `/api/hot/github` | 单平台：GitHub |
+| GET | `/api/hot/:source` | 单平台数据 |
 | GET | `/api/hot/<无效source>` | 返回 404 |
+
+`:source` 取值（8 平台）：`weibo` / `zhihu` / `bilibili` / `github` / `toutiao` / `thepaper` / `kr36` / `hupu`（`hupu` 当前返回降级 error 态）。
 
 `/api/hot` 走 `hot:all` 内存缓存（默认 TTL 300 秒）；开发环境加 `?refresh=1` 可跳过缓存。
 
@@ -130,6 +137,14 @@ cd client && npm run build   # 编译到 client/dist
 | `CACHE_TTL` | `hot:all` 缓存秒数 | `300` | 保持 `300`，避免高频请求上游 |
 | `CLIENT_ORIGIN` | 后端 CORS 允许的前端来源 | `http://localhost:5173` | **必须**改为前端真实域名，如 `https://your-app.vercel.app` |
 | `VITE_API_BASE` | 前端请求后端的基础地址（构建期注入） | 不设（走 `/api` 代理） | 后端公网地址，如 `https://your-backend.up.railway.app` |
+| `AI_ENABLED` | AI 总开关，仅 `true` 时调用 AI | `false` | 需要 AI 增强时设 `true` |
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 | 无 | 填真实 key（**只放 `.env`，不提交**） |
+| `DEEPSEEK_MODEL` | 使用的模型 ID | 无 | 如 `deepseek-v4-flash` |
+| `DEEPSEEK_BASE_URL` | 接口地址（可选） | `https://api.deepseek.com/chat/completions` | 用代理时覆盖 |
+| `DEEPSEEK_THINKING` | 思考模式（可选） | `disabled`（关思考，快且省 token） | `enabled` 开思考；`none` 不带该参数 |
+| `AI_TIMEOUT_MS` | 单次 AI 调用超时毫秒（可选） | `15000` | 按需调整 |
+
+> ⚠️ **安全**：`server/.env` 已被 `.gitignore` 忽略，**切勿提交 `.env` 或任何 API Key / token / cookie**。AI 关闭时基础热榜照常，AI 不是必需依赖。
 
 ## 部署前检查表
 

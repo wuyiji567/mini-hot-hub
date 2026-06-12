@@ -69,6 +69,7 @@ export default function Sidebar({
         <footer className={styles.footer}>
           <p>本站为个人学习项目，非商用，非官方。</p>
           <p>数据来源于各平台公开信息，内容版权与责任归原平台及原作者所有。</p>
+          <p>AI 推荐和标签由 AI 自动生成，仅供参考。</p>
           <p>数据约每 5 分钟更新一次。</p>
           <p>如有侵权或不当内容，请通过项目仓库 Issue 联系处理。</p>
         </footer>
