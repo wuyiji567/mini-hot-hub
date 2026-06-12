@@ -62,10 +62,18 @@ function tagColorVars(tag: string): React.CSSProperties {
   return { color: `var(--tag-${key})`, background: `var(--tag-${key}-bg)` };
 }
 
+// 取首个分类做卡片渐变铺底（与首页 AI 卡片同款 color-mix 语言；不支持时优雅回退白底）
+function cardBgStyle(item: AIRecommend): React.CSSProperties {
+  const key = CATEGORY_VAR[item.tags[0] ?? ""] ?? "other";
+  return {
+    background: `radial-gradient(130% 120% at 0% 0%, color-mix(in srgb, var(--tag-${key}) 12%, var(--color-card)), var(--color-card) 78%)`,
+  };
+}
+
 function RecommendCard({ item }: { item: AIRecommend }) {
   const follow = item.reasonType === "follow";
   return (
-    <article className={styles.card}>
+    <article className={styles.card} style={cardBgStyle(item)}>
       <div className={styles.cardHead}>
         <span className={`${styles.reasonTag} ${follow ? styles.follow : styles.similar}`}>
           {item.reasonLabel || (follow ? "你关注" : "相似主题")}

@@ -4,23 +4,17 @@
   gap: var(--space-lg);
 }
 
-/* ---------- 标签筛选栏 ---------- */
+/* ---------- 标签筛选栏（与平台页保持一致）---------- */
 .filterBar {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-sm);
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
-}
-
-.filterBar::-webkit-scrollbar {
-  height: 4px;
 }
 
 .filterBtn {
   flex-shrink: 0;
-  padding: 6px 14px;
-  background: var(--color-card);
+  padding: 5px 13px;
+  background: rgba(148, 163, 184, 0.06);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-pill);
   color: var(--color-text-muted);
@@ -35,9 +29,12 @@
 .filterBtn:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
+  background: rgba(var(--color-accent-rgb), 0.05);
 }
 
-.filterActive {
+/* 选中态：清楚但克制（淡青底 + 描边 + 加粗，不做实心重底） */
+.filterActive,
+.filterActive:hover {
   background: rgba(var(--color-accent-rgb), 0.1);
   border-color: var(--color-accent);
   color: var(--color-accent);
@@ -51,6 +48,7 @@
   gap: var(--space-md);
 }
 
+/* 卡片：与首页 AI 卡片同款（白底 + 分类渐变铺底由内联 style 提供、轻边框、卡片阴影、hover 上浮 2px） */
 .card {
   display: flex;
   flex-direction: column;
@@ -65,7 +63,7 @@
 }
 
 .card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-card-hover);
 }
 
@@ -77,23 +75,26 @@
   flex-wrap: wrap;
 }
 
-/* 推荐原因标签：follow 青蓝 / similar 紫 */
+/* 推荐原因徽章：轻量 meta（follow 青蓝 / similar 紫），淡底不像主按钮 */
 .reasonTag {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
-  padding: 2px 10px;
+  padding: 2px 9px;
   border-radius: var(--radius-pill);
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .follow {
   color: var(--color-accent);
-  background: rgba(var(--color-accent-rgb), 0.12);
+  background: rgba(var(--color-accent-rgb), 0.08);
 }
 
 .similar {
   color: #7c3aed;
-  background: rgba(124, 58, 237, 0.12);
+  background: rgba(124, 58, 237, 0.08);
 }
 
 .tags {
@@ -110,16 +111,21 @@
   white-space: nowrap;
 }
 
+/* 标题：与首页 AI 卡片同字号字重，最多两行省略不溢出 */
 .cardTitle {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.4;
   color: var(--color-text);
   overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* AI 推荐理由：左侧青色竖线高亮 */
+/* AI 推荐理由：左侧青色竖线高亮（与首页同款），最多三行省略不溢出 */
 .reason {
   margin: 0;
   font-size: 12px;
@@ -130,6 +136,10 @@
   border-left: 2px solid var(--color-accent);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .reasonLabel {
@@ -142,18 +152,20 @@
   margin-bottom: 2px;
 }
 
+/* 底部信息：热度 / 平台 / 平台数，统一间距与字号 */
 .meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   margin-top: auto;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--color-text-muted);
 }
 
 .heat {
   font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-heat);
   white-space: nowrap;
@@ -203,6 +215,21 @@
   border-radius: var(--radius-pill);
 }
 
+/* 移动端：筛选栏改横向滚动单行（与平台页一致），不多行撑高页面 */
+@media (max-width: 768px) {
+  .filterBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .filterBar::-webkit-scrollbar {
+    height: 4px;
+  }
+}
+
+/* 小屏：推荐卡片单列 */
 @media (max-width: 640px) {
   .grid {
     grid-template-columns: 1fr;
