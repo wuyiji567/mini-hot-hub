@@ -11,6 +11,7 @@ import {
   type SlimItem,
 } from "./prompts.js";
 import { parseJson, parseFeatured, parseRecommend, parseTagResults } from "./parser.js";
+import { fetchOgImage } from "../utils/ogImage.js";
 
 const AI_RESULT_KEY = "ai:result";
 const AI_FAIL_KEY = "ai:fail";
@@ -118,6 +119,58 @@ function withImages<T extends AIFeatured | AIRecommend>(items: T[]): T[] {
   }));
 }
 
+/** 在 sources 中按 source + rank 找回原始 item.url（找不到返回 null） */
+function urlBySourceRank(sources: HotPlatform[], source: Source, rank: number): string | null {
+  const p = sources.find((s) => s.source === source && s.status === "ok");
+  const item = p?.items.find((it) => it.rank === rank);
+  return item?.url || null;
+}
+
+/** featured：用首个 platform 的 source+rank 回原始 url */
+function urlForFeatured(f: AIFeatured, sources: HotPlatform[]): string | null {
+  const first = f.platforms[0];
+  return first ? urlBySourceRank(sources, first.source, first.rank) : null;
+}
+
+/** recommend：无 rank，按平台内标题归一化匹配回原始 url */
+function urlForRecommend(r: AIRecommend, sources: HotPlatform[]): string | null {
+  const p = sources.find((s) => s.source === r.platform && s.status === "ok");
+  if (!p) return null;
+  const ev = normalizeTitle(r.eventTitle);
+  if (ev.length < 4) return null;
+  const hit = p.items.find((it) => {
+    const t = normalizeTitle(it.title);
+    return t.length >= 4 && (t.includes(ev) || ev.includes(t));
+  });
+  return hit?.url || null;
+}
+
+/**
+ * 用来源页 og:image 覆盖分类默认图（best-effort）：
+ * - 找不到原始 url → 保留分类默认图
+ * - og 抓取失败/无图 → 保留分类默认图
+ * - 单条失败不影响其它条；整体兜底，绝不抛错（图片问题不得拖垮 AI）
+ * items 进来时已带分类默认 imageUrl。
+ */
+async function enrichWithOgImages<T extends AIFeatured | AIRecommend>(
+  items: T[],
+  getUrl: (it: T) => string | null,
+): Promise<T[]> {
+  try {
+    return await Promise.all(
+      items.map(async (it) => {
+        const pageUrl = getUrl(it);
+        if (!pageUrl) return it;
+        const og = await fetchOgImage(pageUrl); // 内部已兜底为 null
+        return og ? { ...it, imageUrl: og } : it;
+      }),
+    );
+  } catch (err) {
+    console.error("[ai] og 图片富化失败，保留分类默认图:", err instanceof Error ? err.message : err);
+    return items;
+  }
+}
+
 /**
  * 构建 AI 区域（状态机）：
  * - AI 未开启 → unavailable
@@ -162,13 +215,19 @@ export async function buildAi(sources: HotPlatform[]): Promise<HotResponse["ai"]
     applyTags(sources, tagMap);
 
     // C2：今日最热 + 热点速览；platforms 为空时按标题匹配兜底（用更广的 slimForTags）
-    const featured = withImages(parseFeatured(parseJson(featuredText))).map((f) => ({
+    const featuredBase = withImages(parseFeatured(parseJson(featuredText))).map((f) => ({
       ...f,
       platforms: f.platforms.length > 0 ? f.platforms : derivePlatforms(f.eventTitle, slimForTags),
     }));
 
     // C3：个性推荐
-    const recommendations = withImages(parseRecommend(parseJson(recText)));
+    const recommendBase = withImages(parseRecommend(parseJson(recText)));
+
+    // 图片来源：尽量用来源页 og:image 覆盖分类默认图（并行、best-effort、失败回落默认图）
+    const [featured, recommendations] = await Promise.all([
+      enrichWithOgImages(featuredBase, (f) => urlForFeatured(f, sources)),
+      enrichWithOgImages(recommendBase, (r) => urlForRecommend(r, sources)),
+    ]);
 
     const payload: AiPayload = {
       featured,
