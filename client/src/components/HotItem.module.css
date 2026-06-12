@@ -1,8 +1,8 @@
 .item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-sm);
-  padding: 6px 6px;
+  padding: 7px 6px;
   margin: 0 -6px;
   border-radius: var(--radius-sm);
   border-bottom: 1px solid var(--border-card);
@@ -58,16 +58,27 @@
   font-weight: 800;
 }
 
+/* 内容主区：标题行 + 标签行 纵向排列 */
 .body {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 第一行：标题占主区，热度靠右 */
+.titleLine {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
 .title {
+  flex: 1;
+  min-width: 0;
   font-size: 12px;
+  line-height: 1.5;
   color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -75,16 +86,17 @@
   transition: color var(--transition-fast);
 }
 
-.tags {
-  display: inline-flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
 .heat {
   flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--color-text-dim);
-  text-align: right;
+  white-space: nowrap;
+}
+
+/* 第二行：AI 标签，左对齐 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }

@@ -22,23 +22,27 @@ export default function HotItem({ item }: HotItemProps) {
       <span className={`${styles.rank} ${rankClass}`}>{item.rank}</span>
 
       <div className={styles.body}>
-        {item.url ? (
-          <a className={styles.title} href={item.url} target="_blank" rel="noopener noreferrer">
-            {item.title}
-          </a>
-        ) : (
-          <span className={styles.title}>{item.title}</span>
-        )}
+        {/* 第一行：标题 + 热度（热度靠右，不与标签挤在一起） */}
+        <div className={styles.titleLine}>
+          {item.url ? (
+            <a className={styles.title} href={item.url} target="_blank" rel="noopener noreferrer">
+              {item.title}
+            </a>
+          ) : (
+            <span className={styles.title}>{item.title}</span>
+          )}
+          {item.heat && <span className={styles.heat}>{item.heat}</span>}
+        </div>
+
+        {/* 第二行：AI 标签，统一在标题下方左对齐 */}
         {item.tags.length > 0 && (
-          <span className={styles.tags}>
+          <div className={styles.tags}>
             {item.tags.slice(0, 2).map((tag) => (
               <TagBadge key={tag} label={tag} />
             ))}
-          </span>
+          </div>
         )}
       </div>
-
-      {item.heat && <span className={styles.heat}>{item.heat}</span>}
     </li>
   );
 }

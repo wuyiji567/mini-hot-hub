@@ -2,10 +2,12 @@ import styles from "./PlatformCard.module.css";
 import HotItem from "./HotItem";
 import EmptyState from "./EmptyState";
 import ErrorCard from "./ErrorCard";
-import type { HotPlatform } from "../types";
+import type { HotItem as HotItemType, HotPlatform } from "../types";
 
 interface PlatformCardProps {
   platform: HotPlatform;
+  items?: HotItemType[]; // 经标签筛选后的展示条目（缺省用 platform.items）
+  emptyMessage?: string; // 无条目时的空状态文案
   onRetry?: () => void; // 错误态重试
 }
 
@@ -18,7 +20,13 @@ function formatRelative(iso: string | null): string {
 }
 
 /** 单个平台卡片：图标 + 名称 + Top 列表 + 更新时间 */
-export default function PlatformCard({ platform, onRetry }: PlatformCardProps) {
+export default function PlatformCard({
+  platform,
+  items,
+  emptyMessage = "暂无数据",
+  onRetry,
+}: PlatformCardProps) {
+  const displayItems = items ?? platform.items;
   return (
     <section className={styles.card}>
       <header className={styles.header}>
@@ -34,11 +42,11 @@ export default function PlatformCard({ platform, onRetry }: PlatformCardProps) {
       <div className={styles.bodyWrap}>
         {platform.status === "error" ? (
           <ErrorCard message={platform.errorMessage ?? "数据源暂时不可用"} onRetry={onRetry} />
-        ) : platform.items.length === 0 ? (
-          <EmptyState message="暂无数据" />
+        ) : displayItems.length === 0 ? (
+          <EmptyState message={emptyMessage} />
         ) : (
           <ul className={styles.list}>
-            {platform.items.slice(0, 20).map((item) => (
+            {displayItems.slice(0, 20).map((item) => (
               <HotItem key={`${platform.source}-${item.rank}`} item={item} />
             ))}
           </ul>

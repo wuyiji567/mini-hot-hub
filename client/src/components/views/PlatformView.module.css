@@ -1,6 +1,47 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ---------- 标签筛选工具栏（非内容卡片，轻量）---------- */
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-sm);
+  row-gap: 6px;
+}
+
+.filterBtn {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  background: var(--color-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.filterBtn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.filterActive {
+  background: rgba(var(--color-accent-rgb), 0.1);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ---------- 平台卡片网格 ---------- */
 .grid {
   display: grid;
-  /* 自适应换行：每卡最小 300px，自动决定列数，避免横向溢出 */
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-md);
   align-items: start;
@@ -12,7 +53,21 @@
   color: var(--color-text-muted);
 }
 
-/* 小屏：强制单列，防止 300px 最小宽撑出横向滚动 */
+/* 移动端：筛选栏改横向滚动单行，不多行撑高页面 */
+@media (max-width: 768px) {
+  .filterBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .filterBar::-webkit-scrollbar {
+    height: 4px;
+  }
+}
+
+/* 小屏：平台卡片单列 */
 @media (max-width: 640px) {
   .grid {
     grid-template-columns: 1fr;
