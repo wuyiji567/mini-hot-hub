@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./HomeView.module.css";
 import RankingList from "../RankingList";
 import Loading from "../Loading";
-import type { AIFeatured, HotResponse, Source } from "../../types";
+import type { AIFeatured, HotPlatform, HotResponse, Source } from "../../types";
 
 interface HomeViewProps {
   data: HotResponse | null;
@@ -158,8 +158,27 @@ function resolveImageUrl(item: AIFeatured): string | null {
   return url ? url : null;
 }
 
-/** AI 卡片（今日最热 big / 热点速览 small 共用） */
-function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" }) {
+/** 按 AIFeatured.platforms[0] 的 source+rank，从 sources 找回原始 HotItem.url（找不到返回 null） */
+function urlForFeatured(item: AIFeatured, sources: HotPlatform[]): string | null {
+  const first = item.platforms[0];
+  if (!first) return null;
+  const p = sources.find((s) => s.source === first.source && s.status === "ok");
+  const hit = p?.items.find((it) => it.rank === first.rank);
+  return hit?.url || null;
+}
+
+/** AI 卡片（今日最热 big / 热点速览 small 共用）；href 存在时整卡可点击跳转来源 */
+function FeaturedCard({
+  item,
+  size,
+  href,
+  onImageLoaded,
+}: {
+  item: AIFeatured;
+  size: "big" | "small";
+  href?: string | null;
+  onImageLoaded?: (url: string) => void; // 图片真正加载成功时上报，供轮播判定"图片态"
+}) {
   // 分类渐变铺满背景，让卡片不像空白文字卡；大卡更浓、小卡更淡。
   // color-mix 不支持时整条 background 失效，自动回退到卡片白底（优雅降级）。
   const key = categoryKey(item.tag);
@@ -176,13 +195,12 @@ function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" 
   useEffect(() => setImgFailed(false), [imageUrl]);
   const hasImage = imageUrl !== null && !imgFailed;
 
-  return (
-    <article
-      className={`${styles.card} ${size === "big" ? styles.cardBig : styles.cardSmall} ${
-        hasImage ? styles.hasImage : ""
-      }`}
-      style={bgStyle}
-    >
+  const className = `${styles.card} ${size === "big" ? styles.cardBig : styles.cardSmall} ${
+    hasImage ? styles.hasImage : ""
+  } ${href ? styles.cardLink : ""}`;
+
+  const inner = (
+    <>
       {hasImage && (
         <>
           {/* 图片铺满 + 深色渐变遮罩，保证叠加文字可读 */}
@@ -191,6 +209,9 @@ function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" 
             src={imageUrl}
             alt=""
             loading="lazy"
+            onLoad={() => {
+              if (imageUrl) onImageLoaded?.(imageUrl);
+            }}
             onError={() => setImgFailed(true)}
           />
           <span className={styles.bgScrim} aria-hidden="true" />
@@ -231,18 +252,51 @@ function FeaturedCard({ item, size }: { item: AIFeatured; size: "big" | "small" 
           </span>
         )}
       </div>
+    </>
+  );
+
+  // 有来源 url → 整卡渲染为可聚焦链接（新标签打开）；否则普通 article。
+  if (href) {
+    return (
+      <a className={className} style={bgStyle} href={href} target="_blank" rel="noreferrer">
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <article className={className} style={bgStyle}>
+      {inner}
     </article>
   );
 }
 
+/**
+ * 仅当图片真正加载成功后才进入"图片态"（白 chevron）。
+ * 防盗链 403 / 加载失败 / 尚未加载 → 留在渐变态（深灰蓝箭头，始终可见）。
+ * 返回已成功加载的 URL 集合与上报回调。
+ */
+function useLoadedImages() {
+  const [loaded, setLoaded] = useState<Set<string>>(() => new Set());
+  const markLoaded = useCallback((url: string) => {
+    setLoaded((prev) => (prev.has(url) ? prev : new Set(prev).add(url)));
+  }, []);
+  return { loaded, markLoaded };
+}
+
 /** 今日最热：大卡 crossfade 轮播，一次 1 张 */
-function FeaturedCarousel({ items }: { items: AIFeatured[] }) {
+function FeaturedCarousel({ items, sources }: { items: AIFeatured[]; sources: HotPlatform[] }) {
   const count = items.length;
   const { page, setPaused, go, next, prev } = useAutoCarousel(count, AUTO_MS);
+  const { loaded, markLoaded } = useLoadedImages();
+
+  // 图片态 = 当前激活卡的图已真正加载成功（而非仅有 imageUrl）
+  const cur = items[page];
+  const curUrl = cur ? resolveImageUrl(cur) : null;
+  const imageMode = curUrl !== null && loaded.has(curUrl);
 
   return (
     <div
-      className={styles.carousel}
+      className={`${styles.carousel} ${imageMode ? styles.carouselImageMode : ""}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -253,7 +307,12 @@ function FeaturedCarousel({ items }: { items: AIFeatured[] }) {
             className={`${styles.slide} ${i === page ? styles.slideActive : ""}`}
             aria-hidden={i !== page}
           >
-            <FeaturedCard item={it} size="big" />
+            <FeaturedCard
+              item={it}
+              size="big"
+              href={urlForFeatured(it, sources)}
+              onImageLoaded={markLoaded}
+            />
           </div>
         ))}
       </div>
@@ -263,16 +322,23 @@ function FeaturedCarousel({ items }: { items: AIFeatured[] }) {
 }
 
 /** 热点速览：小卡 crossfade 轮播，每页 2~3 张（响应式），移动端 1 张 */
-function QuickCarousel({ items }: { items: AIFeatured[] }) {
+function QuickCarousel({ items, sources }: { items: AIFeatured[]; sources: HotPlatform[] }) {
   const perPage = usePerPage();
   const pages: AIFeatured[][] = [];
   for (let i = 0; i < items.length; i += perPage) pages.push(items.slice(i, i + perPage));
   const pageCount = Math.max(1, pages.length);
   const { page, setPaused, go, next, prev } = useAutoCarousel(pageCount, AUTO_MS);
+  const { loaded, markLoaded } = useLoadedImages();
+
+  // 图片态 = 当前页任一卡的图已真正加载成功（防盗链失败的卡不计入，箭头保持深色可见）
+  const imageMode = (pages[page] ?? []).some((it) => {
+    const u = resolveImageUrl(it);
+    return u !== null && loaded.has(u);
+  });
 
   return (
     <div
-      className={styles.carousel}
+      className={`${styles.carousel} ${imageMode ? styles.carouselImageMode : ""}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -288,7 +354,13 @@ function QuickCarousel({ items }: { items: AIFeatured[] }) {
               style={{ gridTemplateColumns: `repeat(${perPage}, minmax(0, 1fr))` }}
             >
               {pageItems.map((it, i) => (
-                <FeaturedCard key={`q-${pi}-${i}`} item={it} size="small" />
+                <FeaturedCard
+                  key={`q-${pi}-${i}`}
+                  item={it}
+                  size="small"
+                  href={urlForFeatured(it, sources)}
+                  onImageLoaded={markLoaded}
+                />
               ))}
             </div>
           </div>
@@ -329,7 +401,7 @@ export default function HomeView({ data, loading }: HomeViewProps) {
           <span className={styles.sectionHint}>AI 精选 · 最值得关注</span>
         </h2>
         {featured.length > 0 ? (
-          <FeaturedCarousel items={featured} />
+          <FeaturedCarousel items={featured} sources={data?.sources ?? []} />
         ) : (
           <div className={styles.aiPlaceholder}>
             <div className={styles.placeholderTag}>今日最热</div>
@@ -345,7 +417,7 @@ export default function HomeView({ data, loading }: HomeViewProps) {
           <span className={styles.sectionHint}>AI 速览 · 次级热点</span>
         </h2>
         {quick.length > 0 ? (
-          <QuickCarousel items={quick} />
+          <QuickCarousel items={quick} sources={data?.sources ?? []} />
         ) : (
           <div className={styles.aiPlaceholder}>
             <div className={styles.placeholderTag}>热点速览</div>
