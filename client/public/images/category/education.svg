@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice" role="img" aria-label="教育">
+  <defs>
+    <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#161f30"/>
+      <stop offset="60%" stop-color="#0e1521"/>
+      <stop offset="100%" stop-color="#0b1019"/>
+    </linearGradient>
+    <radialGradient id="g" cx="18%" cy="2%" r="95%">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="0.40"/>
+      <stop offset="55%" stop-color="#fb923c" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#9fb0c8" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="480" fill="url(#b)"/>
+  <rect width="1200" height="480" fill="url(#grid)"/>
+  <rect width="1200" height="480" fill="url(#g)"/>
+  <g transform="translate(600 232)" fill="none" stroke="#fdba74" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <path d="M-58 -10L0 -38L58 -10L0 18Z"/><path d="M58 -10V22"/><path d="M-32 4V30a32 13 0 0 0 64 0V4"/>
+  </g>
+  <text x="600" y="372" text-anchor="middle" font-family="'Noto Sans SC',-apple-system,sans-serif" font-size="30" letter-spacing="10" fill="#fdba74" fill-opacity="0.55">教育</text>
+</svg>

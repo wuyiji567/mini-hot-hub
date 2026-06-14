@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice" role="img" aria-label="娱乐">
+  <defs>
+    <linearGradient id="b" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#161f30"/>
+      <stop offset="60%" stop-color="#0e1521"/>
+      <stop offset="100%" stop-color="#0b1019"/>
+    </linearGradient>
+    <radialGradient id="g" cx="18%" cy="2%" r="95%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.40"/>
+      <stop offset="55%" stop-color="#f472b6" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#9fb0c8" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="480" fill="url(#b)"/>
+  <rect width="1200" height="480" fill="url(#grid)"/>
+  <rect width="1200" height="480" fill="url(#g)"/>
+  <g transform="translate(600 232)" fill="none" stroke="#f9a8d4" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+    <circle r="56"/><path d="M-18 -30L36 0L-18 30Z"/>
+  </g>
+  <text x="600" y="372" text-anchor="middle" font-family="'Noto Sans SC',-apple-system,sans-serif" font-size="30" letter-spacing="10" fill="#f9a8d4" fill-opacity="0.55">娱乐</text>
+</svg>

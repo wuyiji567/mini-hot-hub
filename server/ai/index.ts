@@ -21,34 +21,28 @@ const FAIL_TTL = 120; // 失败熔断 120 秒，避免疯狂重试
 const DEFAULT_INTERESTS = ["科技", "财经", "社会"];
 
 /**
- * 分类 → 默认图文件名映射（未来挂钩）。
- * 当前这些 /images/category/*.jpg 文件尚未随产物部署，返回它们会让前端 <img> 404。
- * 因此 imageForCategory 目前一律返回 ""（空串）——前端图片管线对空 imageUrl 直接走渐变兜底，
- * 既不破图也不产生 404。待把分类占位图放进 client/public/images/category/ 后，
- * 再让本函数返回对应路径即可启用该兜底层。
+ * 分类 → 深色占位图（client/public/images/category/*.svg，随前端产物部署，同源 Nginx 静态服务）。
+ * 这些 SVG 是深底设计，配合前端卡片的深色遮罩 + 白字 + 白箭头展示。
+ * 缺图/找不到分类时回落 default.svg；前端对加载失败仍有渐变兜底（不破图）。
  */
 const CATEGORY_IMAGES: Record<string, string> = {
-  科技: "/images/category/tech.jpg",
-  娱乐: "/images/category/entertainment.jpg",
-  体育: "/images/category/sports.jpg",
-  财经: "/images/category/finance.jpg",
-  社会: "/images/category/society.jpg",
-  游戏: "/images/category/gaming.jpg",
-  教育: "/images/category/education.jpg",
-  汽车: "/images/category/auto.jpg",
-  国际: "/images/category/world.jpg",
-  生活: "/images/category/life.jpg",
-  其他: "/images/category/default.jpg",
+  科技: "/images/category/tech.svg",
+  娱乐: "/images/category/entertainment.svg",
+  体育: "/images/category/sports.svg",
+  财经: "/images/category/finance.svg",
+  社会: "/images/category/society.svg",
+  游戏: "/images/category/gaming.svg",
+  教育: "/images/category/education.svg",
+  汽车: "/images/category/auto.svg",
+  国际: "/images/category/world.svg",
+  生活: "/images/category/life.svg",
+  其他: "/images/category/default.svg",
 };
-// 保留引用避免 TS 未使用告警；当前不返回这些路径（见上方说明）。
-void CATEGORY_IMAGES;
 
-/**
- * 由标签文案（如「科技 · AI」）取分类默认图。
- * 当前实现：恒返回 ""，让缺少真实 OG 图的卡片在前端走渐变兜底（不破图、不 404）。
- */
-export function imageForCategory(_tag: string | undefined): string {
-  return "";
+/** 由标签文案（如「科技 · AI」）取分类占位图，找不到用 default */
+export function imageForCategory(tag: string | undefined): string {
+  const main = (tag ?? "").split("·")[0]?.trim();
+  return CATEGORY_IMAGES[main ?? ""] ?? CATEGORY_IMAGES["其他"];
 }
 
 // 缓存载荷：除 AI 卡片外，也缓存「标题→标签」映射，便于 hot:all 重建时回填 items.tags。
